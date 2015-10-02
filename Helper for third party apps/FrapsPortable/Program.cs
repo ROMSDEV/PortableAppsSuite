@@ -20,7 +20,7 @@ namespace FrapsPortable
             if (Environment.Is64BitOperatingSystem && File.Exists(appPath64))
             {
                 SilDev.Run.App(new ProcessStartInfo() { FileName = appPath64 });
-                return;
+                Environment.Exit(Environment.ExitCode);
             }
 #endif
             bool newInstance = true;
