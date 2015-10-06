@@ -29,6 +29,9 @@
     <ApplicationIcon>RAR.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup />
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />

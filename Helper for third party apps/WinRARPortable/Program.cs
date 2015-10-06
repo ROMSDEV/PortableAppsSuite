@@ -11,7 +11,10 @@ namespace WinRARPortable
         [STAThread]
         static void Main()
         {
-            if (SilDev.Elevation.IsAdministrator && Environment.CommandLine.EndsWith(".exe\" /ClearRegistryAsAdmin"))
+            SilDev.Initialization.File(Application.StartupPath, Environment.Is64BitProcess ? "WinRAR64Portable.ini" : "WinRARPortable.ini");
+            bool ContextMenuEntriesAllowed = false;
+            bool.TryParse(SilDev.Initialization.ReadValue("ContextMenu", "EntriesAllowed"), out ContextMenuEntriesAllowed);
+            if (!ContextMenuEntriesAllowed && SilDev.Elevation.IsAdministrator && Environment.CommandLine.EndsWith(".exe\" /ClearRegistryAsAdmin", StringComparison.OrdinalIgnoreCase))
             {
                 SilDev.Reg.RemoveExistSubKey(SilDev.Reg.RegKey.ClassesRoot, "WinRAR");
                 SilDev.Reg.RemoveExistSubKey(SilDev.Reg.RegKey.ClassesRoot, "WinRAR.REV");
@@ -28,7 +31,6 @@ namespace WinRARPortable
                 if (newInstance)
                 {
                     string CurrentDate = DateTime.Now.ToString("M/d/yyyy", System.Globalization.CultureInfo.CreateSpecificCulture("en-US"));
-                    SilDev.Initialization.File(Application.StartupPath, Environment.Is64BitProcess ? "WinRAR64Portable.ini" : "WinRARPortable.ini");
                     string LastUpdateCheck = SilDev.Initialization.ReadValue("History", "LastUpdateCheck");
                     if (LastUpdateCheck != CurrentDate)
                     {
@@ -47,16 +49,17 @@ namespace WinRARPortable
                         foreach (Process app in runningApp)
                             app.WaitForExit();
                     }
-                    string appdataPath = Path.Combine(Environment.GetEnvironmentVariable("APPDATA"), "WinRAR");
-                    if (Directory.Exists(appdataPath))
-                        Directory.Delete(appdataPath, true);
-                    if (SilDev.Reg.SubKeyExist(SilDev.Reg.RegKey.ClassesRoot, "WinRAR") ||
-                        SilDev.Reg.SubKeyExist(SilDev.Reg.RegKey.ClassesRoot, "WinRAR.REV") ||
-                        SilDev.Reg.SubKeyExist(SilDev.Reg.RegKey.ClassesRoot, "WinRAR.ZIP") ||
-                        SilDev.Reg.SubKeyExist(SilDev.Reg.RegKey.CurrentUser, "Software\\Classes\\WinRAR") ||
-                        SilDev.Reg.SubKeyExist(SilDev.Reg.RegKey.CurrentUser, "Software\\Classes\\WinRAR.REV") ||
-                        SilDev.Reg.SubKeyExist(SilDev.Reg.RegKey.CurrentUser, "Software\\Classes\\WinRAR.ZIP") ||
-                        SilDev.Reg.SubKeyExist(SilDev.Reg.RegKey.CurrentUser, "Software\\WinRAR"))
+                    string appDataPath = Path.Combine(Environment.GetEnvironmentVariable("APPDATA"), "WinRAR");
+                    if (Directory.Exists(appDataPath) && Directory.GetFiles(appDataPath, "*", SearchOption.AllDirectories).Length == 0)
+                        Directory.Delete(appDataPath, true);
+                    if (!ContextMenuEntriesAllowed && 
+                        (SilDev.Reg.SubKeyExist(SilDev.Reg.RegKey.ClassesRoot, "WinRAR") ||
+                         SilDev.Reg.SubKeyExist(SilDev.Reg.RegKey.ClassesRoot, "WinRAR.REV") ||
+                         SilDev.Reg.SubKeyExist(SilDev.Reg.RegKey.ClassesRoot, "WinRAR.ZIP") ||
+                         SilDev.Reg.SubKeyExist(SilDev.Reg.RegKey.CurrentUser, "Software\\Classes\\WinRAR") ||
+                         SilDev.Reg.SubKeyExist(SilDev.Reg.RegKey.CurrentUser, "Software\\Classes\\WinRAR.REV") ||
+                         SilDev.Reg.SubKeyExist(SilDev.Reg.RegKey.CurrentUser, "Software\\Classes\\WinRAR.ZIP") ||
+                         SilDev.Reg.SubKeyExist(SilDev.Reg.RegKey.CurrentUser, "Software\\WinRAR")))
                         SilDev.Elevation.RestartAsAdministrator("/ClearRegistryAsAdmin");
                 }
                 else
