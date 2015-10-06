@@ -17,7 +17,7 @@ namespace TeamViewerUpdater
             Icon = Properties.Resources.TeamViewerUpdater;
         }
 
-        private void MainForm_Load(object sender, EventArgs e)
+        private void MainForm_Shown(object sender, EventArgs e)
         {
             string UpdateURL = "http://download.teamviewer.com/download/TeamViewerPortable.zip";
             string FileName = "TeamViewerPortable.zip";
@@ -32,17 +32,14 @@ namespace TeamViewerUpdater
                     {
                         SilDev.Network.DownloadFileAsync(UpdateURL, ZipPath);
                         CheckDownload.Enabled = true;
-                        if (!Environment.CommandLine.Contains("/silent"))
-                        {
-                            Opacity = 1f;
-                            ShowInTaskbar = true;
-                        }
+                        Opacity = 1f;
+                        WindowState = FormWindowState.Normal;
                     }
                     else
                     {
                         ExtractDownload.RunWorkerAsync();
                         Opacity = 0;
-                        ShowInTaskbar = false;
+                        WindowState = FormWindowState.Minimized;
                     }
                 }
                 else
@@ -133,6 +130,15 @@ namespace TeamViewerUpdater
             }
             catch (Exception ex)
             {
+                try
+                {
+                    if (File.Exists(ZipPath))
+                        File.Delete(ZipPath);
+                }
+                catch (Exception exx)
+                {
+                    SilDev.Log.Debug(exx);
+                }
                 e.Result = "UpdateFailed";
                 SilDev.Log.Debug(ex);
             }
