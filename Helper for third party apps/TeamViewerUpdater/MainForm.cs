@@ -33,13 +33,11 @@ namespace TeamViewerUpdater
                         SilDev.Network.DownloadFileAsync(UpdateURL, ZipPath);
                         CheckDownload.Enabled = true;
                         Opacity = 1f;
-                        WindowState = FormWindowState.Normal;
                     }
                     else
                     {
                         ExtractDownload.RunWorkerAsync();
                         Opacity = 0;
-                        WindowState = FormWindowState.Minimized;
                     }
                 }
                 else
@@ -89,6 +87,8 @@ namespace TeamViewerUpdater
             DLSpeed.Text = SilDev.Network.DownloadInfo.GetTransferSpeed;
             DLPercentage.Value = SilDev.Network.DownloadInfo.GetProgressPercentage;
             DLLoaded.Text = SilDev.Network.DownloadInfo.GetDataReceived;
+            if (DLPercentage.Value > 0 && WindowState != FormWindowState.Normal)
+                WindowState = FormWindowState.Normal;
             if (!SilDev.Network.AsyncIsBusy())
                 count++;
             if (count == 1)
