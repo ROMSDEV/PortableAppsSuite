@@ -61,8 +61,15 @@ namespace TeamViewerPortable
                             }
                         }
                     }
-                    SilDev.Run.App(Path.GetDirectoryName(updaterPath), Path.GetFileName(updaterPath), "/silent", true, SilDev.Run.WindowStyle.Normal, -1, 0);
-                    SilDev.Run.App(Path.GetDirectoryName(appPath), Path.GetFileName(appPath), true, 0);
+                    SilDev.Initialization.File(Application.StartupPath, "TeamViewerPortable.ini");
+                    string CurrentDate = DateTime.Now.ToString("M/d/yyyy", System.Globalization.CultureInfo.CreateSpecificCulture("en-US"));
+                    string LastUpdateCheck = SilDev.Initialization.ReadValue("History", "LastUpdateCheck");
+                    if (LastUpdateCheck != CurrentDate)
+                    {
+                        SilDev.Run.App(new ProcessStartInfo() { FileName = updaterPath, Arguments = "/silent", Verb = "runas" }, 0);
+                        SilDev.Initialization.WriteValue("History", "LastUpdateCheck", CurrentDate);
+                    }
+                    SilDev.Run.App(new ProcessStartInfo() { FileName = appPath, Verb = "runas" }, 0);
                 }
             }
         }
