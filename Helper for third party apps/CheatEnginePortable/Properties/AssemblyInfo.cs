@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Si13n7 Dev. ®")]
 [assembly: AssemblyProduct("CheatEnginePortable")]
-[assembly: AssemblyCopyright("Copyright © Si13n7 Dev. ® 2014")]
+[assembly: AssemblyCopyright("Copyright © Si13n7 Dev. ® 2016")]
 [assembly: AssemblyTrademark("Si13n7 Dev. ®")]
 [assembly: AssemblyCulture("")]
 
