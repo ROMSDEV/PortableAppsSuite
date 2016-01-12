@@ -32,11 +32,11 @@ namespace SteamPortable
 
                     string defServiceDir = SilDev.Run.EnvironmentVariableFilter("%CommonProgramFiles(x86)%\\Steam");
                     string serviceDir = SilDev.Run.EnvironmentVariableFilter("%CurrentDir%\\App\\Service");
-                    DirLinkHelper(defServiceDir, serviceDir);
+                    SilDev.Data.DirLink(defServiceDir, serviceDir, true);
 
                     string defCacheDir = SilDev.Run.EnvironmentVariableFilter("%LocalAppData%\\Steam");
                     string cacheDir = SilDev.Run.EnvironmentVariableFilter("%CurrentDir%\\Data\\Cache");
-                    DirLinkHelper(defCacheDir, cacheDir);
+                    SilDev.Data.DirLink(defCacheDir, cacheDir, true);
 
                     string iniPath = Path.Combine(Application.StartupPath, string.Format("{0}.ini", Path.GetFileNameWithoutExtension(Application.ExecutablePath).Replace("64", string.Empty)));
                     if (File.Exists(iniPath))
@@ -80,7 +80,7 @@ namespace SteamPortable
                             }
                             catch (Exception ex)
                             {
-                                SilDev.Log.Debug(ex.Message, "SteamPortable.Program.Main - improveSteamStart");
+                                SilDev.Log.Debug(ex);
                             }
                         }
                         string steamAppsDir = SilDev.Initialization.ReadValue("Settings", "SteamAppsPathOverride", iniPath);
@@ -88,7 +88,7 @@ namespace SteamPortable
                         {
                             string defaultSteamAppsPath = Path.Combine(appDir, "steamapps");
                             steamAppsDir = SilDev.Run.EnvironmentVariableFilter(steamAppsDir);
-                            DirLinkHelper(defaultSteamAppsPath, steamAppsDir);
+                            SilDev.Data.DirLink(defaultSteamAppsPath, steamAppsDir, true);
                         }
                     }
 
@@ -128,7 +128,7 @@ namespace SteamPortable
                         }
                         catch (Exception ex)
                         {
-                            SilDev.Log.Debug(ex.Message, "SteamPortable.Program.Main - servicePath");
+                            SilDev.Log.Debug(ex);
                         }
                         SilDev.ServiceTools.InstallService(serviceName, serviceName, Path.Combine(defServiceDir, "SteamService.exe"), "/RunAsService");
                         SilDev.ServiceTools.StartService(serviceName);
@@ -140,7 +140,11 @@ namespace SteamPortable
                         cmdLineArgs = cmdLineArgs.TrimStart().TrimEnd();
                     }
 
-                    SilDev.Run.App(appDir, "Steam.exe", cmdLineArgs, 0);
+                    SilDev.Run.App(new ProcessStartInfo()
+                    {
+                        Arguments = cmdLineArgs,
+                        FileName = Path.Combine(appDir, "Steam.exe")
+                    }, 0);
                     while (isRunning(appDir, "Steam"))
                         Thread.Sleep(200);
 
@@ -154,13 +158,27 @@ namespace SteamPortable
 
                     string tempRegPath = SilDev.Run.EnvironmentVariableFilter("%CurrentDir%\\Data\\temp.reg");
                     string regFileContent = string.Empty;
-                    if (File.Exists(tempRegPath))
-                        File.Delete(tempRegPath);
+                    try
+                    {
+                        if (File.Exists(tempRegPath))
+                            File.Delete(tempRegPath);
+                    }
+                    catch (Exception ex)
+                    {
+                        SilDev.Log.Debug(ex);
+                    }
                     SilDev.Reg.ExportFile("HKCU\\Software\\Valve", tempRegPath);
                     if (File.Exists(tempRegPath))
                     {
                         regFileContent = File.ReadAllText(tempRegPath);
-                        File.Delete(tempRegPath);
+                        try
+                        {
+                            File.Delete(tempRegPath);
+                        }
+                        catch (Exception ex)
+                        {
+                            SilDev.Log.Debug(ex);
+                        }
                     }
 
                     SilDev.Reg.ExportFile("HKLM\\SOFTWARE\\Valve", tempRegPath);
@@ -177,7 +195,14 @@ namespace SteamPortable
                                 regFileContent += line;
                             }
                         }
-                        File.Delete(tempRegPath);
+                        try
+                        {
+                            File.Delete(tempRegPath);
+                        }
+                        catch (Exception ex)
+                        {
+                            SilDev.Log.Debug(ex);
+                        }
                     }
 #if !x86
                     SilDev.Reg.ExportFile("HKLM\\SOFTWARE\\Wow6432Node\\Valve", tempRegPath);
@@ -194,7 +219,14 @@ namespace SteamPortable
                                 regFileContent += line;
                             }
                         }
-                        File.Delete(tempRegPath);
+                        try
+                        {
+                            File.Delete(tempRegPath);
+                        }
+                        catch (Exception ex)
+                        {
+                            SilDev.Log.Debug(ex);
+                        }
                     }
 #endif
                     SilDev.Reg.RemoveExistSubKey("HKCU\\Software\\Valve");
@@ -213,13 +245,26 @@ namespace SteamPortable
                     if (SilDev.Reg.SubKeyExist("HKLM\\SOFTWARE\\Wow6432Node\\SI13N7-BACKUP: Valve"))
                         SilDev.Reg.RenameSubKey("HKLM\\SOFTWARE\\Wow6432Node\\SI13N7-BACKUP: Valve", "SOFTWARE\\Wow6432Node\\Valve");
 #endif
-                    if (File.Exists(settingsKeyPath))
-                        File.Delete(settingsKeyPath);
-                    if (!File.Exists(settingsKeyPath))
-                        File.WriteAllText(settingsKeyPath, regFileContent);
 
-                    DirUnLinkHelper(defServiceDir);
-                    DirUnLinkHelper(defCacheDir);
+                    try
+                    {
+                        if (File.Exists(settingsKeyPath))
+                        {
+                            foreach (Process p in Process.GetProcessesByName("reg"))
+                                if (p.StartInfo.Arguments.ToLower().Contains(settingsKeyPath.ToLower()))
+                                    p.Kill();
+                            File.Delete(settingsKeyPath);
+                        }
+                        if (!File.Exists(settingsKeyPath))
+                            File.WriteAllText(settingsKeyPath, regFileContent);
+                    }
+                    catch (Exception ex)
+                    {
+                        SilDev.Log.Debug(ex);
+                    }
+
+                    SilDev.Data.DirUnLink(defServiceDir, true);
+                    SilDev.Data.DirUnLink(defCacheDir, true);
 
                     if (File.Exists(iniPath))
                     {
@@ -227,12 +272,16 @@ namespace SteamPortable
                         if (!string.IsNullOrWhiteSpace(steamAppsPath))
                         {
                             string defaultSteamAppsPath = Path.Combine(appDir, "steamapps");
-                            DirUnLinkHelper(defaultSteamAppsPath);
+                            SilDev.Data.DirUnLink(defaultSteamAppsPath, true);
                         }
                     }
                 }
                 else
-                    SilDev.Run.App(appDir, "Steam.exe", cmdLineArgs);
+                    SilDev.Run.App(new ProcessStartInfo()
+                    {
+                        Arguments = cmdLineArgs,
+                        FileName = Path.Combine(appDir, "Steam.exe")
+                    }, 0);
             }
         }
 
@@ -279,38 +328,6 @@ namespace SteamPortable
             {
                 SilDev.Log.Debug(ex.Message, "SteamPortable.Program.killAll");
             }
-        }
-
-        static void DirLinkHelper(string _src, string _dest)
-        {
-            if (!Directory.Exists(_dest))
-                Directory.CreateDirectory(_dest);
-            if (Directory.Exists(_dest))
-            {
-                if (Directory.Exists(_src))
-                {
-                    if (!SilDev.Data.DirIsLink(_src))
-                    {
-                        Directory.Move(_src, string.Format("{0}.SI13N7-BACKUP", _src));
-                        if (Directory.Exists(_src))
-                            Directory.Delete(_src, true);
-                    }
-                    else
-                        SilDev.Data.DirUnLink(_src);
-                }
-                SilDev.Data.DirLink(_dest, _src);
-            }
-        }
-
-        static void DirUnLinkHelper(string _path)
-        {
-            if (Directory.Exists(string.Format("{0}.SI13N7-BACKUP", _path)))
-            {
-                if (Directory.Exists(_path))
-                    Directory.Delete(_path, true);
-                Directory.Move(string.Format("{0}.SI13N7-BACKUP", _path), _path);
-            }
-            SilDev.Data.DirUnLink(_path);
         }
 
         #endregion
