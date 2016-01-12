@@ -27,11 +27,20 @@ namespace CCleanerPortable
                     SilDev.Log.AllowDebug();
                     string portableDat = Path.Combine(rootDir, "portable.dat");
                     if (!File.Exists(portableDat))
-                        using (StreamWriter sw = File.CreateText(portableDat))
-                            sw.Write("#PORTABLE#");
+                        File.WriteAllText(portableDat, "#PORTABLE#");
                     string commandLine = Environment.CommandLine.Replace(string.Format("\"{0}\"", Application.ExecutablePath), string.Empty);
-                    SilDev.Run.App(Path.GetDirectoryName(updaterPath), Path.GetFileName(updaterPath), "/silent", true, SilDev.Run.WindowStyle.Normal, -1, 0);
-                    SilDev.Run.App(Path.GetDirectoryName(appPath), Path.GetFileName(appPath), commandLine, true, 0);
+                    SilDev.Run.App(new ProcessStartInfo()
+                    {
+                        Arguments = "/silent",
+                        FileName = updaterPath,
+                        Verb = "runas"
+                    }, 0);
+                    SilDev.Run.App(new ProcessStartInfo()
+                    {
+                        Arguments = commandLine,
+                        FileName = appPath,
+                        Verb = "runas"
+                    }, 0);
                 }
             }
         }

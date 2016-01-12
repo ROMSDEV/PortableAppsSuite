@@ -2,8 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
-using System.Reflection;
-using System.Text.RegularExpressions;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace CCleanerUpdater
@@ -20,20 +19,29 @@ namespace CCleanerUpdater
 
         private void MainForm_Load(object sender, EventArgs e)
         {
+            SilDev.WinAPI.TaskbarProgress.SetState(Handle, SilDev.WinAPI.TaskbarProgress.TaskbarStates.Indeterminate);
+
             string CCleaner = Path.Combine(Application.StartupPath, "CCleaner.exe");
             string UpdateURL = "https://www.piriform.com/ccleaner/download/portable/downloadfile";
 
             string LocalVersion = string.Empty;
-            string[] VerFilter = FileVersionInfo.GetVersionInfo(CCleaner).FileVersion.Replace(" ", string.Empty).Split(',');
-            if (VerFilter.Length >= 2)
-                for (int i = 0; i < 2; i++)
-                    LocalVersion += VerFilter[i];
+            try
+            {
+                string[] VerFilter = FileVersionInfo.GetVersionInfo(CCleaner).FileVersion.Replace(" ", string.Empty).Split(',');
+                if (VerFilter.Length >= 2)
+                    for (int i = 0; i < 2; i++)
+                        LocalVersion += VerFilter[i];
+            }
+            catch (Exception ex)
+            {
+                SilDev.Log.Debug(ex);
+            }
             CheckClose(LocalVersion, "LocalVersion");
 
             string FileName = SilDev.Network.DownloadInfo.GetOnlineFileName(UpdateURL);
             CheckClose(FileName, "FileName");
 
-            string OnlineVersion = Regex.Match(FileName, "ccsetup(.+?).zip").Groups[1].Value;
+            string OnlineVersion = string.Concat(FileName.Where(x => char.IsDigit(x)).ToArray());
             CheckClose(OnlineVersion, "OnlineVersion");
 
             if (Convert.ToInt32(LocalVersion) < Convert.ToInt32(OnlineVersion))
@@ -43,28 +51,20 @@ namespace CCleanerUpdater
                     ZipPath = Path.Combine(Application.StartupPath, FileName);
                     if (!File.Exists(ZipPath))
                     {
+                        Opacity = 1f;
                         SilDev.Network.DownloadFileAsync(UpdateURL, ZipPath);
                         CheckDownload.Enabled = true;
-                        if (Environment.CommandLine.Contains("/silent"))
-                        {
-                            this.Opacity = 0;
-                            this.ShowInTaskbar = false;
-                        }
                     }
                     else
-                    {
                         ExtractDownload.RunWorkerAsync();
-                        this.Opacity = 0;
-                        this.ShowInTaskbar = false;
-                    }
                 }
                 else
-                    this.Close();
+                    Close();
             }
             else
             {
                 ShowInfoBox("NoUpdates", MessageBoxButtons.OK);
-                this.Close();
+                Application.Exit();
             }
         }
 
@@ -73,7 +73,7 @@ namespace CCleanerUpdater
             if (string.IsNullOrWhiteSpace(_check))
             {
                 ShowInfoBox(_arg, MessageBoxButtons.OK);
-                this.Close();
+                Application.Exit();
             }
         }
 
@@ -97,7 +97,7 @@ namespace CCleanerUpdater
                     text = "No newer version available.";
                     break;
             }
-            return MessageBox.Show(text, this.Text, _btn, MessageBoxIcon.Information);
+            return MessageBox.Show(text, Text, _btn, MessageBoxIcon.Information);
         }
 
         private void CheckDownload_Tick(object sender, EventArgs e)
@@ -115,6 +115,7 @@ namespace CCleanerUpdater
                 DLPercentage.Maximum = 100;
                 DLPercentage.Value = 100;
             }
+            SilDev.WinAPI.TaskbarProgress.SetValue(Handle, DLPercentage.Value, DLPercentage.Maximum);
             if (count >= 10)
             {
                 CheckDownload.Enabled = false;
@@ -151,10 +152,10 @@ namespace CCleanerUpdater
 
         private void ExtractDownload_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
         {
-            this.Opacity = 0;
-            this.ShowInTaskbar = false;
+            WindowState = FormWindowState.Minimized;
+            SilDev.WinAPI.TaskbarProgress.SetState(Handle, SilDev.WinAPI.TaskbarProgress.TaskbarStates.Indeterminate);
             ShowInfoBox(e.Result.ToString(), MessageBoxButtons.OK);
-            this.Close();
+            Close();
         }
 
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)

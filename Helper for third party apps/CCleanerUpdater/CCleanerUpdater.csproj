@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>CCleanerUpdater</RootNamespace>
     <AssemblyName>CCleanerUpdater</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -59,6 +59,7 @@
     <Compile Include="..\..\_libs\SilDev.Network.cs" />
     <Compile Include="..\..\_libs\SilDev.Run.cs" />
     <Compile Include="..\..\_libs\SilDev.Initialization.cs" />
+    <Compile Include="..\..\_libs\SilDev.WinAPI.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
