@@ -53,6 +53,7 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+	<Compile Include="..\..\_libs\SilDev.WinAPI.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\_libs\SilDev.Elevation.cs" />

@@ -42,9 +42,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\_libs\SilDev.Crypt.cs" />
+    <Compile Include="..\..\_libs\SilDev.Log.cs" />
+    <Compile Include="..\..\_libs\SilDev.Run.cs" />
+    <Compile Include="..\..\_libs\SilDev.WinAPI.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">

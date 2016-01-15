@@ -155,7 +155,6 @@ namespace DefragglerUpdater
                                 File.Delete(EntPath);
                             ent.ExtractToFile(EntPath, true);
                         }
-                        zip.Dispose();
                     }
                     e.Result = "Updated";
                 }

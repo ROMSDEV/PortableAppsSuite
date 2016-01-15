@@ -49,10 +49,7 @@ namespace TeamViewerPortable
                             try
                             {
                                 using (ZipArchive zip = ZipFile.OpenRead(archivePath))
-                                {
                                     zip.ExtractToDirectory(rootDir);
-                                    zip.Dispose();
-                                }
                                 File.Delete(archivePath);
                             }
                             catch (Exception ex)

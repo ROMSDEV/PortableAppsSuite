@@ -68,11 +68,11 @@ namespace TS3ClientPortable
                             else
                                 p.WaitForExit();
                         }
-                        IntPtr hWnd = SilDev.WinAPI.FindWindowByCaption(IntPtr.Zero, "TeamSpeak 3");
+                        IntPtr hWnd = SilDev.WinAPI.SafeNativeMethods.FindWindowByCaption(IntPtr.Zero, "TeamSpeak 3");
                         if (hWnd != IntPtr.Zero && hideInTaskBar)
                         {
                             SilDev.WinAPI.HideWindow(hWnd);
-                            SilDev.WinAPI.SetWindowLong(hWnd, -0x14, SilDev.WinAPI.GetWindowLong(hWnd, -0x14) | 0x0080);
+                            SilDev.WinAPI.SafeNativeMethods.SetWindowLong(hWnd, -0x14, SilDev.WinAPI.SafeNativeMethods.GetWindowLong(hWnd, -0x14) | 0x0080);
                             SilDev.WinAPI.ShowWindow(hWnd);
                             hideInTaskBar = false;
                         }

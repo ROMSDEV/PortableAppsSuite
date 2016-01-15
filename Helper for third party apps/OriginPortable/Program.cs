@@ -528,7 +528,7 @@ namespace OriginPortable
                                 if (p.MainWindowTitle.ToLower() == name)
                                 {
                                     MinimizedAtStart++;
-                                    SilDev.WinAPI.ShowWindow(p.MainWindowHandle, SilDev.WinAPI.Win32HookAction.SW_MINIMIZE);
+                                    SilDev.WinAPI.SafeNativeMethods.ShowWindow(p.MainWindowHandle, SilDev.WinAPI.Win32HookAction.SW_MINIMIZE);
                                 }
                             }
                         }

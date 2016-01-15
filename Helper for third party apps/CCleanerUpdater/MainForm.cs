@@ -138,7 +138,6 @@ namespace CCleanerUpdater
                                 File.Delete(EntPath);
                             ent.ExtractToFile(EntPath, true);
                         }
-                        zip.Dispose();
                     }
                     e.Result = "Updated";
                 }

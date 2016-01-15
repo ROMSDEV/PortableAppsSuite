@@ -122,7 +122,6 @@ namespace TeamViewerUpdater
                                 File.Delete(EntPath);
                             ent.ExtractToFile(EntPath, true);
                         }
-                        zip.Dispose();
                     }
                     File.SetLastWriteTime(TeamViewer, DateTime.Now);
                     e.Result = "Updated";

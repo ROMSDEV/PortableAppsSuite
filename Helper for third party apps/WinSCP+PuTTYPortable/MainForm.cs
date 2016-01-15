@@ -71,7 +71,7 @@ namespace WinSCP_PuTTY_Launcher
         private void MainForm_Resize(object sender, EventArgs e)
         {
             foreach (IntPtr hwnd in Main.PuTTYTabs.Values)
-                SilDev.WinAPI.MoveWindow(hwnd, 0, 0, puttyTabCtrl.SelectedTab.Width, puttyTabCtrl.SelectedTab.Height, true);
+                SilDev.WinAPI.SafeNativeMethods.MoveWindow(hwnd, 0, 0, puttyTabCtrl.SelectedTab.Width, puttyTabCtrl.SelectedTab.Height, true);
         }
 
         private void MainForm_ResizeEnd(object sender, EventArgs e)
@@ -161,10 +161,7 @@ namespace WinSCP_PuTTY_Launcher
                         bool overwriteSettings = false;
                         string settingsContent = string.Empty;
                         using (StreamReader sr = new StreamReader(settingsPath))
-                        {
                             settingsContent = sr.ReadToEnd();
-                            sr.Dispose();
-                        }
                         if (settingsContent.Contains(oldPath))
                         {
                             overwriteSettings = true;
@@ -259,9 +256,9 @@ namespace WinSCP_PuTTY_Launcher
                 puttyTabCtrl.SelectedIndex = puttyTabCtrl.TabPages.Count - 1;
                 if (!Main.PuTTYTabs.ContainsKey(p.Id))
                     Main.PuTTYTabs.Add(p.Id, p.MainWindowHandle);
-                SilDev.WinAPI.SetWindowLong(p.MainWindowHandle, -16, (int)(SilDev.WinAPI.GetWindowLong(p.MainWindowHandle, -16) & ~0x00020000L & ~0x00010000L));
-                SilDev.WinAPI.MoveWindow(p.MainWindowHandle, 0, 0, puttyTabCtrl.SelectedTab.Width, puttyTabCtrl.SelectedTab.Height, true);
-                SilDev.WinAPI.SetParent(p.MainWindowHandle, puttyTabCtrl.SelectedTab.Handle);
+                SilDev.WinAPI.SafeNativeMethods.SetWindowLong(p.MainWindowHandle, -16, (int)(SilDev.WinAPI.SafeNativeMethods.GetWindowLong(p.MainWindowHandle, -16) & ~0x00020000L & ~0x00010000L));
+                SilDev.WinAPI.SafeNativeMethods.MoveWindow(p.MainWindowHandle, 0, 0, puttyTabCtrl.SelectedTab.Width, puttyTabCtrl.SelectedTab.Height, true);
+                SilDev.WinAPI.SafeNativeMethods.SetParent(p.MainWindowHandle, puttyTabCtrl.SelectedTab.Handle);
                 if (!this.TopMost)
                     this.TopMost = true;
                 Thread.Sleep(5);
@@ -293,13 +290,13 @@ namespace WinSCP_PuTTY_Launcher
                 Main.PuTTYTabs.Remove(ToRemove);
             if (!IsResizing && puttyTabCtrl.TabCount > 0)
             {
-                if (SilDev.WinAPI.GetForegroundWindow() == this.Handle)
+                if (SilDev.WinAPI.SafeNativeMethods.GetForegroundWindow() == this.Handle)
                 {
                     int tabtext = 0;
                     int.TryParse(puttyTabCtrl.SelectedTab.Text, out tabtext);
                     IntPtr hwnd = (IntPtr)tabtext;
                     if (hwnd != IntPtr.Zero)
-                        SilDev.WinAPI.SetForegroundWindow(hwnd);
+                        SilDev.WinAPI.SafeNativeMethods.SetForegroundWindow(hwnd);
                 }
             }
             if (puttyTabCtrl.TabCount <= 0)
