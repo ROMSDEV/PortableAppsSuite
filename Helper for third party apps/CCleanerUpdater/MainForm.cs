@@ -19,7 +19,7 @@ namespace CCleanerUpdater
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            SilDev.WinAPI.TaskBarProgress.SetState(Handle, SilDev.WinAPI.TaskBarProgress.TaskBarStates.Indeterminate);
+            SilDev.WinAPI.TaskBarProgress.SetState(Handle, SilDev.WinAPI.TaskBarProgress.States.Indeterminate);
 
             string CCleaner = Path.Combine(Application.StartupPath, "CCleaner.exe");
             string UpdateURL = "https://www.piriform.com/ccleaner/download/portable/downloadfile";
@@ -152,7 +152,7 @@ namespace CCleanerUpdater
         private void ExtractDownload_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
         {
             WindowState = FormWindowState.Minimized;
-            SilDev.WinAPI.TaskBarProgress.SetState(Handle, SilDev.WinAPI.TaskBarProgress.TaskBarStates.Indeterminate);
+            SilDev.WinAPI.TaskBarProgress.SetState(Handle, SilDev.WinAPI.TaskBarProgress.States.Indeterminate);
             ShowInfoBox(e.Result.ToString(), MessageBoxButtons.OK);
             Close();
         }
