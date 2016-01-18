@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
@@ -118,7 +117,7 @@ namespace SteamPortable
                     SilDev.Reg.WriteValue("HKLM\\SOFTWARE\\Wow6432Node\\Valve\\Steam", "InstallPath", appDir);
 #endif
                     string serviceName = "Steam Client Service";
-                    if (SilDev.Elevation.IsAdministrator && !SilDev.ServiceTools.ServiceExists(serviceName))
+                    if (SilDev.Elevation.IsAdministrator && !SilDev.WinAPI.ServiceTools.ServiceExists(serviceName))
                     {
                         try
                         {
@@ -130,8 +129,8 @@ namespace SteamPortable
                         {
                             SilDev.Log.Debug(ex);
                         }
-                        SilDev.ServiceTools.InstallService(serviceName, serviceName, Path.Combine(defServiceDir, "SteamService.exe"), "/RunAsService");
-                        SilDev.ServiceTools.StartService(serviceName);
+                        SilDev.WinAPI.ServiceTools.InstallService(serviceName, serviceName, Path.Combine(defServiceDir, "SteamService.exe"), "/RunAsService");
+                        SilDev.WinAPI.ServiceTools.StartService(serviceName);
                     }
 
                     if (File.Exists(iniPath))
@@ -148,10 +147,10 @@ namespace SteamPortable
                     while (isRunning(appDir, "Steam"))
                         Thread.Sleep(200);
 
-                    if (SilDev.Elevation.IsAdministrator && SilDev.ServiceTools.ServiceExists(serviceName) && SilDev.Data.DirIsLink(defServiceDir))
+                    if (SilDev.Elevation.IsAdministrator && SilDev.WinAPI.ServiceTools.ServiceExists(serviceName) && SilDev.Data.DirIsLink(defServiceDir))
                     {
-                        SilDev.ServiceTools.StopService(serviceName);
-                        SilDev.ServiceTools.UninstallService(serviceName);
+                        SilDev.WinAPI.ServiceTools.StopService(serviceName);
+                        SilDev.WinAPI.ServiceTools.UninstallService(serviceName);
                     }
 
                     SilDev.Reg.ImportFile(new string[] { "Windows Registry Editor Version 5.00", "[-HKEY_CLASSES_ROOT\\steam]", Environment.NewLine }, true);

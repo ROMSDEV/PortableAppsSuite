@@ -53,11 +53,10 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-	<Compile Include="..\..\_libs\SilDev.WinAPI.cs" />
+    <Compile Include="..\..\_libs\SilDev.WinAPI.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\_libs\SilDev.Elevation.cs" />
-    <Compile Include="..\..\_libs\SilDev.ServiceTools.cs" />
     <Compile Include="..\..\_libs\SilDev.Crypt.cs" />
     <Compile Include="..\..\_libs\SilDev.Data.cs" />
     <Compile Include="..\..\_libs\SilDev.Initialization.cs" />
