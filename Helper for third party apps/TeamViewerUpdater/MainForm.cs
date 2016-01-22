@@ -21,7 +21,7 @@ namespace TeamViewerUpdater
         {
             string UpdateURL = "http://download.teamviewer.com/download/TeamViewerPortable.zip";
             string FileName = "TeamViewerPortable.zip";
-            DateTime onlineDate = SilDev.Network.DownloadInfo.GetOnlineFileDate(UpdateURL);
+            DateTime onlineDate = SilDev.Network.GetOnlineFileDate(UpdateURL);
             DateTime localDate = File.GetLastWriteTime(TeamViewer);
             if (onlineDate.Date > localDate.Date)
             {
@@ -84,12 +84,12 @@ namespace TeamViewerUpdater
 
         private void CheckDownload_Tick(object sender, EventArgs e)
         {
-            DLSpeed.Text = SilDev.Network.DownloadInfo.GetTransferSpeed;
-            DLPercentage.Value = SilDev.Network.DownloadInfo.GetProgressPercentage;
-            DLLoaded.Text = SilDev.Network.DownloadInfo.GetDataReceived;
+            DLSpeed.Text = SilDev.Network.LatestAsyncDownloadInfo.TransferSpeed;
+            DLPercentage.Value = SilDev.Network.LatestAsyncDownloadInfo.ProgressPercentage;
+            DLLoaded.Text = SilDev.Network.LatestAsyncDownloadInfo.DataReceived;
             if (DLPercentage.Value > 0 && WindowState != FormWindowState.Normal)
                 WindowState = FormWindowState.Normal;
-            if (!SilDev.Network.AsyncIsBusy())
+            if (!SilDev.Network.AsyncDownloadIsBusy())
                 count++;
             if (count == 1)
             {

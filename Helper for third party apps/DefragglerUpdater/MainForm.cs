@@ -35,7 +35,7 @@ namespace DefragglerUpdater
                     LocalVersion += split[i];
                 CheckClose(LocalVersion, "LocalVersion");
 
-                string FileName = SilDev.Network.DownloadInfo.GetOnlineFileName(UpdateURL);
+                string FileName = SilDev.Network.GetOnlineFileName(UpdateURL);
                 CheckClose(FileName, "FileName");
 
                 string OnlineVersion = Regex.Match(FileName, "dfsetup(.+?).zip").Groups[1].Value;
@@ -120,10 +120,10 @@ namespace DefragglerUpdater
 
         private void CheckDownload_Tick(object sender, EventArgs e)
         {
-            DLSpeed.Text = SilDev.Network.DownloadInfo.GetTransferSpeed;
-            DLPercentage.Value = SilDev.Network.DownloadInfo.GetProgressPercentage;
-            DLLoaded.Text = SilDev.Network.DownloadInfo.GetDataReceived;
-            if (!SilDev.Network.AsyncIsBusy())
+            DLSpeed.Text = SilDev.Network.LatestAsyncDownloadInfo.TransferSpeed;
+            DLPercentage.Value = SilDev.Network.LatestAsyncDownloadInfo.ProgressPercentage;
+            DLLoaded.Text = SilDev.Network.LatestAsyncDownloadInfo.DataReceived;
+            if (!SilDev.Network.AsyncDownloadIsBusy())
                 count++;
             if (count == 1)
             {

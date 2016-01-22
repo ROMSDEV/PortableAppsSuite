@@ -176,10 +176,10 @@ namespace WinRARUpdater
 
         private void CheckDownload_Tick(object sender, EventArgs e)
         {
-            DLSpeed.Text = SilDev.Network.DownloadInfo.GetTransferSpeed;
-            DLPercentage.Value = SilDev.Network.DownloadInfo.GetProgressPercentage;
-            DLLoaded.Text = SilDev.Network.DownloadInfo.GetDataReceived;
-            if (!SilDev.Network.AsyncIsBusy())
+            DLSpeed.Text = SilDev.Network.LatestAsyncDownloadInfo.TransferSpeed;
+            DLPercentage.Value = SilDev.Network.LatestAsyncDownloadInfo.ProgressPercentage;
+            DLLoaded.Text = SilDev.Network.LatestAsyncDownloadInfo.DataReceived;
+            if (!SilDev.Network.AsyncDownloadIsBusy())
                 count++;
             if (count == 1)
             {

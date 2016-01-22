@@ -26,7 +26,7 @@ namespace RunPHP
 
         private void DownloadForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-            if (SilDev.Network.AsyncIsBusy())
+            if (SilDev.Network.AsyncDownloadIsBusy())
                 SilDev.Network.CancelAsyncDownload();
             if (ExtractDownload.IsBusy)
                 ExtractDownload.CancelAsync();
@@ -66,10 +66,10 @@ namespace RunPHP
 
         private void CheckDownload_Tick(object sender, EventArgs e)
         {
-            DLSpeed.Text = SilDev.Network.DownloadInfo.GetTransferSpeed;
-            DLPercentage.Value = SilDev.Network.DownloadInfo.GetProgressPercentage;
-            DLLoaded.Text = SilDev.Network.DownloadInfo.GetDataReceived;
-            if (!SilDev.Network.AsyncIsBusy())
+            DLSpeed.Text = SilDev.Network.LatestAsyncDownloadInfo.TransferSpeed;
+            DLPercentage.Value = SilDev.Network.LatestAsyncDownloadInfo.ProgressPercentage;
+            DLLoaded.Text = SilDev.Network.LatestAsyncDownloadInfo.DataReceived;
+            if (!SilDev.Network.AsyncDownloadIsBusy())
                 count++;
             if (count == 1)
             {
@@ -91,16 +91,16 @@ namespace RunPHP
             try
             {
                 string path = Path.Combine(Application.StartupPath, "php");
-                if (File.Exists(SilDev.Network.DownloadInfo.GetFilePath))
+                if (File.Exists(SilDev.Network.LatestAsyncDownloadInfo.FilePath))
                 {
-                    using (ZipArchive zip = ZipFile.Open(SilDev.Network.DownloadInfo.GetFilePath, ZipArchiveMode.Read))
+                    using (ZipArchive zip = ZipFile.Open(SilDev.Network.LatestAsyncDownloadInfo.FilePath, ZipArchiveMode.Read))
                     {
                         if (Directory.Exists(path))
                             Directory.Delete(path, true);
                         zip.ExtractToDirectory(path);
                         zip.Dispose();
                     }
-                    File.Delete(SilDev.Network.DownloadInfo.GetFilePath);
+                    File.Delete(SilDev.Network.LatestAsyncDownloadInfo.FilePath);
                 }
             }
             catch
@@ -113,9 +113,9 @@ namespace RunPHP
         {
             if (!e.Cancelled)
             {
-                if (!string.IsNullOrWhiteSpace(SilDev.Network.DownloadInfo.GetStatusMessage))
-                  SilDev.MsgBox.Show(this, SilDev.Network.DownloadInfo.GetStatusMessage, "Info", MessageBoxButtons.OK, MessageBoxIcon.None);
-                this.Close();
+                if (!string.IsNullOrWhiteSpace(SilDev.Network.LatestAsyncDownloadInfo.StatusMessage))
+                  SilDev.MsgBox.Show(this, SilDev.Network.LatestAsyncDownloadInfo.StatusMessage, "Info", MessageBoxButtons.OK, MessageBoxIcon.None);
+                Close();
             }
         }
     }
