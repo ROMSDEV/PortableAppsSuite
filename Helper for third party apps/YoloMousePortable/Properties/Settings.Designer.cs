@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace CheatEnginePortable.Properties {
+namespace YoloMousePortable.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
