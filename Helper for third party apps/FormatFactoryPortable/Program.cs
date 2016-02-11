@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Threading;
 using System.Windows.Forms;
 
-namespace FormatFactoryPortable
+namespace FFactoryPortable
 {
     static class Program
     {
@@ -41,11 +40,18 @@ namespace FormatFactoryPortable
                     SilDev.Reg.WriteValue(HKCU, subKey, "Portable App", true, SilDev.Reg.RegValueKind.String);
                     SilDev.Reg.WriteValue(HKCU, subKey, "FormatFactory", Path.GetDirectoryName(appPath), SilDev.Reg.RegValueKind.String);
                     SilDev.Reg.WriteValue(HKCU, appSubKey, "CheckNewVersion", 0, SilDev.Reg.RegValueKind.DWord);
+                    SilDev.Reg.WriteValue(HKCU, appSubKey, "CodecInstalled", 0, SilDev.Reg.RegValueKind.DWord);
                     SilDev.Reg.WriteValue(HKCU, appSubKey, "OptionActivePage", 0, SilDev.Reg.RegValueKind.DWord);
                     SilDev.Reg.WriteValue(HKCU, appSubKey, "OutputDir", Path.Combine(Application.StartupPath, "Data\\Output"), SilDev.Reg.RegValueKind.String);
-                    SilDev.Reg.WriteValue(HKCU, appSubKey, "Skin", 2, SilDev.Reg.RegValueKind.DWord);
                     SilDev.Reg.WriteValue(HKCU, appSubKey, "UseCount", 1, SilDev.Reg.RegValueKind.DWord);
+#if Legacy
+                    SilDev.Reg.WriteValue(HKCU, appSubKey, "Skin", 2, SilDev.Reg.RegValueKind.DWord);
                     SilDev.Reg.WriteValue(HKCU, appSubKey, "Version", "3.3.5", SilDev.Reg.RegValueKind.String);
+#else
+                    SilDev.Reg.WriteValue(HKCU, appSubKey, "Skin", 6, SilDev.Reg.RegValueKind.DWord);
+                    SilDev.Reg.WriteValue(HKCU, appSubKey, "StartMethodTab", 0, SilDev.Reg.RegValueKind.DWord);
+                    SilDev.Reg.WriteValue(HKCU, appSubKey, "Version", "3.8.0", SilDev.Reg.RegValueKind.String);
+#endif
                     SilDev.Run.App(Path.GetDirectoryName(appPath), Path.GetFileName(appPath), Environment.CommandLine.Replace(string.Format("\"{0}\"", Application.ExecutablePath), string.Empty).TrimStart(), 0);
                     if (File.Exists(oldSettingsPath))
                         File.Delete(oldSettingsPath);
