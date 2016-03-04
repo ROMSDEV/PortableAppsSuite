@@ -7,10 +7,11 @@
     <ProjectGuid>{684F4EBA-25C9-4AC7-95F0-CE84798BA394}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>FormatFactoryPortable</RootNamespace>
-    <AssemblyName>FormatFactoryPortable</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <RootNamespace>FFactoryPortable</RootNamespace>
+    <AssemblyName>FFactoryPortable</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -34,7 +35,7 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>FormatFactoryPortable.Program</StartupObject>
+    <StartupObject>FFactoryPortable.Program</StartupObject>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>appicon.ico</ApplicationIcon>
@@ -57,7 +58,7 @@
     <Compile Include="..\..\_libs\SilDev.Log.cs" />
     <Compile Include="..\..\_libs\SilDev.Registry.cs" />
     <Compile Include="..\..\_libs\SilDev.Run.cs" />
-	<Compile Include="..\..\_libs\SilDev.WinAPI.cs" />
+    <Compile Include="..\..\_libs\SilDev.WinAPI.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -68,6 +69,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

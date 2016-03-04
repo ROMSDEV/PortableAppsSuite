@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{0C08AEE1-1EEE-416A-95CB-7272D8AF74B1}</ProjectGuid>
+    <ProjectGuid>{BF06EB8A-6FA3-46BB-963F-6C13575D2878}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Updater</RootNamespace>
-    <AssemblyName>Updater</AssemblyName>
+    <RootNamespace>FFactoryPortable</RootNamespace>
+    <AssemblyName>FFactoryLegacyPortable</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -18,8 +18,8 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\_bin\Binaries\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <OutputPath>..\_bin\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;Legacy</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>true</Prefer32Bit>
@@ -28,17 +28,17 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\_bin\Binaries\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <OutputPath>..\_bin\</OutputPath>
+    <DefineConstants>TRACE;Legacy</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>Updater.Program</StartupObject>
+    <StartupObject>FFactoryPortable.Program</StartupObject>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Resources\PortableApps_green_64.ico</ApplicationIcon>
+    <ApplicationIcon>appicon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -53,44 +53,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\_libs\SilDev.Crypt.cs" />
-    <Compile Include="..\_libs\SilDev.Elevation.cs" />
-    <Compile Include="..\_libs\SilDev.Initialization.cs" />
-    <Compile Include="..\_libs\SilDev.Log.cs" />
-    <Compile Include="..\_libs\SilDev.MsgBox.cs" />
-    <Compile Include="..\_libs\SilDev.Network.cs" />
-    <Compile Include="..\_libs\SilDev.Run.cs" />
-    <Compile Include="..\_libs\SilDev.WinAPI.cs" />
-    <Compile Include="Updater.Lang.cs" />
-    <Compile Include="LangResources\de-DE.Designer.cs">
-      <DependentUpon>de-DE.resx</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="LangResources\en-US.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>en-US.resx</DependentUpon>
-    </Compile>
-    <Compile Include="MainForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="MainForm.Designer.cs">
-      <DependentUpon>MainForm.cs</DependentUpon>
-    </Compile>
+    <Compile Include="..\..\_libs\SilDev.Crypt.cs" />
+    <Compile Include="..\..\_libs\SilDev.Initialization.cs" />
+    <Compile Include="..\..\_libs\SilDev.Log.cs" />
+    <Compile Include="..\..\_libs\SilDev.Registry.cs" />
+    <Compile Include="..\..\_libs\SilDev.Run.cs" />
+    <Compile Include="..\..\_libs\SilDev.WinAPI.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="LangResources\de-DE.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>de-DE.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="LangResources\en-US.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>en-US.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MainForm.resx">
-      <DependentUpon>MainForm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -115,13 +85,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\diagonal_pattern.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\PortableAppsUpdater.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\PortableApps_green_64.ico" />
+    <Content Include="appicon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
