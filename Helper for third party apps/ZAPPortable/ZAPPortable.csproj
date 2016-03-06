@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ZAPPortable</RootNamespace>
     <AssemblyName>ZAPPortable</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -53,11 +54,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\_libs\SilDev.Crypt.cs" />
-    <Compile Include="..\..\_libs\SilDev.Initialization.cs" />
+    <Compile Include="..\..\_libs\SilDev.Data.cs" />
     <Compile Include="..\..\_libs\SilDev.Log.cs" />
-    <Compile Include="..\..\_libs\SilDev.Registry.cs" />
     <Compile Include="..\..\_libs\SilDev.Run.cs" />
-	<Compile Include="..\..\_libs\SilDev.WinAPI.cs" />
+    <Compile Include="..\..\_libs\SilDev.WinAPI.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -68,6 +68,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
