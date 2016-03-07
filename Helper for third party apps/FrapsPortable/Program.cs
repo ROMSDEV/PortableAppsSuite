@@ -91,19 +91,9 @@ namespace FrapsPortable
 
                     string driverPath = Path.Combine(Application.StartupPath, @"App\Driver");
 #if x86
-                    SilDev.Run.App(new ProcessStartInfo()
-                    {
-                        FileName = @"%WinDir%\System32\cmd.exe",
-                        Arguments = string.Format("/C COPY /Y \"{0}\\SysWOW64\\{1}\" \"%WinDir%\\System32\\{1}\"", driverPath, "frapsvid.dll"),
-                        WindowStyle = ProcessWindowStyle.Hidden
-                    }, 0);
+                    SilDev.Run.Cmd(string.Format("COPY /Y \"{0}\\SysWOW64\\{1}\" \"%WinDir%\\System32\\{1}\"", driverPath, "frapsvid.dll"), true);
 #else
-                    SilDev.Run.App(new ProcessStartInfo()
-                    {
-                        FileName = @"%WinDir%\System32\cmd.exe",
-                        Arguments = string.Format("/C COPY /Y \"{0}\\{1}\" \"%WinDir%\\{1}\" && COPY /Y \"{0}\\{2}\" \"%WinDir%\\{2}\"", driverPath, @"System32\frapsv64.dll", @"SysWOW64\frapsvid.dll"),
-                        WindowStyle = ProcessWindowStyle.Hidden
-                    }, 0);
+                    SilDev.Run.Cmd(string.Format("COPY /Y \"{0}\\{1}\" \"%WinDir%\\{1}\" && COPY /Y \"{0}\\{2}\" \"%WinDir%\\{2}\"", driverPath, @"System32\frapsv64.dll", @"SysWOW64\frapsvid.dll"), true);
 #endif
 #if x86
                     if (!SilDev.Reg.SubKeyExist(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Fraps"))

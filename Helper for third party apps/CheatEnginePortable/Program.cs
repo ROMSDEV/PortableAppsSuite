@@ -50,7 +50,7 @@ namespace CheatEnginePortable
                         }
                     }
                     SilDev.Reg.ImportFile(dataSettings);
-                    SilDev.Run.App(Application.StartupPath, "App\\CheatEngine\\Cheat Engine.exe", 0);
+                    SilDev.Run.App(new ProcessStartInfo() { FileName = "%CurrentDir%\\App\\CheatEngine\\Cheat Engine.exe" }, 0);
                     bool isRunning = true;
                     while (isRunning)
                     {
@@ -68,7 +68,7 @@ namespace CheatEnginePortable
                         SilDev.Reg.RenameSubKey("HKEY_CURRENT_USER\\Software\\SI13N7-BACKUP: Cheat Engine", "Software\\Cheat Engine");
                 }
                 else
-                    SilDev.Run.App(Application.StartupPath, "CheatEngine\\Cheat Engine.exe");
+                    SilDev.Run.App(new ProcessStartInfo() { FileName = "%CurrentDir%\\App\\CheatEngine\\Cheat Engine.exe" });
             }
         }
     }

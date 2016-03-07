@@ -17,7 +17,7 @@ namespace DefragglerUpdater
                 MessageBox.Show("Defraggler not found.", new MainForm().Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 Environment.Exit(-1);
             }
-            if (Process.GetProcessesByName("Defraggler").Length > 0)
+            if (Process.GetProcessesByName("Defraggler").Length > 0 || Process.GetProcessesByName("Defraggler64").Length > 0)
             {
                 MessageBox.Show("Defraggler must be closed.", new MainForm().Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 Environment.Exit(-1);

@@ -12,13 +12,12 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Si13n7 Dev. ®")]
-[assembly: AssemblyCopyright("Copyright © Si13n7 Dev. ® 2015")]
+[assembly: AssemblyCopyright("Copyright © Si13n7 Dev. ® 2016")]
 [assembly: AssemblyTrademark("Si13n7 Dev. ®")]
 [assembly: AssemblyCulture("")]
 
 [assembly: ComVisible(false)]
 
-[assembly: Guid("BC7E1F05-B6DF-4F58-9627-211BCD21866E")]
+[assembly: Guid("bc7e1f05-b6df-4f58-9627-211bcd21866e")]
 
 [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyFileVersion("1.0.0.0")]

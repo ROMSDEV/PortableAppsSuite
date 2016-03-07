@@ -12,7 +12,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Si13n7 Dev. ®")]
-[assembly: AssemblyCopyright("Copyright © Si13n7 Dev. ® 2015")]
+[assembly: AssemblyCopyright("Copyright © Si13n7 Dev. ® 2016")]
 [assembly: AssemblyTrademark("Si13n7 Dev. ®")]
 [assembly: AssemblyCulture("")]
 
@@ -21,4 +21,3 @@ using System.Runtime.InteropServices;
 [assembly: Guid("7b93647f-6645-4272-9813-0e5f129448ec")]
 
 [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyFileVersion("1.0.0.1")]

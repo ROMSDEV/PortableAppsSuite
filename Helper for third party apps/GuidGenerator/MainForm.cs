@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Drawing;
 using System.Windows.Forms;
 
 namespace GuidGenerator
@@ -11,14 +10,10 @@ namespace GuidGenerator
             InitializeComponent();
         }
 
-        private void MainForm_Load(object sender, EventArgs e)
-        {
-            Icon = (Icon)Properties.Resources.Hengerek_Teal;
-        }
+        private void MainForm_Load(object sender, EventArgs e) =>
+            Icon = Properties.Resources.Hengerek_Teal;
 
-        private void button1_Click(object sender, EventArgs e)
-        {
+        private void button1_Click(object sender, EventArgs e) =>
             textBox1.Text = Guid.NewGuid().ToString();
-        }
     }
 }

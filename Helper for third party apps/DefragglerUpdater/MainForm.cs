@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
-using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
@@ -62,19 +61,19 @@ namespace DefragglerUpdater
                             CheckDownload.Enabled = true;
                             if (Environment.CommandLine.Contains("/silent"))
                             {
-                                this.Opacity = 0;
-                                this.ShowInTaskbar = false;
+                                Opacity = 0;
+                                ShowInTaskbar = false;
                             }
                         }
                         else
                         {
                             ExtractDownload.RunWorkerAsync();
-                            this.Opacity = 0;
-                            this.ShowInTaskbar = false;
+                            Opacity = 0;
+                            ShowInTaskbar = false;
                         }
                     }
                     else
-                        this.Close();
+                        Close();
                 }
                 else
                     throw new Exception();
@@ -82,7 +81,7 @@ namespace DefragglerUpdater
             catch
             {
                 ShowInfoBox("NoUpdates", MessageBoxButtons.OK);
-                this.Close();
+                Close();
             }
         }
 
@@ -91,7 +90,7 @@ namespace DefragglerUpdater
             if (string.IsNullOrWhiteSpace(_check))
             {
                 ShowInfoBox(_arg, MessageBoxButtons.OK);
-                this.Close();
+                Close();
             }
         }
 
@@ -115,7 +114,7 @@ namespace DefragglerUpdater
                     text = "No newer version available.";
                     break;
             }
-            return MessageBox.Show(text, this.Text, _btn, MessageBoxIcon.Information);
+            return MessageBox.Show(text, Text, _btn, MessageBoxIcon.Information);
         }
 
         private void CheckDownload_Tick(object sender, EventArgs e)
@@ -162,22 +161,22 @@ namespace DefragglerUpdater
             catch (Exception ex)
             {
                 e.Result = "UpdateFailed";
-                SilDev.Log.Debug(ex.Message, "MainForm_Load - ZipArchive");
+                SilDev.Log.Debug(ex);
             }
         }
 
         private void ExtractDownload_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
         {
-            this.Opacity = 0;
-            this.ShowInTaskbar = false;
+            Opacity = 0;
+            ShowInTaskbar = false;
             ShowInfoBox(e.Result.ToString(), MessageBoxButtons.OK);
-            this.Close();
+            Close();
         }
 
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             if (File.Exists(ZipPath))
-                SilDev.Run.App(@"%WinDir%\System32", "cmd.exe", string.Format("/C PING 127.0.0.1 -n 2 & DEL /F /Q \"{0}\"", ZipPath), SilDev.Run.WindowStyle.Hidden);
+                SilDev.Run.Cmd($"PING 127.0.0.1 -n 2 & DEL /F /Q \"{ZipPath}\"");
         }
     }
 }

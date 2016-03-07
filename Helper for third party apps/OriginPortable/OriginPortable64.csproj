@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>OriginPortable</RootNamespace>
     <AssemblyName>OriginPortable64</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>OriginPortable.Program</StartupObject>
@@ -61,8 +62,7 @@
     <Compile Include="..\..\_libs\SilDev.Registry.cs" />
     <Compile Include="..\..\_libs\SilDev.Run.cs" />
     <Compile Include="..\..\_libs\SilDev.WinAPI.cs" />
-	<Compile Include="..\..\_libs\SilDev.Elevation.cs" />
-	<Compile Include="..\..\_libs\SilDev.ServiceTools.cs" />
+    <Compile Include="..\..\_libs\SilDev.Elevation.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -73,6 +73,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="app.manifest" />
     <None Include="Properties\Settings.settings">

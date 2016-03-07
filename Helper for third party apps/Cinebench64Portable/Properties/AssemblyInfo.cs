@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Si13n7 Dev. ®")]
 [assembly: AssemblyProduct("Cinebench64Portable")]
-[assembly: AssemblyCopyright("Copyright © Si13n7 Dev. ® 2015")]
+[assembly: AssemblyCopyright("Copyright © Si13n7 Dev. ® 2016")]
 [assembly: AssemblyTrademark("Si13n7 Dev. ®")]
 [assembly: AssemblyCulture("")]
 
@@ -16,4 +16,3 @@ using System.Runtime.InteropServices;
 [assembly: Guid("021d99cb-9f04-4f9c-8c73-2dacbfc691af")]
 
 [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyFileVersion("1.0.0.0")]

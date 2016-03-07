@@ -28,7 +28,7 @@ namespace CCleanerPortable
                     string portableDat = Path.Combine(rootDir, "portable.dat");
                     if (!File.Exists(portableDat))
                         File.WriteAllText(portableDat, "#PORTABLE#");
-                    string commandLine = Environment.CommandLine.Replace(string.Format("\"{0}\"", Application.ExecutablePath), string.Empty);
+                    string cmdLine = Environment.CommandLine.Replace($"\"{Application.ExecutablePath}\"", string.Empty).TrimStart();
                     SilDev.Run.App(new ProcessStartInfo()
                     {
                         Arguments = "/silent",
@@ -37,7 +37,7 @@ namespace CCleanerPortable
                     }, 0);
                     SilDev.Run.App(new ProcessStartInfo()
                     {
-                        Arguments = commandLine,
+                        Arguments = cmdLine,
                         FileName = appPath,
                         Verb = "runas"
                     }, 0);

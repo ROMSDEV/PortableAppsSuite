@@ -16,12 +16,29 @@ namespace DefragglerPortable
             {
                 if (newInstance)
                 {
-                    string commandLine = Environment.CommandLine.Replace(string.Format("\"{0}\"", Application.ExecutablePath), string.Empty);
-                    SilDev.Run.App(Application.StartupPath, "Defraggler\\DefragglerUpdater.exe", "/silent", true, SilDev.Run.WindowStyle.Normal, -1, 0);
-                    SilDev.Run.App(Application.StartupPath, "Defraggler\\Defraggler.exe", commandLine, true, 0);
+                    string rootDir = Path.Combine(Application.StartupPath, "Defraggler");
+                    if (!Directory.Exists(rootDir))
+                        return;
+                    string appPath = Path.Combine(rootDir, "Defraggler.exe");
+                    string updaterPath = Path.Combine(rootDir, "DefragglerUpdater.exe");
+                    if (!File.Exists(appPath) || Process.GetProcessesByName(Path.GetFileNameWithoutExtension(appPath)).Length > 0 ||
+                        !File.Exists(updaterPath) || Process.GetProcessesByName(Path.GetFileNameWithoutExtension(updaterPath)).Length > 0)
+                        return;
+                    SilDev.Log.AllowDebug();
+                    string cmdLine = Environment.CommandLine.Replace($"\"{Application.ExecutablePath}\"", string.Empty).TrimStart();
+                    SilDev.Run.App(new ProcessStartInfo()
+                    {
+                        Arguments = "/silent",
+                        FileName = updaterPath,
+                        Verb = "runas"
+                    }, -1, 0);
+                    SilDev.Run.App(new ProcessStartInfo()
+                    {
+                        Arguments = cmdLine,
+                        FileName = appPath,
+                        Verb = "runas"
+                    }, 0);
                 }
-                else
-                    Environment.Exit(2);
             }
         }
     }

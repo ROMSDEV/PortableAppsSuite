@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Si13n7 Dev. ®")]
 [assembly: AssemblyProduct("HexEditorMXPortable")]
-[assembly: AssemblyCopyright("Copyright © Si13n7 Dev. ® 2015")]
+[assembly: AssemblyCopyright("Copyright © Si13n7 Dev. ® 2016")]
 [assembly: AssemblyTrademark("Si13n7 Dev. ®")]
 [assembly: AssemblyCulture("")]
 
@@ -16,4 +16,3 @@ using System.Runtime.InteropServices;
 [assembly: Guid("c83887d3-8be8-4b4f-8297-e86bd6221947")]
 
 [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyFileVersion("1.0.0.3")]

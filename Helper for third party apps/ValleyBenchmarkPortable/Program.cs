@@ -15,7 +15,11 @@ namespace ValleyBenchmarkPortable // Valley Benchmark 1.0
                 if (newInstance)
                 {
                     SilDev.Data.DirLink(SilDev.Run.EnvironmentVariableFilter("%UserProfile%\\Valley"), SilDev.Run.EnvironmentVariableFilter("%CurrentDir%\\Data"), true);
-                    SilDev.Run.App(new ProcessStartInfo() { FileName = "%CurrentDir%\\App\\valley\\bin\\browser_x86.exe", Arguments = string.Format("-config \"{0}\"", SilDev.Run.EnvironmentVariableFilter("%CurrentDir%\\App\\Valley\\data\\launcher\\launcher.xml")) }, 0);
+                    SilDev.Run.App(new ProcessStartInfo()
+                    {
+                        Arguments = $"-config \"{SilDev.Run.EnvironmentVariableFilter("%CurrentDir%\\App\\Valley\\data\\launcher\\launcher.xml")}\"",
+                        FileName = "%CurrentDir%\\App\\valley\\bin\\browser_x86.exe"
+                    }, 0);
                     while (Process.GetProcessesByName("browser_x86").Length > 0 || Process.GetProcessesByName("Valley").Length > 0)
                     {
                         foreach (Process app in Process.GetProcessesByName("browser_x86"))

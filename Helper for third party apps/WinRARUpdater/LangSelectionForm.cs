@@ -8,7 +8,7 @@ namespace WinRARUpdater
         public LangSelectionForm()
         {
             InitializeComponent();
-            this.Icon = (System.Drawing.Icon)Properties.Resources.RAR;
+            Icon = Properties.Resources.RAR;
         }
 
         private void LangSelectionForm_Load(object sender, EventArgs e)
@@ -22,31 +22,19 @@ namespace WinRARUpdater
             }
             catch
             {
-                this.Close();
+                DialogResult = DialogResult.Cancel;
             }
         }
 
         private void OkBtn_Click(object sender, EventArgs e)
         {
-            try
-            {
-                SilDev.Initialization.WriteValue("Settings", "Language", LangSelectBox.SelectedItem.ToString());
-                SilDev.Initialization.WriteValue("Settings", "Architecture", BitSelectBox.SelectedItem.ToString());
-                SilDev.Initialization.WriteValue("Settings", "DoNotAskAgain", DoNotAskAgainCheck.Checked.ToString());
-                this.DialogResult = DialogResult.OK;
-                this.Close();
-            }
-            catch
-            {
-                this.DialogResult = DialogResult.Cancel;
-                this.Close();
-            }
+            SilDev.Initialization.WriteValue("Settings", "Language", LangSelectBox.GetItemText(LangSelectBox.SelectedItem));
+            SilDev.Initialization.WriteValue("Settings", "Architecture", BitSelectBox.GetItemText(BitSelectBox.SelectedItem));
+            SilDev.Initialization.WriteValue("Settings", "DoNotAskAgain", DoNotAskAgainCheck.Checked);
+            DialogResult = DialogResult.OK;
         }
 
-        private void CancelBtn_Click(object sender, EventArgs e)
-        {
-            this.DialogResult = DialogResult.Cancel;
-            this.Close();
-        }
+        private void CancelBtn_Click(object sender, EventArgs e) =>
+            DialogResult = DialogResult.Cancel;
     }
 }

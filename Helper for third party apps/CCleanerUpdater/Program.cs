@@ -17,7 +17,7 @@ namespace CCleanerUpdater
                 MessageBox.Show("CCleaner not found.", new MainForm().Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 Environment.Exit(-1);
             }
-            if (Process.GetProcessesByName("CCleaner").Length > 0)
+            if (Process.GetProcessesByName("CCleaner").Length > 0 || Process.GetProcessesByName("CCleaner64").Length > 0)
             {
                 MessageBox.Show("CCleaner must be closed.", new MainForm().Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 Environment.Exit(-1);

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
@@ -16,7 +15,7 @@ namespace WinRARUpdater
         public MainForm()
         {
             InitializeComponent();
-            this.Icon = (System.Drawing.Icon)Properties.Resources.RAR;
+            Icon = Properties.Resources.RAR;
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -24,23 +23,22 @@ namespace WinRARUpdater
             string IniFile = Path.Combine(Application.StartupPath, string.Format("{0}.ini", Path.GetFileNameWithoutExtension(Application.ExecutablePath)));
             if (!File.Exists(IniFile))
             {
-                SilDev.Initialization.File(Path.GetDirectoryName(IniFile), Path.GetFileName(IniFile));
+                SilDev.Initialization.File(IniFile);
                 SilDev.Initialization.WriteValue("Settings", "Language", "English");
                 SilDev.Initialization.WriteValue("Settings", "Architecture", Environment.Is64BitProcess ? "64 bit" : "32 bit");
                 SilDev.Initialization.WriteValue("Settings", "DoNotAskAgain", false);
             }
             else
-                SilDev.Initialization.File(Path.GetDirectoryName(IniFile), Path.GetFileName(IniFile));
+                SilDev.Initialization.File(IniFile);
 
             bool DoNotAskAgain = false;
-            bool.TryParse(SilDev.Initialization.ReadValue("Settings", "DoNotAskAgain"), out DoNotAskAgain);
-            if (!DoNotAskAgain)
+            if (!bool.TryParse(SilDev.Initialization.ReadValue("Settings", "DoNotAskAgain"), out DoNotAskAgain) || !DoNotAskAgain)
             {
                 Form LangSelection = new LangSelectionForm();
                 if (LangSelection.ShowDialog() != DialogResult.OK)
                 {
                     ShowInfoBox("Canceled", MessageBoxButtons.OK);
-                    this.Close();
+                    Application.Exit();
                     return;
                 }
             }
@@ -91,10 +89,14 @@ namespace WinRARUpdater
             foreach (var item in OnlineInfo)
             {
                 string Lang = SilDev.Initialization.ReadValue("Settings", "Language");
+                if (string.IsNullOrWhiteSpace(Lang))
+                    Lang = "English";
                 string Bits = SilDev.Initialization.ReadValue("Settings", "Architecture");
-                if (item.Key.ToLower() == string.Format("{0} ({1})", Lang.ToLower(), Bits.ToLower()))
+                if (string.IsNullOrWhiteSpace(Lang))
+                    Bits = Environment.Is64BitProcess ? "64 bit" : "32 bit";
+                if (item.Key.ToLower() == $"{Lang.ToLower()} ({Bits.ToLower()})")
                 {
-                    OnlineVersion = string.Format("{0}.0", item.Value[0]);
+                    OnlineVersion = $"{item.Value[0]}.0";
                     FileName = item.Value[1];
                     break;
                 }
@@ -102,10 +104,10 @@ namespace WinRARUpdater
             CheckClose(FileName, "FileName");
 
             int LocalVer = 0;
-            int.TryParse(LocalVersion.Replace(".", ""), out LocalVer);
+            int.TryParse(LocalVersion.Replace(".", string.Empty), out LocalVer);
 
             int OnlineVer = 0;
-            int.TryParse(OnlineVersion.Replace(".", ""), out OnlineVer);
+            int.TryParse(OnlineVersion.Replace(".", string.Empty), out OnlineVer);
 
             if (LocalVer < OnlineVer)
             {
@@ -114,28 +116,20 @@ namespace WinRARUpdater
                     SetupPath = Path.Combine(Application.StartupPath, FileName);
                     if (!File.Exists(SetupPath))
                     {
+                        Opacity = 1d;
+                        ShowInTaskbar = true;
+                        WindowState = FormWindowState.Normal;
                         SilDev.Network.DownloadFileAsync(string.Format("http://www.rarsoft.com/rar/{0}", FileName), SetupPath);
                         CheckDownload.Enabled = true;
-                        if (Environment.CommandLine.Contains("/silent"))
-                        {
-                            this.Opacity = 0;
-                            this.ShowInTaskbar = false;
-                        }
-                    }
-                    else
-                    {
-                        ExtractDownload.RunWorkerAsync();
-                        this.Opacity = 0;
-                        this.ShowInTaskbar = false;
                     }
                 }
                 else
-                    this.Close();
+                    Application.Exit();
             }
             else
             {
                 ShowInfoBox("NoUpdates", MessageBoxButtons.OK);
-                this.Close();
+                Application.Exit();
             }
         }
 
@@ -144,7 +138,7 @@ namespace WinRARUpdater
             if (string.IsNullOrWhiteSpace(_check))
             {
                 ShowInfoBox(_arg, MessageBoxButtons.OK);
-                this.Close();
+                Application.Exit();
             }
         }
 
@@ -171,7 +165,7 @@ namespace WinRARUpdater
                     text = "No newer version available.";
                     break;
             }
-            return MessageBox.Show(text, this.Text, _btn, MessageBoxIcon.Information);
+            return MessageBox.Show(text, Text, _btn, MessageBoxIcon.Information);
         }
 
         private void CheckDownload_Tick(object sender, EventArgs e)
@@ -208,7 +202,12 @@ namespace WinRARUpdater
                     string ContentPath = Path.Combine(Application.StartupPath, "Update");
                     if (!Directory.Exists(ContentPath))
                         Directory.CreateDirectory(ContentPath);
-                    SilDev.Run.App(Path.GetDirectoryName(UnRAR), Path.GetFileName(UnRAR), string.Format("x -u \"{0}\" \"{1}\"", SetupPath, ContentPath), SilDev.Run.WindowStyle.Minimized, 0);
+                    SilDev.Run.App(new ProcessStartInfo()
+                    {
+                        Arguments = $"x -u \"{SetupPath}\" \"{ContentPath}\"",
+                        FileName = UnRAR,
+                        WindowStyle = ProcessWindowStyle.Minimized
+                    }, 0);
                     string[] FileList = Directory.GetFiles(ContentPath, "*", SearchOption.TopDirectoryOnly);
                     if (FileList.Length <= 0)
                         throw new Exception("No files found to update");
@@ -229,23 +228,22 @@ namespace WinRARUpdater
             catch (Exception ex)
             {
                 e.Result = "UpdateFailed";
-                SilDev.Log.Debug(ex.Message, "MainForm_Load - ZipArchive");
+                SilDev.Log.Debug(ex);
             }
         }
 
         private void ExtractDownload_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
         {
-            this.Opacity = 0;
-            this.ShowInTaskbar = false;
+            Opacity = 0;
+            ShowInTaskbar = false;
             ShowInfoBox(e.Result.ToString(), MessageBoxButtons.OK);
-            this.Close();
+            Application.Exit();
         }
 
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-            SilDev.Source.ClearSources();
             if (File.Exists(SetupPath))
-                SilDev.Run.App(@"%WinDir%\System32", "cmd.exe", string.Format("/C PING 127.0.0.1 -n 2 & DEL /F /Q \"{0}\"", SetupPath), SilDev.Run.WindowStyle.Hidden);
+                SilDev.Run.Cmd($"PING 127.0.0.1 -n 2 & DEL /F /Q \"{SetupPath}\"");
         }
     }
 }

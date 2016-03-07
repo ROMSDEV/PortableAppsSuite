@@ -25,7 +25,7 @@ namespace WinSCP_PuTTY_Launcher
                     Application.Run(new MainForm());
                 }
                 else
-                    SilDev.Run.App(WinSCP_PuTTY_Launcher.Main.WinSCPExePath);
+                    SilDev.Run.App(new ProcessStartInfo() { FileName = WinSCP_PuTTY_Launcher.Main.WinSCPExePath });
             }
         }
     }

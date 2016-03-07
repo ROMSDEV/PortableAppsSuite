@@ -52,7 +52,11 @@ namespace FFactoryPortable
                     SilDev.Reg.WriteValue(HKCU, appSubKey, "StartMethodTab", 0, SilDev.Reg.RegValueKind.DWord);
                     SilDev.Reg.WriteValue(HKCU, appSubKey, "Version", "3.8.0", SilDev.Reg.RegValueKind.String);
 #endif
-                    SilDev.Run.App(Path.GetDirectoryName(appPath), Path.GetFileName(appPath), Environment.CommandLine.Replace(string.Format("\"{0}\"", Application.ExecutablePath), string.Empty).TrimStart(), 0);
+                    SilDev.Run.App(new ProcessStartInfo()
+                    {
+                        Arguments = Environment.CommandLine.Replace($"\"{Application.ExecutablePath}\"", string.Empty).TrimStart(),
+                        FileName = appPath
+                    }, 0);
                     if (File.Exists(oldSettingsPath))
                         File.Delete(oldSettingsPath);
                     SilDev.Reg.ExportFile("HKEY_CURRENT_USER\\Software\\FreeTime", settingsPath);

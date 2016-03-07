@@ -23,7 +23,7 @@ namespace CDBurnerXPPortable
                     string iniPath = Path.Combine(Application.StartupPath, "CDBurnerXP\\Config.ini");
                     if (!File.Exists(iniPath))
                         File.WriteAllLines(iniPath, new string[] { "[CDBurnerXP]", "Portable=1" });
-                    SilDev.Run.App(appPath, 0);
+                    SilDev.Run.App(new ProcessStartInfo() { FileName = appPath }, 0);
                     SilDev.Reg.RemoveExistSubKey(SilDev.Reg.RegKey.CurrentUser, "Software\\Canneverbe Limited");
                 }
             }

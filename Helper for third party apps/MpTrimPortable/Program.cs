@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Threading;
 using System.Windows.Forms;
@@ -16,28 +17,35 @@ namespace mpTrimPortable
             {
                 if (newInstance)
                 {
-                    SilDev.Initialization.File(Application.StartupPath, "mpTrim\\mpTrim.ini");
-                    string left = SilDev.Initialization.ReadValue("Settings", "Left");
-                    if (string.IsNullOrWhiteSpace(left))
-                        left = "50";
-                    string top = SilDev.Initialization.ReadValue("Settings", "Top");
-                    if (string.IsNullOrWhiteSpace(left))
-                        top = "50";
-                    SilDev.Reg.CreateNewSubKey(SilDev.Reg.RegKey.CurrentUser, "Software\\mpTrim");
-                    SilDev.Reg.WriteValue(SilDev.Reg.RegKey.CurrentUser, "Software\\mpTrim", "MainFormLeft", left, SilDev.Reg.RegValueKind.DWord);
-                    SilDev.Reg.WriteValue(SilDev.Reg.RegKey.CurrentUser, "Software\\mpTrim", "MainFormTop", top, SilDev.Reg.RegValueKind.DWord);
-                    SilDev.Run.App(Application.StartupPath, "mpTrim\\mpTrim.exe", 0);
-                    left = SilDev.Reg.ReadValue(SilDev.Reg.RegKey.CurrentUser, "Software\\mpTrim", "MainFormLeft").ToString();
-                    top = SilDev.Reg.ReadValue(SilDev.Reg.RegKey.CurrentUser, "Software\\mpTrim", "MainFormTop").ToString();
-                    if (!string.IsNullOrWhiteSpace(left) && !string.IsNullOrWhiteSpace(top))
+                    SilDev.Log.AllowDebug();
+
+                    string iniPath = SilDev.Run.EnvironmentVariableFilter("%CurrentDir%\\mpTrim\\mpTrim.ini");
+
+                    int Left = 0;
+                    if (!int.TryParse(SilDev.Initialization.ReadValue("Settings", "Left", iniPath), out Left))
+                        Left = (int)Math.Round((Screen.PrimaryScreen.WorkingArea.Width / 2f) - (335f / 2f));
+                    int Top = 0;
+                    if (!int.TryParse(SilDev.Initialization.ReadValue("Settings", "Top", iniPath), out Top))
+                        Top = (int)Math.Round((Screen.PrimaryScreen.WorkingArea.Height / 2f) - (410f / 2f));
+                    SilDev.Reg.CreateNewSubKey("HKCU\\Software\\mpTrim");
+                    SilDev.Reg.WriteValue("HKCU", "Software\\mpTrim", "MainFormLeft", Left, SilDev.Reg.RegValueKind.DWord);
+                    SilDev.Reg.WriteValue("HKCU", "Software\\mpTrim", "MainFormTop", Top, SilDev.Reg.RegValueKind.DWord);
+
+                    SilDev.Run.App(new ProcessStartInfo() { FileName = "%CurrentDir%\\mpTrim\\mpTrim.exe" }, 0);
+
+                    string left = SilDev.Reg.ReadValue("HKCU\\Software\\mpTrim", "MainFormLeft");
+                    string top = SilDev.Reg.ReadValue("HKCU\\Software\\mpTrim", "MainFormTop");
+                    if (!string.IsNullOrWhiteSpace(left) && left != Left.ToString() &&
+                        !string.IsNullOrWhiteSpace(top) && top != Top.ToString())
                     {
+                        SilDev.Initialization.File(iniPath);
                         SilDev.Initialization.WriteValue("Settings", "Left", left);
                         SilDev.Initialization.WriteValue("Settings", "Top", top);
                     }
-                    SilDev.Reg.RemoveExistSubKey(SilDev.Reg.RegKey.CurrentUser, "Software\\mpTrim");
+                    SilDev.Reg.RemoveExistSubKey("HKCU\\Software\\mpTrim");
                 }
                 else
-                    SilDev.Run.App(Application.StartupPath, "mpTrim\\mpTrim.exe");
+                    SilDev.Run.App(new ProcessStartInfo() { FileName = "%CurrentDir%\\mpTrim\\mpTrim.exe" });
             }
         }
     }

@@ -17,7 +17,7 @@ namespace HexEditorMXPortable
             {
                 SilDev.Log.AllowDebug();
                 string appPath = Path.Combine(Application.StartupPath, "App\\hexeditmx\\hexeditmx.exe");
-                string commandLine = Environment.CommandLine.Replace(string.Format("\"{0}\"", Application.ExecutablePath), string.Empty).TrimStart();
+                string cmdLine = Environment.CommandLine.Replace($"\"{Application.ExecutablePath}\"", string.Empty).TrimStart();
                 if (newInstance)
                 {
                     if (!File.Exists(appPath) || Process.GetProcessesByName(Path.GetFileNameWithoutExtension(appPath)).Length > 0)
@@ -40,7 +40,11 @@ namespace HexEditorMXPortable
                     if (File.Exists(settingsPath))
                         SilDev.Reg.ImportFile(settingsPath);
                     SilDev.Reg.WriteValue("HKEY_CURRENT_USER\\Software\\NEXT-Soft", "Portable App", "True");
-                    SilDev.Run.App(Path.GetDirectoryName(appPath), Path.GetFileName(appPath), commandLine, 0);
+                    SilDev.Run.App(new ProcessStartInfo()
+                    {
+                        Arguments = cmdLine,
+                        FileName = appPath
+                    }, 0);
                     bool isRunning = true;
                     while (isRunning)
                     {
@@ -57,7 +61,11 @@ namespace HexEditorMXPortable
                         SilDev.Reg.RenameSubKey("HKEY_CURRENT_USER\\Software\\SI13N7-BACKUP: NEXT-Soft", "Software\\NEXT-Soft");
                 }
                 else
-                    SilDev.Run.App(Path.GetDirectoryName(appPath), Path.GetFileName(appPath), commandLine);
+                    SilDev.Run.App(new ProcessStartInfo()
+                    {
+                        Arguments = cmdLine,
+                        FileName = appPath
+                    });
             }
         }
     }

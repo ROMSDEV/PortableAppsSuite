@@ -145,7 +145,7 @@ namespace CCleanerUpdater
             catch (Exception ex)
             {
                 e.Result = "UpdateFailed";
-                SilDev.Log.Debug(ex.Message, "MainForm_Load - ZipArchive");
+                SilDev.Log.Debug(ex);
             }
         }
 
@@ -160,7 +160,7 @@ namespace CCleanerUpdater
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             if (File.Exists(ZipPath))
-                SilDev.Run.App(@"%WinDir%\System32", "cmd.exe", string.Format("/C PING 127.0.0.1 -n 2 & DEL /F /Q \"{0}\"", ZipPath), SilDev.Run.WindowStyle.Hidden);
+                SilDev.Run.Cmd($"/C PING 127.0.0.1 -n 2 & DEL /F /Q \"{ZipPath}\"");
         }
     }
 }

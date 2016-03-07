@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Si13n7 Dev. ®")]
 [assembly: AssemblyProduct("gpuz.exe")]
-[assembly: AssemblyCopyright("Copyright © Si13n7 Dev. ® 2014")]
+[assembly: AssemblyCopyright("Copyright © Si13n7 Dev. ® 2016")]
 [assembly: AssemblyTrademark("Si13n7 Dev. ®")]
 [assembly: AssemblyCulture("")]
 
@@ -16,4 +16,3 @@ using System.Runtime.InteropServices;
 [assembly: Guid("c83e46d2-1f4c-4024-b60a-20b4a6316a90")]
 
 [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyFileVersion("1.0.0.0")]

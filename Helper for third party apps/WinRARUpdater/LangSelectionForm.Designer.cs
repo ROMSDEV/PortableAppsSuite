@@ -108,6 +108,8 @@
             // 
             this.DoNotAskAgainCheck.AutoSize = true;
             this.DoNotAskAgainCheck.BackColor = System.Drawing.Color.Transparent;
+            this.DoNotAskAgainCheck.Checked = true;
+            this.DoNotAskAgainCheck.CheckState = System.Windows.Forms.CheckState.Checked;
             this.DoNotAskAgainCheck.Font = new System.Drawing.Font("Tahoma", 8.25F);
             this.DoNotAskAgainCheck.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.DoNotAskAgainCheck.Location = new System.Drawing.Point(20, 50);

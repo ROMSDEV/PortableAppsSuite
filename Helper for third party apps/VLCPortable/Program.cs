@@ -29,7 +29,11 @@ namespace VLCPortable
                 if (newInstance)
                 {
                     SilDev.Data.DirLink(SilDev.Run.EnvironmentVariableFilter("%AppData%\\vlc"), SilDev.Run.EnvironmentVariableFilter("%CurrentDir%\\Data"), true);
-                    SilDev.Run.App(new ProcessStartInfo() { FileName = appPath, Arguments = string.Format("{0}--no-plugins-cache", cmdLine) }, 0);
+                    SilDev.Run.App(new ProcessStartInfo()
+                    {
+                        Arguments = $"{cmdLine}--no-plugins-cache",
+                        FileName = appPath
+                    }, 0);
                     while (Process.GetProcessesByName("vlc").Length > 0)
                     {
                         foreach (Process app in Process.GetProcessesByName("vlc"))
@@ -38,7 +42,11 @@ namespace VLCPortable
                     SilDev.Data.DirUnLink(SilDev.Run.EnvironmentVariableFilter("%AppData%\\vlc"), true);
                 }
                 else
-                    SilDev.Run.App(new ProcessStartInfo() { FileName = appPath, Arguments = cmdLine }, 0);
+                    SilDev.Run.App(new ProcessStartInfo()
+                    {
+                        Arguments = cmdLine,
+                        FileName = appPath
+                    });
             }
         }
     }

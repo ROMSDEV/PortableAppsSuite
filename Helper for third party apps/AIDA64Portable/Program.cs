@@ -31,7 +31,7 @@ namespace AIDA64Portable
                     }
                     SilDev.Reg.ImportFile(Path.Combine(Application.StartupPath, "settings.reg"));
                     SilDev.Reg.WriteValue("HKEY_CURRENT_USER\\Software\\FinalWire", "Portable App", "True");
-                    SilDev.Run.App(appPath, 0);
+                    SilDev.Run.App(new ProcessStartInfo() { FileName = appPath }, 0);
                     SilDev.Reg.ExportFile("HKEY_CURRENT_USER\\Software\\FinalWire", Path.Combine(Application.StartupPath, "settings.reg"));
                     SilDev.Reg.RemoveExistSubKey(SilDev.Reg.RegKey.CurrentUser, "Software\\FinalWire");
                     if (regBackup)

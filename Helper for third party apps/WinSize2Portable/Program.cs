@@ -30,7 +30,7 @@ namespace WinSize2Portable
                         SilDev.Initialization.File(appdataPath, "WinSize2_Root.INI");
                         SilDev.Initialization.WriteValue("Settings", "INIWithScreenSize", 0);
                         SilDev.Initialization.WriteValue("Settings", "INIFile_Path", dataPath);
-                        SilDev.Run.App(Application.StartupPath, "App\\WinSize2\\_WinSize2_Launcher.exe", 0);
+                        SilDev.Run.App(new ProcessStartInfo() { FileName = "%CurrentDir%\\App\\WinSize2\\_WinSize2_Launcher.exe" }, 0);
                         bool isRunning = true;
                         while (isRunning)
                         {
@@ -42,7 +42,7 @@ namespace WinSize2Portable
                     }
                     catch (Exception ex)
                     {
-                        SilDev.Log.Debug(ex.Message, "WinSize2Portable.Program.Main");
+                        SilDev.Log.Debug(ex);
                     }
                 }
             }

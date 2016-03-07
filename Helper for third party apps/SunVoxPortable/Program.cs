@@ -34,7 +34,7 @@ namespace SunVoxPortable
                     }
                     catch (Exception ex)
                     {
-                        SilDev.Log.Debug(ex.Message, "SunVoxPortable.Program.Main - Create local backups");
+                        SilDev.Log.Debug(ex);
                     }
                     string dataPath = Path.Combine(Application.StartupPath, "Data");
                     try
@@ -48,9 +48,13 @@ namespace SunVoxPortable
                     }
                     catch (Exception ex)
                     {
-                        SilDev.Log.Debug(ex.Message, "SunVoxPortable.Program.Main - Restore portable settings");
+                        SilDev.Log.Debug(ex);
                     }
-                    SilDev.Run.App(appPath, SilDev.Run.WindowStyle.Maximized, 0);
+                    SilDev.Run.App(new ProcessStartInfo()
+                    {
+                        FileName = appPath,
+                        WindowStyle = ProcessWindowStyle.Maximized
+                    }, 0);
                     try
                     {
                         foreach (string f in Directory.GetFiles(SilDev.Run.EnvironmentVariableFilter("%AppData%"), "*", SearchOption.TopDirectoryOnly))
@@ -64,7 +68,7 @@ namespace SunVoxPortable
                     }
                     catch (Exception ex)
                     {
-                        SilDev.Log.Debug(ex.Message, "SunVoxPortable.Program.Main - Save portable settings");
+                        SilDev.Log.Debug(ex);
                     }
                     try
                     {
@@ -78,7 +82,7 @@ namespace SunVoxPortable
                     }
                     catch (Exception ex)
                     {
-                        SilDev.Log.Debug(ex.Message, "SunVoxPortable.Program.Main - Restore local settings");
+                        SilDev.Log.Debug(ex);
                     }
                 }
             }

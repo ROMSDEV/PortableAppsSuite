@@ -12,8 +12,8 @@ namespace WinSCP_PuTTY_Launcher
 {
     public partial class MainForm : Form
     {
-        static bool CancelExit = true;
-        static bool IsResizing = false;
+        bool CancelExit = true;
+        bool IsResizing = false;
 
         public MainForm()
         {
@@ -25,7 +25,7 @@ namespace WinSCP_PuTTY_Launcher
             SilDev.Initialization.File(Application.StartupPath, "WinSCP+PuTTYPortable.ini");
             if (File.Exists(SilDev.Initialization.File()))
             {
-                int left = Int16.MinValue, top = Int16.MinValue, width = Int16.MinValue, height = Int16.MinValue;
+                int left = short.MinValue, top = short.MinValue, width = short.MinValue, height = short.MinValue;
                 string value = SilDev.Initialization.ReadValue("Settings", "Left");
                 if (!string.IsNullOrWhiteSpace(value))
                     int.TryParse(value, out left);
@@ -43,30 +43,28 @@ namespace WinSCP_PuTTY_Launcher
                 if (!string.IsNullOrWhiteSpace(value))
                     bool.TryParse(value, out maximized);
                 if (width >= 640 && height >= 480)
-                    this.Size = new Size(width, height);
-                if (left > Int16.MinValue && top > Int16.MinValue)
+                    Size = new Size(width, height);
+                if (left > short.MinValue && top > short.MinValue)
                 {
                     Point location = new Point(left, top);
-                    Rectangle workingArea = new Rectangle(Int16.MaxValue, Int16.MaxValue, Int16.MinValue, Int16.MinValue);
+                    Rectangle workingArea = new Rectangle(short.MaxValue, short.MaxValue, short.MinValue, short.MinValue);
                     foreach (Screen screen in Screen.AllScreens)
                         workingArea = Rectangle.Union(workingArea, screen.Bounds);
-                    if (location.X < (workingArea.Width - this.Size.Width) && location.X > 0 && location.Y < (workingArea.Height - this.Height) && location.Y > 0)
+                    if (location.X < (workingArea.Width - Size.Width) && location.X > 0 && location.Y < (workingArea.Height - Height) && location.Y > 0)
                     {
-                        this.StartPosition = FormStartPosition.Manual;
-                        this.Location = location;
+                        StartPosition = FormStartPosition.Manual;
+                        Location = location;
                     }
                 }
                 if (maximized)
-                    this.WindowState = FormWindowState.Maximized;
+                    WindowState = FormWindowState.Maximized;
             }
             bwWorker.RunWorkerAsync();
             PuttyTabber.Enabled = true;
         }
 
-        private void MainForm_ResizeBegin(object sender, EventArgs e)
-        {
+        private void MainForm_ResizeBegin(object sender, EventArgs e) =>
             IsResizing = true;
-        }
 
         private void MainForm_Resize(object sender, EventArgs e)
         {
@@ -74,10 +72,8 @@ namespace WinSCP_PuTTY_Launcher
                 SilDev.WinAPI.SafeNativeMethods.MoveWindow(hwnd, 0, 0, puttyTabCtrl.SelectedTab.Width, puttyTabCtrl.SelectedTab.Height, true);
         }
 
-        private void MainForm_ResizeEnd(object sender, EventArgs e)
-        {
+        private void MainForm_ResizeEnd(object sender, EventArgs e) =>
             IsResizing = false;
-        }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -94,16 +90,16 @@ namespace WinSCP_PuTTY_Launcher
             }
             catch (Exception ex)
             {
-                SilDev.Log.Debug(ex.Message, "WinSCP_PuTTY_Launcher.MainForm.MainForm_FormClosing");
+                SilDev.Log.Debug(ex);
             }
             Main.PuTTYTabs.Clear();
             puttyTabCtrl.TabPages.Clear();
             if (CancelExit)
             {
-                if (this.ShowInTaskbar)
-                    this.ShowInTaskbar = false;
-                if (this.Opacity == 1f)
-                    this.Opacity = 0;
+                if (ShowInTaskbar)
+                    ShowInTaskbar = false;
+                if (Opacity == 1f)
+                    Opacity = 0;
                 e.Cancel = CancelExit;
             }
         }
@@ -112,14 +108,14 @@ namespace WinSCP_PuTTY_Launcher
         {
             try
             {
-                if (this.WindowState != FormWindowState.Maximized)
+                if (WindowState != FormWindowState.Maximized)
                 {
-                    SilDev.Initialization.WriteValue("Settings", "Left", this.Left);
-                    SilDev.Initialization.WriteValue("Settings", "Top", this.Top);
-                    SilDev.Initialization.WriteValue("Settings", "Width", this.Width);
-                    SilDev.Initialization.WriteValue("Settings", "Height", this.Height);
+                    SilDev.Initialization.WriteValue("Settings", "Left", Left);
+                    SilDev.Initialization.WriteValue("Settings", "Top", Top);
+                    SilDev.Initialization.WriteValue("Settings", "Width", Width);
+                    SilDev.Initialization.WriteValue("Settings", "Height", Height);
                 }
-                SilDev.Initialization.WriteValue("Settings", "Maximized", this.WindowState == FormWindowState.Maximized);
+                SilDev.Initialization.WriteValue("Settings", "Maximized", WindowState == FormWindowState.Maximized);
                 foreach (Process p in Process.GetProcessesByName("PUTTY"))
                 {
                     p.CloseMainWindow();
@@ -130,7 +126,7 @@ namespace WinSCP_PuTTY_Launcher
             }
             catch (Exception ex)
             {
-                SilDev.Log.Debug(ex.Message, "WinSCP_PuTTY_Launcher.MainForm.MainForm_FormClosed");
+                SilDev.Log.Debug(ex);
             }
             SilDev.Reg.RemoveExistSubKey(@"HKEY_CURRENT_USER\Software\SimonTatham");
         }
@@ -177,7 +173,7 @@ namespace WinSCP_PuTTY_Launcher
             }
             if (File.Exists(Main.PuTTYExePath))
             {
-                SilDev.Run.App(WinSCP_PuTTY_Launcher.Main.PuTTYExePath);
+                SilDev.Run.App(new ProcessStartInfo() { FileName = Main.PuTTYExePath });
                 for (int i = 0; i < 1496; i++)
                 {
                     Thread.Sleep(10);
@@ -197,7 +193,7 @@ namespace WinSCP_PuTTY_Launcher
                     }
                 }
             }
-            SilDev.Run.App(WinSCP_PuTTY_Launcher.Main.WinSCPExePath);
+            SilDev.Run.App(new ProcessStartInfo() { FileName = Main.WinSCPExePath });
             for (int i = 0; i < 224; i++)
             {
                 Thread.Sleep(10);
@@ -239,7 +235,7 @@ namespace WinSCP_PuTTY_Launcher
         private void bwWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             CancelExit = false;
-            this.Close();
+            Close();
         }
 
         private void PuttyTabber_Tick(object sender, EventArgs e)
@@ -248,10 +244,10 @@ namespace WinSCP_PuTTY_Launcher
             {
                 if (p.MainWindowHandle == IntPtr.Zero || Main.PuTTYTabs.Keys.Contains(p.Id) || Main.PuTTYTabs.Values.Contains(p.MainWindowHandle) || p.MainWindowHandle == Main.PuTTYWnd || p.MainWindowTitle.ToLower().Contains("putty configuration"))
                     continue;
-                if (!this.ShowInTaskbar)
-                    this.ShowInTaskbar = true;
-                if (this.Opacity != 1f)
-                    this.Opacity = 1f;
+                if (!ShowInTaskbar)
+                    ShowInTaskbar = true;
+                if (Opacity != 1f)
+                    Opacity = 1f;
                 puttyTabCtrl.TabPages.Add(p.MainWindowHandle.ToString());
                 puttyTabCtrl.SelectedIndex = puttyTabCtrl.TabPages.Count - 1;
                 if (!Main.PuTTYTabs.ContainsKey(p.Id))
@@ -259,11 +255,11 @@ namespace WinSCP_PuTTY_Launcher
                 SilDev.WinAPI.SafeNativeMethods.SetWindowLong(p.MainWindowHandle, -16, (int)(SilDev.WinAPI.SafeNativeMethods.GetWindowLong(p.MainWindowHandle, -16) & ~0x00020000L & ~0x00010000L));
                 SilDev.WinAPI.SafeNativeMethods.MoveWindow(p.MainWindowHandle, 0, 0, puttyTabCtrl.SelectedTab.Width, puttyTabCtrl.SelectedTab.Height, true);
                 SilDev.WinAPI.SafeNativeMethods.SetParent(p.MainWindowHandle, puttyTabCtrl.SelectedTab.Handle);
-                if (!this.TopMost)
-                    this.TopMost = true;
+                if (!TopMost)
+                    TopMost = true;
                 Thread.Sleep(5);
-                if (this.TopMost) 
-                    this.TopMost = false;
+                if (TopMost) 
+                    TopMost = false;
             }
             int ToRemove = -1;
             foreach (var hwnd in Main.PuTTYTabs)
@@ -290,7 +286,7 @@ namespace WinSCP_PuTTY_Launcher
                 Main.PuTTYTabs.Remove(ToRemove);
             if (!IsResizing && puttyTabCtrl.TabCount > 0)
             {
-                if (SilDev.WinAPI.SafeNativeMethods.GetForegroundWindow() == this.Handle)
+                if (SilDev.WinAPI.SafeNativeMethods.GetForegroundWindow() == Handle)
                 {
                     int tabtext = 0;
                     int.TryParse(puttyTabCtrl.SelectedTab.Text, out tabtext);
@@ -300,7 +296,7 @@ namespace WinSCP_PuTTY_Launcher
                 }
             }
             if (puttyTabCtrl.TabCount <= 0)
-                this.Close();
+                Close();
         }
     }
 }

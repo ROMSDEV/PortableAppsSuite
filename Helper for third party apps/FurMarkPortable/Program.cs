@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Threading;
-using System.Windows.Forms;
 
 namespace FurMarkPortable
 {
@@ -10,7 +8,7 @@ namespace FurMarkPortable
         [STAThread]
         static void Main()
         {
-            SilDev.Run.App(Application.StartupPath, "FurMark\\FurMark.exe");
+            SilDev.Run.App(new ProcessStartInfo() { FileName = "%CurrentDir%\\FurMark\\FurMark.exe" });
         }
     }
 }

@@ -20,7 +20,11 @@ namespace OBSPortable
                     string appPath = Path.Combine(Application.StartupPath, "OBS\\OBS.exe");
                     if (!File.Exists(appPath) || Process.GetProcessesByName(Path.GetFileNameWithoutExtension(appPath)).Length > 0)
                         return;
-                    SilDev.Run.App(Path.GetDirectoryName(appPath), Path.GetFileName(appPath), "-portable", 0);
+                    SilDev.Run.App(new ProcessStartInfo()
+                    {
+                        Arguments = "-portable",
+                        FileName = appPath
+                    }, 0);
                 }
             }
         }

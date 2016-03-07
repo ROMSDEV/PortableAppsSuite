@@ -25,7 +25,11 @@ namespace OriginPortable
 #if x86
                     if (Environment.Is64BitOperatingSystem)
                     {
-                        SilDev.Run.App(Application.StartupPath, string.Format("{0}64.exe", Path.GetFileNameWithoutExtension(Application.ExecutablePath)), cmdLineArgs);
+                        SilDev.Run.App(new ProcessStartInfo()
+                        {
+                            Arguments = cmdLineArgs,
+                            FileName = $"%CurrentDir%\\{Path.GetFileNameWithoutExtension(Application.ExecutablePath)}64.exe"
+                        });
                         return;
                     }
 #endif
@@ -249,20 +253,24 @@ namespace OriginPortable
                     bool.TryParse(SilDev.Initialization.ReadValue("Settings", "RunPunkBusterOnlyWithOrigin", iniPath), out RunPunkBusterOnlyWithOrigin);
                     if (RunPunkBusterOnlyWithOrigin)
                     {
-                        SilDev.Run.App(@"%WinDir%\System32", "cmd.exe", "/C sc config \"PnkBstrA\" start= auto", SilDev.Run.WindowStyle.Hidden, 0);
-                        SilDev.Run.App(@"%WinDir%\System32", "cmd.exe", "/C sc start \"PnkBstrA\"", SilDev.Run.WindowStyle.Hidden);
-                        SilDev.Run.App(@"%WinDir%\System32", "cmd.exe", "/C sc config \"PnkBstrB\" start= auto", SilDev.Run.WindowStyle.Hidden);
+                        SilDev.Run.Cmd("sc config \"PnkBstrA\" start= auto");
+                        SilDev.Run.Cmd("sc start \"PnkBstrA\"");
+                        SilDev.Run.Cmd("sc config \"PnkBstrB\" start= auto");
                     }
 
                     SilDev.Run.App(StartInfoHelper(appPath, cmdLineArgs));
-                    while (isRunning(appDir, "origin"))
-                        Thread.Sleep(200);
+                    for (int i = 0; i < 10; i++)
+                    {
+                        while (isRunning(appDir, "origin"))
+                            Thread.Sleep(200);
+                        Thread.Sleep(300);
+                    }
 
                     string serviceName = "Origin Client Service";
-                    if (SilDev.Elevation.IsAdministrator && SilDev.ServiceTools.ServiceExists(serviceName) && !SilDev.Reg.SubKeyExist(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\SI13N7-BACKUP: Origin"))
+                    if (SilDev.Elevation.IsAdministrator && SilDev.WinAPI.ServiceTools.ServiceExists(serviceName) && !SilDev.Reg.SubKeyExist(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\SI13N7-BACKUP: Origin"))
                     {
-                        SilDev.ServiceTools.StopService(serviceName);
-                        SilDev.ServiceTools.UninstallService(serviceName);
+                        SilDev.WinAPI.ServiceTools.StopService(serviceName);
+                        SilDev.WinAPI.ServiceTools.UninstallService(serviceName);
                     }
 
                     # region Registry Export
@@ -428,36 +436,12 @@ namespace OriginPortable
 
                     #endregion
 
-                    #region DISABLED
-                    /*
-                    try
-                    {
-                        string delDir = Path.Combine(Application.StartupPath, @"Data\Desktop");
-                        if (Directory.Exists(delDir))
-                            Directory.Delete(delDir, true);
-                        delDir = Path.Combine(Application.StartupPath, @"Data\AppData\Local\Microsoft");
-                        if (Directory.Exists(delDir))
-                            Directory.Delete(delDir, true);
-                        delDir = Path.Combine(Application.StartupPath, @"Data\ProgramData\Microsoft");
-                        if (Directory.Exists(delDir))
-                            Directory.Delete(delDir, true);
-                        delDir = Path.Combine(Application.StartupPath, @"Data\Temp");
-                        if (Directory.Exists(delDir))
-                            Directory.Delete(delDir, true);
-                    }
-                    catch (Exception ex)
-                    {
-                        SilDev.Log.Debug(ex);
-                    }
-                    */
-                    #endregion
-
                     if (RunPunkBusterOnlyWithOrigin)
                     {
-                        SilDev.Run.App(@"%WinDir%\System32", "cmd.exe", "/C sc stop \"PnkBstrA\"", SilDev.Run.WindowStyle.Hidden, 0);
-                        SilDev.Run.App(@"%WinDir%\System32", "cmd.exe", "/C sc config \"PnkBstrA\" start= disabled", SilDev.Run.WindowStyle.Hidden, 0);
-                        SilDev.Run.App(@"%WinDir%\System32", "cmd.exe", "/C sc stop \"PnkBstrB\"", SilDev.Run.WindowStyle.Hidden, 0);
-                        SilDev.Run.App(@"%WinDir%\System32", "cmd.exe", "/C sc config \"PnkBstrB\" start= disabled", SilDev.Run.WindowStyle.Hidden);
+                        SilDev.Run.Cmd("sc stop \"PnkBstrA\"");
+                        SilDev.Run.Cmd("sc config \"PnkBstrA\" start= disabled");
+                        SilDev.Run.Cmd("sc stop \"PnkBstrB\"");
+                        SilDev.Run.Cmd("sc config \"PnkBstrB\" start= disabled");
                     }
                 }
             }

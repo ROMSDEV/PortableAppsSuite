@@ -24,7 +24,7 @@ namespace GyazoPortable
                         if (SilDev.Initialization.ReadValue("Settings", "SecondRunMode").ToLower() == "true")
                         {
                             secondRunMode = true;
-                            SilDev.Run.App(Application.StartupPath, "Gyazo\\Gyazowin.exe", 0);
+                            SilDev.Run.App(new ProcessStartInfo() { FileName = "%CurrentDir%\\Gyazo\\Gyazowin.exe" }, 0);
                         }
                     }
                     if (!secondRunMode)
@@ -46,7 +46,7 @@ namespace GyazoPortable
                                 }
                             }
                         }
-                        SilDev.Run.App(Application.StartupPath, "Gyazo\\GyStation.exe", 0);
+                        SilDev.Run.App(new ProcessStartInfo() { FileName = "%CurrentDir%\\Gyazo\\GyStation.exe" }, 0);
                         if (!File.Exists(iniSettings))
                             File.Create(iniSettings).Close();
                         Dictionary<string, string> regSettings = new Dictionary<string, string>();
@@ -73,8 +73,6 @@ namespace GyazoPortable
                     if (Directory.Exists(tempDir))
                         Directory.Delete(tempDir, true);
                 }
-                else
-                    Environment.Exit(2);
             }
         }
     }

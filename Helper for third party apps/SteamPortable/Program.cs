@@ -22,7 +22,11 @@ namespace SteamPortable
 #if x86
                     if (Environment.Is64BitOperatingSystem)
                     {
-                        SilDev.Run.App(Application.StartupPath, string.Format("{0}64.exe", Path.GetFileNameWithoutExtension(Application.ExecutablePath)), cmdLineArgs);
+                        SilDev.Run.App(new ProcessStartInfo()
+                        {
+                            Arguments = cmdLineArgs,
+                            FileName = $"%CurrentDir%\\{Path.GetFileNameWithoutExtension(Application.ExecutablePath)}64.exe"
+                        });
                         return;
                     }
 #endif
@@ -135,7 +139,7 @@ namespace SteamPortable
 
                     if (File.Exists(iniPath))
                     {
-                        cmdLineArgs = string.Format("{0} {1}", SilDev.Initialization.ReadValue("Settings", "StartArguments", iniPath), cmdLineArgs);
+                        cmdLineArgs = $"{SilDev.Initialization.ReadValue("Settings", "StartArguments", iniPath)} {cmdLineArgs}";
                         cmdLineArgs = cmdLineArgs.TrimStart().TrimEnd();
                     }
 
@@ -144,8 +148,12 @@ namespace SteamPortable
                         Arguments = cmdLineArgs,
                         FileName = Path.Combine(appDir, "Steam.exe")
                     }, 0);
-                    while (isRunning(appDir, "Steam"))
-                        Thread.Sleep(200);
+                    for (int i = 0; i < 10; i++)
+                    {
+                        while (isRunning(appDir, "Steam"))
+                            Thread.Sleep(200);
+                        Thread.Sleep(300);
+                    }
 
                     if (SilDev.Elevation.IsAdministrator && SilDev.WinAPI.ServiceTools.ServiceExists(serviceName) && SilDev.Data.DirIsLink(defServiceDir))
                     {
@@ -300,7 +308,7 @@ namespace SteamPortable
             }
             catch (Exception ex)
             {
-                SilDev.Log.Debug(ex.Message, "SteamPortable.Program.isRunning");
+                SilDev.Log.Debug(ex);
                 return false;
             }
         }
@@ -325,7 +333,7 @@ namespace SteamPortable
             }
             catch (Exception ex)
             {
-                SilDev.Log.Debug(ex.Message, "SteamPortable.Program.killAll");
+                SilDev.Log.Debug(ex);
             }
         }
 

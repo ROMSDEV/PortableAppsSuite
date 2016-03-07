@@ -11,6 +11,7 @@ namespace WinRARPortable
         [STAThread]
         static void Main()
         {
+            string appPath = Environment.Is64BitProcess ? "%CurrentDir%\\winrar-x64\\WinRAR.exe" : "%CurrentDir%\\winrar\\WinRAR.exe";
             SilDev.Initialization.File(Application.StartupPath, Environment.Is64BitProcess ? "WinRAR64Portable.ini" : "WinRARPortable.ini");
             bool ContextMenuEntriesAllowed = false;
             bool.TryParse(SilDev.Initialization.ReadValue("ContextMenu", "EntriesAllowed"), out ContextMenuEntriesAllowed);
@@ -32,15 +33,23 @@ namespace WinRARPortable
                 {
                     string CurrentDate = DateTime.Now.ToString("M/d/yyyy", System.Globalization.CultureInfo.CreateSpecificCulture("en-US"));
                     string LastUpdateCheck = SilDev.Initialization.ReadValue("History", "LastUpdateCheck");
-                    if (LastUpdateCheck != CurrentDate)
+                    if (LastUpdateCheck != CurrentDate || !File.Exists(appPath))
                     {
-                        SilDev.Run.App(Application.StartupPath, Environment.Is64BitProcess ? "winrar-x64\\WinRARUpdater64.exe" : "winrar\\WinRARUpdater.exe", "/silent", SilDev.Run.WindowStyle.Normal, -1, 0);
+                        SilDev.Run.App(new ProcessStartInfo()
+                        {
+                            Arguments = "/silent",
+                            FileName = Environment.Is64BitProcess ? "%CurrentDir%\\winrar-x64\\WinRARUpdater64.exe" : "%CurrentDir%\\winrar\\WinRARUpdater.exe"
+                        }, 0);
                         SilDev.Initialization.WriteValue("History", "LastUpdateCheck", CurrentDate);
                     }
                     string ini = Path.Combine(Application.StartupPath, Environment.Is64BitProcess ? "winrar-x64\\WinRAR.ini" : "winrar\\WinRAR.ini");
                     if (!File.Exists(ini))
                         File.Create(ini).Close();
-                    SilDev.Run.App(Application.StartupPath, Environment.Is64BitProcess ? "winrar-x64\\WinRAR.exe" : "winrar\\WinRAR.exe", Environment.CommandLine.Replace(string.Format("\"{0}\"", Application.ExecutablePath), string.Empty), 0);
+                    SilDev.Run.App(new ProcessStartInfo()
+                    {
+                        Arguments = Environment.CommandLine.Replace($"\"{Application.ExecutablePath}\"", string.Empty).TrimStart(),
+                        FileName = appPath
+                    }, 0);
                     bool isRunning = true;
                     while (isRunning)
                     {
@@ -63,7 +72,11 @@ namespace WinRARPortable
                         SilDev.Elevation.RestartAsAdministrator("/ClearRegistryAsAdmin");
                 }
                 else
-                    SilDev.Run.App(Application.StartupPath, Environment.Is64BitProcess ? "winrar-x64\\WinRAR.exe" : "winrar\\WinRAR.exe", Environment.CommandLine.Replace(string.Format("\"{0}\"", Application.ExecutablePath), string.Empty));
+                    SilDev.Run.App(new ProcessStartInfo()
+                    {
+                        Arguments = Environment.CommandLine.Replace($"\"{Application.ExecutablePath}\"", string.Empty).TrimStart(),
+                        FileName = appPath
+                    });
             }
         }
     }
