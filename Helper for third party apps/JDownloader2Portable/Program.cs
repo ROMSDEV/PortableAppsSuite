@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -17,77 +16,69 @@ namespace JDownloader2Portable
             {
                 if (newInstance)
                 {
-                    string JavaDir = string.Empty;
+                    SilDev.Log.AllowDebug();
                     string JavaPath = string.Empty;
                     string ExePath = Path.Combine(Application.StartupPath, "JDownloader_v2.0\\JDownloader2.exe");
                     if (!File.Exists(ExePath))
                     {
-                        string dir = Application.StartupPath;
-                        for (int i = 0; i < Application.StartupPath.Count(x => x == '\\'); i++)
+                        string drive = new DriveInfo(Application.StartupPath).RootDirectory.Root.Name;
+                        string JavaDir = drive;
+                        foreach (string dirName in Application.StartupPath.Split('\\'))
                         {
-                            dir = Path.GetFullPath(Path.Combine(dir, "../"));
-                            for (int j = 0; j < 7; j++)
+                            try
                             {
-                                if (!Environment.Is64BitOperatingSystem)
-                                {
-                                    j = 2;
+                                if (drive.Contains(dirName))
                                     continue;
-                                }
-                                switch (j)
+                                JavaDir = Path.Combine(JavaDir, dirName);
+                                string tmpDir = string.Empty;
+                                if (Environment.Is64BitOperatingSystem)
                                 {
-                                    case 0:
-                                        JavaDir = Path.Combine(dir, "Java64Portable\\CommonFiles\\Java64");
-                                        break;
-                                    case 1:
-                                        JavaDir = Path.Combine(dir, "JavaPortable\\CommonFiles\\Java64");
-                                        break;
-                                    case 2:
-                                        JavaDir = Path.Combine(dir, "CommonFiles\\Java64");
-                                        break;
-                                    case 3:
-                                        JavaDir = Path.Combine(dir, "Java64Portable\\CommonFiles\\Java");
-                                        break;
-                                    case 4:
-                                        JavaDir = Path.Combine(dir, "JavaPortable\\CommonFiles\\Java");
-                                        break;
-                                    case 5:
-                                        JavaDir = Path.Combine(dir, "CommonFiles\\Java");
-                                        break;
-                                    case 6:
-                                        JavaDir = Environment.GetEnvironmentVariable("JAVA_HOME");
-                                        break;
-                                }
-                                if (Directory.Exists(JavaDir))
-                                {
-                                    foreach (string file in Directory.GetFiles(JavaDir, "javaw.exe", SearchOption.AllDirectories))
+                                    tmpDir = Path.Combine(JavaDir, "CommonFiles\\Java64");
+                                    if (Directory.Exists(tmpDir))
                                     {
-                                        JavaPath = file;
-                                        break;
+                                        foreach (string file in Directory.GetFiles(tmpDir, "javaw.exe", SearchOption.AllDirectories))
+                                        {
+                                            JavaDir = tmpDir;
+                                            JavaPath = file;
+                                            break;
+                                        }
                                     }
-                                    if (File.Exists(JavaPath))
-                                        break;
                                 }
+                                tmpDir = Path.Combine(JavaDir, "CommonFiles\\Java64");
+                                if (File.Exists(tmpDir))
+                                {
+                                    if (Directory.Exists(tmpDir))
+                                    {
+                                        foreach (string file in Directory.GetFiles(tmpDir, "javaw.exe", SearchOption.AllDirectories))
+                                        {
+                                            JavaDir = tmpDir;
+                                            JavaPath = file;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                SilDev.Log.Debug(ex);
                             }
                         }
                         if (!File.Exists(JavaPath))
                         {
-                            if (File.Exists(string.Format("{0}.disabled", ExePath)))
-                                File.Move(string.Format("{0}.disabled", ExePath), ExePath);
+                            if (File.Exists($"{ExePath}.disabled"))
+                                File.Move($"{ExePath}.disabled", ExePath);
                             string UpdExePath = Path.Combine(Application.StartupPath, "JDownloader_v2.0\\JDownloader2Update.exe");
-                            if (File.Exists(string.Format("{0}.disabled", UpdExePath)))
-                                File.Move(string.Format("{0}.disabled", UpdExePath), UpdExePath);
+                            if (File.Exists($"{UpdExePath}.disabled"))
+                                File.Move($"{UpdExePath}.disabled", UpdExePath);
                         }
                     }
-                    string commandLine = Environment.CommandLine.Replace(Application.ExecutablePath, string.Empty).Replace("\"\"", string.Empty).TrimStart().TrimEnd();
                     if (File.Exists(ExePath))
                     {
-                        using (Process app = new Process())
+                        SilDev.Run.App(new ProcessStartInfo()
                         {
-                            app.StartInfo.Arguments = commandLine;
-                            app.StartInfo.FileName = ExePath;
-                            app.StartInfo.WorkingDirectory = Path.GetDirectoryName(app.StartInfo.FileName);
-                            app.Start();
-                        }
+                            Arguments = SilDev.Run.CommandLine(false),
+                            FileName = ExePath,
+                        });
                         return;
                     }
                     if (!File.Exists(JavaPath))
@@ -101,13 +92,12 @@ namespace JDownloader2Portable
                         MessageBox.Show("JDownloader 2 not found!", "JDownloader 2 Portable", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return;
                     }
-                    using (Process app = new Process())
+                    SilDev.Run.App(new ProcessStartInfo()
                     {
-                        app.StartInfo.Arguments = string.Format("-jar \"{0}\" {1}", JDownloader, commandLine);
-                        app.StartInfo.FileName = JavaPath;
-                        app.StartInfo.WorkingDirectory = Path.GetDirectoryName(JDownloader);
-                        app.Start();
-                    }
+                        Arguments = $"-jar \"{JDownloader}\" {SilDev.Run.CommandLine(false)}".Trim(),
+                        FileName = JavaPath,
+                        WorkingDirectory = Path.GetDirectoryName(JDownloader)
+                    });
                 }
             }
         }

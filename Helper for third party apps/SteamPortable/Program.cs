@@ -13,7 +13,7 @@ namespace SteamPortable
         {
             SilDev.Log.AllowDebug();
             string appDir = SilDev.Run.EnvironmentVariableFilter("%CurrentDir%\\App\\Steam");
-            string cmdLineArgs = Environment.CommandLine.Replace(Application.ExecutablePath, string.Empty).Replace("\"\"", string.Empty).TrimStart().TrimEnd();
+            string cmdLineArgs = Environment.CommandLine.Replace(Application.ExecutablePath, string.Empty).Replace("\"\"", string.Empty).Trim();
             bool newInstance = true;
             using (Mutex mutex = new Mutex(true, Process.GetCurrentProcess().ProcessName, out newInstance))
             {
@@ -140,7 +140,7 @@ namespace SteamPortable
                     if (File.Exists(iniPath))
                     {
                         cmdLineArgs = $"{SilDev.Initialization.ReadValue("Settings", "StartArguments", iniPath)} {cmdLineArgs}";
-                        cmdLineArgs = cmdLineArgs.TrimStart().TrimEnd();
+                        cmdLineArgs = cmdLineArgs.Trim();
                     }
 
                     SilDev.Run.App(new ProcessStartInfo()

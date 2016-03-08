@@ -8,7 +8,7 @@ namespace OriginPortable
 {
     static class Program
     {
-        static string cmdLineArgs = Environment.CommandLine.Replace(Application.ExecutablePath, string.Empty).Replace("\"\"", string.Empty).TrimStart().TrimEnd();
+        static string cmdLineArgs = Environment.CommandLine.Replace(Application.ExecutablePath, string.Empty).Replace("\"\"", string.Empty).Trim();
         static int MinimizedAtStart = 10;
 
         [STAThread]

@@ -19,6 +19,7 @@ namespace FFactoryPortable
                     return;
                 if (newInstance)
                 {
+                    SilDev.Log.AllowDebug();
                     bool regBackup = false;
                     if (SilDev.Reg.SubKeyExist("HKEY_CURRENT_USER\\Software\\FreeTime"))
                     {
@@ -54,7 +55,7 @@ namespace FFactoryPortable
 #endif
                     SilDev.Run.App(new ProcessStartInfo()
                     {
-                        Arguments = Environment.CommandLine.Replace($"\"{Application.ExecutablePath}\"", string.Empty).TrimStart(),
+                        Arguments = SilDev.Run.CommandLine(),
                         FileName = appPath
                     }, 0);
                     if (File.Exists(oldSettingsPath))

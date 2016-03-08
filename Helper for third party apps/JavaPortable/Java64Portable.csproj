@@ -4,7 +4,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>..\_bin\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
@@ -23,6 +23,9 @@
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>JavaPortableLauncher.Program</StartupObject>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
+    <ProjectGuid>{A7E068BB-35C3-4294-A243-72978F74E180}</ProjectGuid>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Java.ico</ApplicationIcon>
@@ -36,6 +39,9 @@
   <PropertyGroup>
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -45,10 +51,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\_libs\SilDev.Crypt.cs" />
+    <Compile Include="..\..\_libs\SilDev.Data.cs" />
     <Compile Include="..\..\_libs\SilDev.Initialization.cs" />
     <Compile Include="..\..\_libs\SilDev.Log.cs" />
     <Compile Include="..\..\_libs\SilDev.Run.cs" />
-	<Compile Include="..\..\_libs\SilDev.WinAPI.cs" />
+    <Compile Include="..\..\_libs\SilDev.WinAPI.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -76,6 +83,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Java.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

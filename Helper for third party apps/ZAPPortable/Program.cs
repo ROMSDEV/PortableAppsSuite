@@ -25,42 +25,42 @@ namespace ZAPPortable
                             return;
 
                         string appDrive = new DriveInfo(Application.StartupPath).RootDirectory.Root.Name;
-                        string Java = appDrive;
+                        string JavaPath = appDrive;
                         foreach (string dirName in Application.StartupPath.Split('\\'))
                         {
                             if (appDrive.Contains(dirName))
                                 continue;
-                            Java = Path.Combine(Java, dirName);
+                            JavaPath = Path.Combine(JavaPath, dirName);
                             if (Environment.Is64BitOperatingSystem)
                             {
-                                if (File.Exists(Path.Combine(Java, "Java64Portable\\CommonFiles\\Java64\\bin\\javaw.exe")))
+                                if (File.Exists(Path.Combine(JavaPath, "Java64Portable\\CommonFiles\\Java64\\bin\\javaw.exe")))
                                 {
-                                    Java = Path.Combine(Java, "Java64Portable\\CommonFiles\\Java64\\bin\\javaw.exe");
+                                    JavaPath = Path.Combine(JavaPath, "Java64Portable\\CommonFiles\\Java64\\bin\\javaw.exe");
                                     break;
                                 }
-                                if (File.Exists(Path.Combine(Java, "CommonFiles\\Java64\\bin\\javaw.exe")))
+                                if (File.Exists(Path.Combine(JavaPath, "CommonFiles\\Java64\\bin\\javaw.exe")))
                                 {
-                                    Java = Path.Combine(Java, "CommonFiles\\Java64\\bin\\javaw.exe");
+                                    JavaPath = Path.Combine(JavaPath, "CommonFiles\\Java64\\bin\\javaw.exe");
                                     break;
                                 }
                             }
-                            if (File.Exists(Path.Combine(Java, "Java64Portable\\CommonFiles\\Java\\bin\\javaw.exe")))
+                            if (File.Exists(Path.Combine(JavaPath, "Java64Portable\\CommonFiles\\Java\\bin\\javaw.exe")))
                             {
-                                Java = Path.Combine(Java, "Java64Portable\\CommonFiles\\Java\\bin\\javaw.exe");
+                                JavaPath = Path.Combine(JavaPath, "Java64Portable\\CommonFiles\\Java\\bin\\javaw.exe");
                                 break;
                             }
-                            if (File.Exists(Path.Combine(Java, "JavaPortable\\CommonFiles\\Java\\bin\\javaw.exe")))
+                            if (File.Exists(Path.Combine(JavaPath, "JavaPortable\\CommonFiles\\Java\\bin\\javaw.exe")))
                             {
-                                Java = Path.Combine(Java, "JavaPortable\\CommonFiles\\Java\\bin\\javaw.exe");
+                                JavaPath = Path.Combine(JavaPath, "JavaPortable\\CommonFiles\\Java\\bin\\javaw.exe");
                                 break;
                             }
-                            if (File.Exists(Path.Combine(Java, "CommonFiles\\Java\\bin\\javaw.exe")))
+                            if (File.Exists(Path.Combine(JavaPath, "CommonFiles\\Java\\bin\\javaw.exe")))
                             {
-                                Java = Path.Combine(Java, "CommonFiles\\Java\\bin\\javaw.exe");
+                                JavaPath = Path.Combine(JavaPath, "CommonFiles\\Java\\bin\\javaw.exe");
                                 break;
                             }
                         }
-                        if (!File.Exists(Java))
+                        if (!File.Exists(JavaPath))
                         {
                             MessageBox.Show("Java Portable not found!", "Zed Attack Proxy Portable", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             return;
@@ -76,7 +76,7 @@ namespace ZAPPortable
                         SilDev.Run.App(new ProcessStartInfo()
                         {
                             Arguments = $"-Xmx512m -XX:PermSize=256M -jar \"{appPath}\" {cmdLine}",
-                            FileName = Java,
+                            FileName = JavaPath,
                             WorkingDirectory = Path.GetDirectoryName(appPath)
                         }, 0);
 

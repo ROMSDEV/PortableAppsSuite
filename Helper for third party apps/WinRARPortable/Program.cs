@@ -11,6 +11,7 @@ namespace WinRARPortable
         [STAThread]
         static void Main()
         {
+            SilDev.Log.AllowDebug();
             string appPath = Environment.Is64BitProcess ? "%CurrentDir%\\winrar-x64\\WinRAR.exe" : "%CurrentDir%\\winrar\\WinRAR.exe";
             SilDev.Initialization.File(Application.StartupPath, Environment.Is64BitProcess ? "WinRAR64Portable.ini" : "WinRARPortable.ini");
             bool ContextMenuEntriesAllowed = false;
@@ -47,7 +48,7 @@ namespace WinRARPortable
                         File.Create(ini).Close();
                     SilDev.Run.App(new ProcessStartInfo()
                     {
-                        Arguments = Environment.CommandLine.Replace($"\"{Application.ExecutablePath}\"", string.Empty).TrimStart(),
+                        Arguments = SilDev.Run.CommandLine(),
                         FileName = appPath
                     }, 0);
                     bool isRunning = true;
@@ -74,7 +75,7 @@ namespace WinRARPortable
                 else
                     SilDev.Run.App(new ProcessStartInfo()
                     {
-                        Arguments = Environment.CommandLine.Replace($"\"{Application.ExecutablePath}\"", string.Empty).TrimStart(),
+                        Arguments = SilDev.Run.CommandLine(),
                         FileName = appPath
                     });
             }

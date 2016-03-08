@@ -18,20 +18,12 @@ namespace VLCPortable
             using (Mutex mutex = new Mutex(true, Process.GetCurrentProcess().ProcessName, out newInstance))
             {
                 SilDev.Log.AllowDebug();
-                string cmdLine = null;
-                int length = Environment.GetCommandLineArgs().Length - 1;
-                if (length > 0)
-                {
-                    string[] cmdLineArgs = new string[length];
-                    Array.ConstrainedCopy(Environment.GetCommandLineArgs(), 1, cmdLineArgs, 0, length);
-                    cmdLine = string.Format("\"{0}\" ", string.Join("\" \"", cmdLineArgs));
-                }
                 if (newInstance)
                 {
                     SilDev.Data.DirLink(SilDev.Run.EnvironmentVariableFilter("%AppData%\\vlc"), SilDev.Run.EnvironmentVariableFilter("%CurrentDir%\\Data"), true);
                     SilDev.Run.App(new ProcessStartInfo()
                     {
-                        Arguments = $"{cmdLine}--no-plugins-cache",
+                        Arguments = $"{SilDev.Run.CommandLine()} --no-plugins-cache".Trim(),
                         FileName = appPath
                     }, 0);
                     while (Process.GetProcessesByName("vlc").Length > 0)
@@ -44,7 +36,7 @@ namespace VLCPortable
                 else
                     SilDev.Run.App(new ProcessStartInfo()
                     {
-                        Arguments = cmdLine,
+                        Arguments = SilDev.Run.CommandLine(),
                         FileName = appPath
                     });
             }
