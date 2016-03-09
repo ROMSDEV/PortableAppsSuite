@@ -39,22 +39,15 @@ namespace CheatEnginePortable
                         File.WriteAllLines(dataSettings, defaultSettings);
                     }
                     if (File.Exists(dataSettings))
-                        SilDev.Initialization.WriteValue("HKEY_CURRENT_USER\\Software\\Cheat Engine", "\"Initial tables dir\"", string.Format("\"{0}\"", dataTables.Replace("\\", "\\\\")), dataSettings);
-                    bool regBackup = false;
-                    if (SilDev.Reg.SubKeyExist("HKEY_CURRENT_USER\\Software\\Cheat Engine"))
-                    {
-                        if (string.IsNullOrWhiteSpace(SilDev.Reg.ReadValue("HKEY_CURRENT_USER\\Software\\Cheat Engine", "Portable App")))
-                        {
-                            SilDev.Reg.RenameSubKey("HKEY_CURRENT_USER\\Software\\Cheat Engine", "Software\\SI13N7-BACKUP: Cheat Engine");
-                            regBackup = true;
-                        }
-                    }
+                        SilDev.Initialization.WriteValue("HKEY_CURRENT_USER\\Software\\Cheat Engine", "\"Initial tables dir\"", $"\"{dataTables.Replace("\\", "\\\\")}\"", dataSettings);
+                    if (!SilDev.Reg.ValueExist("HKEY_CURRENT_USER\\Software\\Cheat Engine", "Portable App"))
+                        SilDev.Reg.RenameSubKey("HKEY_CURRENT_USER\\Software\\Cheat Engine", "Software\\SI13N7-BACKUP: Cheat Engine");
                     SilDev.Reg.ImportFile(dataSettings);
                     SilDev.Run.App(new ProcessStartInfo() { FileName = "%CurrentDir%\\App\\CheatEngine\\Cheat Engine.exe" }, 0);
                     bool isRunning = true;
                     while (isRunning)
                     {
-                        Process[] runningApp = Process.GetProcessesByName(string.Format("cheatengine-{0}", Environment.Is64BitOperatingSystem ? "x86_64" : "i386"));
+                        Process[] runningApp = Process.GetProcessesByName($"cheatengine-{(Environment.Is64BitOperatingSystem ? "x86_64" : "i386")}");
                         isRunning = runningApp.Length > 0;
                         foreach (Process app in runningApp)
                             app.WaitForExit();
@@ -64,8 +57,7 @@ namespace CheatEnginePortable
                         Directory.Delete(userTables, true);
                     SilDev.Reg.ExportFile("HKEY_CURRENT_USER\\Software\\Cheat Engine", dataSettings);
                     SilDev.Reg.RemoveExistSubKey(SilDev.Reg.RegKey.CurrentUser, "Software\\Cheat Engine");
-                    if (regBackup)
-                        SilDev.Reg.RenameSubKey("HKEY_CURRENT_USER\\Software\\SI13N7-BACKUP: Cheat Engine", "Software\\Cheat Engine");
+                    SilDev.Reg.RenameSubKey("HKEY_CURRENT_USER\\Software\\SI13N7-BACKUP: Cheat Engine", "Software\\Cheat Engine");
                 }
                 else
                     SilDev.Run.App(new ProcessStartInfo() { FileName = "%CurrentDir%\\App\\CheatEngine\\Cheat Engine.exe" });

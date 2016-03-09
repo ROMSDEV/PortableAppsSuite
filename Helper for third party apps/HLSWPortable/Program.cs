@@ -56,22 +56,15 @@ namespace HLSWPortable
                     {
                         if (Directory.Exists(cfgPath))
                             Directory.Delete(cfgPath, true);
-                        if (Directory.Exists(string.Format("{0}.BACKUP", oldCfgPath)))
-                            Directory.Delete(string.Format("{0}.BACKUP", oldCfgPath), true);
+                        if (Directory.Exists($"{oldCfgPath}.BACKUP"))
+                            Directory.Delete($"{oldCfgPath}.BACKUP", true);
                         Directory.Move(oldCfgPath, cfgPath);
                     }
                     if (!Directory.Exists(cfgPath))
                         Directory.CreateDirectory(cfgPath);
 
-                    bool regBackup = false;
-                    if (SilDev.Reg.SubKeyExist("HKEY_CURRENT_USER\\Software\\HLSW"))
-                    {
-                        if (string.IsNullOrWhiteSpace(SilDev.Reg.ReadValue("HKEY_CURRENT_USER\\Software\\HLSW", "Portable App")))
-                        {
-                            SilDev.Reg.RenameSubKey("HKEY_CURRENT_USER\\Software\\HLSW", "Software\\SI13N7-BACKUP: HLSW");
-                            regBackup = true;
-                        }
-                    }
+                    if (!SilDev.Reg.ValueExist("HKEY_CURRENT_USER\\Software\\HLSW", "Portable App"))
+                        SilDev.Reg.RenameSubKey("HKEY_CURRENT_USER\\Software\\HLSW", "Software\\SI13N7-BACKUP: HLSW");
 
                     string settingsPath = Path.Combine(Application.StartupPath, "Data\\settings.reg");
                     string oldSettingsPath = Path.Combine(Application.StartupPath, "Data\\settings.ini");
@@ -97,8 +90,7 @@ namespace HLSWPortable
 
                     SilDev.Reg.ExportFile("HKEY_CURRENT_USER\\Software\\HLSW", settingsPath);
                     SilDev.Reg.RemoveExistSubKey("HKEY_CURRENT_USER\\Software\\HLSW");
-                    if (regBackup)
-                        SilDev.Reg.RenameSubKey("HKEY_CURRENT_USER\\Software\\SI13N7-BACKUP: HLSW", "Software\\HLSW");
+                    SilDev.Reg.RenameSubKey("HKEY_CURRENT_USER\\Software\\SI13N7-BACKUP: HLSW", "Software\\HLSW");
 
                     if (SilDev.Elevation.IsAdministrator)
                     {

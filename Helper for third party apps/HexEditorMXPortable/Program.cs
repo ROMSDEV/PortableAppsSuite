@@ -20,16 +20,12 @@ namespace HexEditorMXPortable
                 {
                     if (!File.Exists(appPath) || Process.GetProcessesByName(Path.GetFileNameWithoutExtension(appPath)).Length > 0)
                         return;
+
                     SilDev.Log.AllowDebug();
-                    bool regBackup = false;
-                    if (SilDev.Reg.SubKeyExist("HKEY_CURRENT_USER\\Software\\NEXT-Soft"))
-                    {
-                        if (string.IsNullOrWhiteSpace(SilDev.Reg.ReadValue("HKEY_CURRENT_USER\\Software\\NEXT-Soft", "Portable App")))
-                        {
-                            SilDev.Reg.RenameSubKey("HKEY_CURRENT_USER\\Software\\NEXT-Soft", "Software\\SI13N7-BACKUP: NEXT-Soft");
-                            regBackup = true;
-                        }
-                    }
+
+                    if (!SilDev.Reg.ValueExist("HKEY_CURRENT_USER\\Software\\NEXT-Soft", "Portable App"))
+                        SilDev.Reg.RenameSubKey("HKEY_CURRENT_USER\\Software\\NEXT-Soft", "Software\\SI13N7-BACKUP: NEXT-Soft");
+
                     string settingsPath = Path.Combine(Application.StartupPath, "Data\\settings.reg");
                     if (!Directory.Exists(Path.GetDirectoryName(settingsPath)))
                         Directory.CreateDirectory(Path.GetDirectoryName(settingsPath));
@@ -38,12 +34,15 @@ namespace HexEditorMXPortable
                         SilDev.Reg.ImportFile(oldSettingsPath);
                     if (File.Exists(settingsPath))
                         SilDev.Reg.ImportFile(settingsPath);
+
                     SilDev.Reg.WriteValue("HKEY_CURRENT_USER\\Software\\NEXT-Soft", "Portable App", "True");
+
                     SilDev.Run.App(new ProcessStartInfo()
                     {
                         Arguments = SilDev.Run.CommandLine(),
                         FileName = appPath
                     }, 0);
+
                     bool isRunning = true;
                     while (isRunning)
                     {
@@ -52,12 +51,13 @@ namespace HexEditorMXPortable
                         foreach (Process app in runningApp)
                             app.WaitForExit();
                     }
+
                     if (File.Exists(oldSettingsPath))
                         File.Delete(oldSettingsPath);
+
                     SilDev.Reg.ExportFile("HKEY_CURRENT_USER\\Software\\NEXT-Soft", settingsPath);
                     SilDev.Reg.RemoveExistSubKey("HKEY_CURRENT_USER\\Software\\NEXT-Soft");
-                    if (regBackup)
-                        SilDev.Reg.RenameSubKey("HKEY_CURRENT_USER\\Software\\SI13N7-BACKUP: NEXT-Soft", "Software\\NEXT-Soft");
+                    SilDev.Reg.RenameSubKey("HKEY_CURRENT_USER\\Software\\SI13N7-BACKUP: NEXT-Soft", "Software\\NEXT-Soft");
                 }
                 else
                     SilDev.Run.App(new ProcessStartInfo()

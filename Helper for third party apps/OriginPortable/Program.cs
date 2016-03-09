@@ -108,46 +108,46 @@ namespace OriginPortable
 
                     #region Registry Backup
 
-                    if (SilDev.Reg.SubKeyExist(@"HKCR\origin") && string.IsNullOrWhiteSpace(SilDev.Reg.ReadValue(@"HKCU\origin", "Portable App")))
+                    if (!SilDev.Reg.ValueExist(@"HKCU\origin", "Portable App"))
                         SilDev.Reg.RenameSubKey(@"HKCU\origin", @"SOFTWARE\SI13N7-BACKUP: origin");
 
-                    if (SilDev.Reg.SubKeyExist(@"HKCR\origin2") && string.IsNullOrWhiteSpace(SilDev.Reg.ReadValue(@"HKCU\origin2", "Portable App")))
+                    if (!SilDev.Reg.ValueExist(@"HKCU\origin2", "Portable App"))
                         SilDev.Reg.RenameSubKey(@"HKCU\origin2", @"SOFTWARE\SI13N7-BACKUP: origin2");
 
-                    if (SilDev.Reg.SubKeyExist(@"HKCU\Software\EA Games") && string.IsNullOrWhiteSpace(SilDev.Reg.ReadValue(@"HKCU\Software\EA Games", "Portable App")))
+                    if (!SilDev.Reg.ValueExist(@"HKCU\Software\EA Games", "Portable App"))
                         SilDev.Reg.RenameSubKey(@"HKCU\Software\EA Games", @"SOFTWARE\SI13N7-BACKUP: EA Games");
 
-                    if (SilDev.Reg.SubKeyExist(@"HKCU\Software\Electronic Arts") && string.IsNullOrWhiteSpace(SilDev.Reg.ReadValue(@"HKCU\Software\Electronic Arts", "Portable App")))
+                    if (!SilDev.Reg.ValueExist(@"HKCU\Software\Electronic Arts", "Portable App"))
                         SilDev.Reg.RenameSubKey(@"HKCU\Software\Electronic Arts", @"SOFTWARE\SI13N7-BACKUP: Electronic Arts");
 
-                    if (SilDev.Reg.SubKeyExist(@"HKLM\SOFTWARE\EA Games") && string.IsNullOrWhiteSpace(SilDev.Reg.ReadValue(@"HKLM\SOFTWARE\EA Games", "Portable App")))
+                    if (!SilDev.Reg.ValueExist(@"HKLM\SOFTWARE\EA Games", "Portable App"))
                         SilDev.Reg.RenameSubKey(@"HKLM\SOFTWARE\EA Games", @"SOFTWARE\SI13N7-BACKUP: EA Games");
 
-                    if (SilDev.Reg.SubKeyExist(@"HKLM\SOFTWARE\Electronic Arts") && string.IsNullOrWhiteSpace(SilDev.Reg.ReadValue(@"HKLM\SOFTWARE\Electronic Arts", "Portable App")))
+                    if (!SilDev.Reg.ValueExist(@"HKLM\SOFTWARE\Electronic Arts", "Portable App"))
                         SilDev.Reg.RenameSubKey(@"HKLM\SOFTWARE\Electronic Arts", @"SOFTWARE\SI13N7-BACKUP: Electronic Arts");
 
-                    if (SilDev.Reg.SubKeyExist(@"HKLM\SOFTWARE\Origin") && string.IsNullOrWhiteSpace(SilDev.Reg.ReadValue(@"HKLM\SOFTWARE\Origin", "Portable App")))
+                    if (!SilDev.Reg.ValueExist(@"HKLM\SOFTWARE\Origin", "Portable App"))
                         SilDev.Reg.RenameSubKey(@"HKLM\SOFTWARE\Origin", @"SOFTWARE\SI13N7-BACKUP: Origin");
 
-                    if (SilDev.Reg.SubKeyExist(@"HKLM\SOFTWARE\Origin Games") && string.IsNullOrWhiteSpace(SilDev.Reg.ReadValue(@"HKLM\SOFTWARE\Origin Games", "Portable App")))
+                    if (!SilDev.Reg.ValueExist(@"HKLM\SOFTWARE\Origin Games", "Portable App"))
                         SilDev.Reg.RenameSubKey(@"HKLM\SOFTWARE\Origin Games", @"SOFTWARE\SI13N7-BACKUP: Origin Games");
 #if !x86
-                    if (SilDev.Reg.SubKeyExist(@"HKLM\SOFTWARE\Wow6432Node\EA Games") && string.IsNullOrWhiteSpace(SilDev.Reg.ReadValue(@"HKLM\SOFTWARE\Wow6432Node\EA Games", "Portable App")))
+                    if (!SilDev.Reg.ValueExist(@"HKLM\SOFTWARE\Wow6432Node\EA Games", "Portable App"))
                         SilDev.Reg.RenameSubKey(@"HKLM\SOFTWARE\Wow6432Node\EA Games", @"SOFTWARE\Wow6432Node\SI13N7-BACKUP: EA Games");
 
-                    if (SilDev.Reg.SubKeyExist(@"HKLM\SOFTWARE\Wow6432Node\Electronic Arts") && string.IsNullOrWhiteSpace(SilDev.Reg.ReadValue(@"HKLM\SOFTWARE\Wow6432Node\Electronic Arts", "Portable App")))
+                    if (!SilDev.Reg.ValueExist(@"HKLM\SOFTWARE\Wow6432Node\Electronic Arts", "Portable App"))
                         SilDev.Reg.RenameSubKey(@"HKLM\SOFTWARE\Wow6432Node\Electronic Arts", @"SOFTWARE\Wow6432Node\SI13N7-BACKUP: Electronic Arts");
 
-                    if (SilDev.Reg.SubKeyExist(@"HKLM\SOFTWARE\Wow6432Node\Origin") && string.IsNullOrWhiteSpace(SilDev.Reg.ReadValue(@"HKLM\SOFTWARE\Wow6432Node\Origin", "Portable App")))
+                    if (!SilDev.Reg.ValueExist(@"HKLM\SOFTWARE\Wow6432Node\Origin", "Portable App"))
                         SilDev.Reg.RenameSubKey(@"HKLM\SOFTWARE\Wow6432Node\Origin", @"SOFTWARE\Wow6432Node\SI13N7-BACKUP: Origin");
 
-                    if (SilDev.Reg.SubKeyExist(@"HKLM\SOFTWARE\Wow6432Node\Origin Games") && string.IsNullOrWhiteSpace(SilDev.Reg.ReadValue(@"HKLM\SOFTWARE\Wow6432Node\Origin Games", "Portable App")))
+                    if (!SilDev.Reg.ValueExist(@"HKLM\SOFTWARE\Wow6432Node\Origin Games", "Portable App"))
                         SilDev.Reg.RenameSubKey(@"HKLM\SOFTWARE\Wow6432Node\Origin Games", @"SOFTWARE\Wow6432Node\SI13N7-BACKUP: Origin Games");
 
-                    if (SilDev.Reg.SubKeyExist(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin") && string.IsNullOrWhiteSpace(SilDev.Reg.ReadValue(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "Portable App")))
+                    if (!SilDev.Reg.ValueExist(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "Portable App"))
                         SilDev.Reg.RenameSubKey(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", @"SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\SI13N7-BACKUP: Origin");
 #else
-                    if (SilDev.Reg.SubKeyExist(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin") && string.IsNullOrWhiteSpace(SilDev.Reg.ReadValue(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "Portable App")))
+                    if (!SilDev.Reg.ValueExist(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "Portable App"))
                         SilDev.Reg.RenameSubKey(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\SI13N7-BACKUP: Origin");
 #endif
                     #endregion
@@ -367,32 +367,16 @@ namespace OriginPortable
                     SilDev.Reg.RemoveExistSubKey(@"HKLM\SOFTWARE\Origin Games");
                     SilDev.Reg.RemoveExistSubKey(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin");
 
-                    if (SilDev.Reg.SubKeyExist(@"HKCR\SI13N7-BACKUP: origin"))
-                        SilDev.Reg.RenameSubKey(@"HKCR\SI13N7-BACKUP: origin", @"origin");
-
-                    if (SilDev.Reg.SubKeyExist(@"HKCR\SI13N7-BACKUP: origin2"))
-                        SilDev.Reg.RenameSubKey(@"HKCR\SI13N7-BACKUP: origin2", @"origin2");
-
-                    if (SilDev.Reg.SubKeyExist(@"HKCU\Software\SI13N7-BACKUP: EA Games"))
-                        SilDev.Reg.RenameSubKey(@"HKCU\Software\SI13N7-BACKUP: EA Games", @"Software\EA Games");
-
-                    if (SilDev.Reg.SubKeyExist(@"HKCU\Software\SI13N7-BACKUP: Electronic Arts"))
-                        SilDev.Reg.RenameSubKey(@"HKCU\Software\SI13N7-BACKUP: Electronic Arts", @"Software\Electronic Arts");
-
-                    if (SilDev.Reg.SubKeyExist(@"HKLM\SOFTWARE\SI13N7-BACKUP: EA Games"))
-                        SilDev.Reg.RenameSubKey(@"HKLM\SOFTWARE\SI13N7-BACKUP: EA Games", @"SOFTWARE\EA Games");
-
-                    if (SilDev.Reg.SubKeyExist(@"HKLM\SOFTWARE\SI13N7-BACKUP: Electronic Arts"))
-                        SilDev.Reg.RenameSubKey(@"HKLM\SOFTWARE\SI13N7-BACKUP: Electronic Arts", @"SOFTWARE\Electronic Arts");
-
-                    if (SilDev.Reg.SubKeyExist(@"HKLM\SOFTWARE\SI13N7-BACKUP: Origin"))
-                        SilDev.Reg.RenameSubKey(@"HKLM\SOFTWARE\SI13N7-BACKUP: Origin", @"SOFTWARE\Origin");
-
-                    if (SilDev.Reg.SubKeyExist(@"HKLM\SOFTWARE\SI13N7-BACKUP: Origin Games"))
-                        SilDev.Reg.RenameSubKey(@"HKLM\SOFTWARE\SI13N7-BACKUP: Origin Games", @"SOFTWARE\Wow6432Node\Origin Games");
+                    SilDev.Reg.RenameSubKey(@"HKCR\SI13N7-BACKUP: origin", @"origin");
+                    SilDev.Reg.RenameSubKey(@"HKCR\SI13N7-BACKUP: origin2", @"origin2");
+                    SilDev.Reg.RenameSubKey(@"HKCU\Software\SI13N7-BACKUP: EA Games", @"Software\EA Games");
+                    SilDev.Reg.RenameSubKey(@"HKCU\Software\SI13N7-BACKUP: Electronic Arts", @"Software\Electronic Arts");
+                    SilDev.Reg.RenameSubKey(@"HKLM\SOFTWARE\SI13N7-BACKUP: EA Games", @"SOFTWARE\EA Games");
+                    SilDev.Reg.RenameSubKey(@"HKLM\SOFTWARE\SI13N7-BACKUP: Electronic Arts", @"SOFTWARE\Electronic Arts");
+                    SilDev.Reg.RenameSubKey(@"HKLM\SOFTWARE\SI13N7-BACKUP: Origin", @"SOFTWARE\Origin");
+                    SilDev.Reg.RenameSubKey(@"HKLM\SOFTWARE\SI13N7-BACKUP: Origin Games", @"SOFTWARE\Wow6432Node\Origin Games");
 #if x86
-                    if (SilDev.Reg.SubKeyExist(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\SI13N7-BACKUP: Origin"))
-                        SilDev.Reg.RenameSubKey(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\SI13N7-BACKUP: Origin", @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin");
+                    SilDev.Reg.RenameSubKey(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\SI13N7-BACKUP: Origin", @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin");
 #else
                     SilDev.Reg.RemoveExistSubKey(@"HKLM\SOFTWARE\Wow6432Node\EA Games");
                     SilDev.Reg.RemoveExistSubKey(@"HKLM\SOFTWARE\Wow6432Node\Electronic Arts");
@@ -400,20 +384,11 @@ namespace OriginPortable
                     SilDev.Reg.RemoveExistSubKey(@"HKLM\SOFTWARE\Wow6432Node\Origin Games");
                     SilDev.Reg.RemoveExistSubKey(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin");
 
-                    if (SilDev.Reg.SubKeyExist(@"HKLM\SOFTWARE\Wow6432Node\SI13N7-BACKUP: EA Games"))
-                        SilDev.Reg.RenameSubKey(@"HKLM\SOFTWARE\Wow6432Node\SI13N7-BACKUP: EA Games", @"SOFTWARE\Wow6432Node\EA Games");
-
-                    if (SilDev.Reg.SubKeyExist(@"HKLM\SOFTWARE\Wow6432Node\SI13N7-BACKUP: Electronic Arts"))
-                        SilDev.Reg.RenameSubKey(@"HKLM\SOFTWARE\Wow6432Node\SI13N7-BACKUP: Electronic Arts", @"SOFTWARE\Wow6432Node\Electronic Arts");
-
-                    if (SilDev.Reg.SubKeyExist(@"HKLM\SOFTWARE\Wow6432Node\SI13N7-BACKUP: Origin"))
-                        SilDev.Reg.RenameSubKey(@"HKLM\SOFTWARE\Wow6432Node\SI13N7-BACKUP: Origin", @"SOFTWARE\Wow6432Node\Origin");
-
-                    if (SilDev.Reg.SubKeyExist(@"HKLM\SOFTWARE\Wow6432Node\SI13N7-BACKUP: Origin Games"))
-                        SilDev.Reg.RenameSubKey(@"HKLM\SOFTWARE\Wow6432Node\SI13N7-BACKUP: Origin Games", @"SOFTWARE\Wow6432Node\Origin Games");
-
-                    if (SilDev.Reg.SubKeyExist(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\SI13N7-BACKUP: Origin"))
-                        SilDev.Reg.RenameSubKey(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\SI13N7-BACKUP: Origin", @"SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin");
+                    SilDev.Reg.RenameSubKey(@"HKLM\SOFTWARE\Wow6432Node\SI13N7-BACKUP: EA Games", @"SOFTWARE\Wow6432Node\EA Games");
+                    SilDev.Reg.RenameSubKey(@"HKLM\SOFTWARE\Wow6432Node\SI13N7-BACKUP: Electronic Arts", @"SOFTWARE\Wow6432Node\Electronic Arts");
+                    SilDev.Reg.RenameSubKey(@"HKLM\SOFTWARE\Wow6432Node\SI13N7-BACKUP: Origin", @"SOFTWARE\Wow6432Node\Origin");
+                    SilDev.Reg.RenameSubKey(@"HKLM\SOFTWARE\Wow6432Node\SI13N7-BACKUP: Origin Games", @"SOFTWARE\Wow6432Node\Origin Games");
+                    SilDev.Reg.RenameSubKey(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\SI13N7-BACKUP: Origin", @"SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin");
 #endif
                     #endregion
 

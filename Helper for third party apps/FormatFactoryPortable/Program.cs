@@ -20,21 +20,17 @@ namespace FFactoryPortable
                 if (newInstance)
                 {
                     SilDev.Log.AllowDebug();
-                    bool regBackup = false;
-                    if (SilDev.Reg.SubKeyExist("HKEY_CURRENT_USER\\Software\\FreeTime"))
-                    {
-                        if (string.IsNullOrWhiteSpace(SilDev.Reg.ReadValue("HKEY_CURRENT_USER\\Software\\FreeTime", "Portable App")))
-                        {
-                            SilDev.Reg.RenameSubKey("HKEY_CURRENT_USER\\Software\\FreeTime", "Software\\SI13N7-BACKUP: FreeTime");
-                            regBackup = true;
-                        }
-                    }
+
+                    if (!SilDev.Reg.ValueExist("HKEY_CURRENT_USER\\Software\\FreeTime", "Portable App"))
+                        SilDev.Reg.RenameSubKey("HKEY_CURRENT_USER\\Software\\FreeTime", "Software\\SI13N7-BACKUP: FreeTime");
+
                     string settingsPath = Path.Combine(Application.StartupPath, "Data\\settings.reg");
                     string oldSettingsPath = Path.Combine(Application.StartupPath, "Data\\settings.ini");
                     if (File.Exists(oldSettingsPath) && !File.Exists(settingsPath))
                         SilDev.Reg.ImportFile(oldSettingsPath);
                     if (File.Exists(settingsPath))
                         SilDev.Reg.ImportFile(settingsPath);
+
                     SilDev.Reg.RegKey HKCU = SilDev.Reg.RegKey.CurrentUser;
                     string subKey = "Software\\FreeTime";
                     string appSubKey = "Software\\FreeTime\\FormatFactory";
@@ -62,8 +58,7 @@ namespace FFactoryPortable
                         File.Delete(oldSettingsPath);
                     SilDev.Reg.ExportFile("HKEY_CURRENT_USER\\Software\\FreeTime", settingsPath);
                     SilDev.Reg.RemoveExistSubKey(HKCU, subKey);
-                    if (regBackup)
-                        SilDev.Reg.RenameSubKey("HKEY_CURRENT_USER\\Software\\SI13N7-BACKUP: FreeTime", "Software\\FreeTime");
+                    SilDev.Reg.RenameSubKey("HKEY_CURRENT_USER\\Software\\SI13N7-BACKUP: FreeTime", "Software\\FreeTime");
                 }
             }
         }

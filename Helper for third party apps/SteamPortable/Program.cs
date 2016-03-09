@@ -95,13 +95,13 @@ namespace SteamPortable
                         }
                     }
 
-                    if (SilDev.Reg.SubKeyExist("HKCU\\Software\\Valve") && string.IsNullOrWhiteSpace(SilDev.Reg.ReadValue("HKCU\\Software\\Valve", "Portable App")))
+                    if (!SilDev.Reg.ValueExist("HKCU\\Software\\Valve", "Portable App"))
                         SilDev.Reg.RenameSubKey("HKCU\\Software\\Valve", "Software\\SI13N7-BACKUP: Valve");
-
-                    if (SilDev.Reg.SubKeyExist("HKLM\\SOFTWARE\\Wow6432Node\\Valve") && string.IsNullOrWhiteSpace(SilDev.Reg.ReadValue("HKLM\\SOFTWARE\\Wow6432Node\\Valve", "Portable App")))
+#if !x86
+                    if (!SilDev.Reg.ValueExist("HKLM\\SOFTWARE\\Wow6432Node\\Valve", "Portable App"))
                         SilDev.Reg.RenameSubKey("HKLM\\SOFTWARE\\Wow6432Node\\Valve", "SOFTWARE\\Wow6432Node\\SI13N7-BACKUP: Valve");
-
-                    if (SilDev.Reg.SubKeyExist("HKLM\\SOFTWARE\\Valve") && string.IsNullOrWhiteSpace(SilDev.Reg.ReadValue("HKLM\\SOFTWARE\\Valve", "Portable App")))
+#endif
+                    if (!SilDev.Reg.ValueExist("HKLM\\SOFTWARE\\Valve", "Portable App"))
                         SilDev.Reg.RenameSubKey("HKLM\\SOFTWARE\\Valve", "SOFTWARE\\SI13N7-BACKUP: Valve");
 
                     string settingsKeyPath = SilDev.Run.EnvironmentVariableFilter("%CurrentDir%\\Data\\settings.reg");
@@ -243,16 +243,11 @@ namespace SteamPortable
 #endif
                     SilDev.Reg.RemoveValue("HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run", "Steam");
 
-                    if (SilDev.Reg.SubKeyExist("HKCU\\Software\\SI13N7-BACKUP: Valve"))
-                        SilDev.Reg.RenameSubKey("HKCU\\Software\\SI13N7-BACKUP: Valve", "Software\\Valve");
-
-                    if (SilDev.Reg.SubKeyExist("HKLM\\SOFTWARE\\SI13N7-BACKUP: Valve"))
-                        SilDev.Reg.RenameSubKey("HKLM\\SOFTWARE\\SI13N7-BACKUP: Valve", "SOFTWARE\\Valve");
+                    SilDev.Reg.RenameSubKey("HKCU\\Software\\SI13N7-BACKUP: Valve", "Software\\Valve");
+                    SilDev.Reg.RenameSubKey("HKLM\\SOFTWARE\\SI13N7-BACKUP: Valve", "SOFTWARE\\Valve");
 #if !x86
-                    if (SilDev.Reg.SubKeyExist("HKLM\\SOFTWARE\\Wow6432Node\\SI13N7-BACKUP: Valve"))
-                        SilDev.Reg.RenameSubKey("HKLM\\SOFTWARE\\Wow6432Node\\SI13N7-BACKUP: Valve", "SOFTWARE\\Wow6432Node\\Valve");
+                    SilDev.Reg.RenameSubKey("HKLM\\SOFTWARE\\Wow6432Node\\SI13N7-BACKUP: Valve", "SOFTWARE\\Wow6432Node\\Valve");
 #endif
-
                     try
                     {
                         if (File.Exists(settingsKeyPath))

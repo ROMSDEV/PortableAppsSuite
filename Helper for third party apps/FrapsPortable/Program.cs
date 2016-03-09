@@ -29,28 +29,17 @@ namespace FrapsPortable
                 if (newInstance)
                 {
                     SilDev.Log.AllowDebug();
-                    bool backupMode = false;
+
 #if x86
-                    if (SilDev.Reg.SubKeyExist(@"HKEY_LOCAL_MACHINE\SOFTWARE\Fraps"))
-                    {
-                        if (string.IsNullOrWhiteSpace(SilDev.Reg.ReadValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Fraps", "Portable App")))
-                        {
-                            backupMode = true;
-                            SilDev.Reg.RenameSubKey(@"HKEY_LOCAL_MACHINE\SOFTWARE\Fraps", @"SOFTWARE\SI13N7-BACKUP: Fraps");
-                        }
-                    }
+                    if (!SilDev.Reg.ValueExist(@"HKEY_LOCAL_MACHINE\SOFTWARE\Fraps", "Portable App"))
+                        SilDev.Reg.RenameSubKey(@"HKEY_LOCAL_MACHINE\SOFTWARE\Fraps", @"SOFTWARE\SI13N7-BACKUP: Fraps");
                     SilDev.Reg.WriteValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Fraps", "Install_Dir", Path.GetDirectoryName(appPath));
 #else
-                    if (SilDev.Reg.SubKeyExist(@"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Fraps"))
-                    {
-                        if (string.IsNullOrWhiteSpace(SilDev.Reg.ReadValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Fraps", "Portable App")))
-                        {
-                            backupMode = true;
-                            SilDev.Reg.RenameSubKey(@"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Fraps", @"SOFTWARE\Wow6432Node\SI13N7-BACKUP: Fraps");
-                        }
-                    }
+                    if (!SilDev.Reg.ValueExist(@"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Fraps", "Portable App"))
+                        SilDev.Reg.RenameSubKey(@"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Fraps", @"SOFTWARE\Wow6432Node\SI13N7-BACKUP: Fraps");
                     SilDev.Reg.WriteValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Fraps", "Install_Dir", Path.GetDirectoryName(appPath));
 #endif
+
                     string regHelperPath = SilDev.Run.EnvironmentVariableFilter(string.Format(@"%TEMP%\{0}.reg", SilDev.Crypt.MD5.Encrypt(appPath)));
                     if (File.Exists(regHelperPath))
                         File.Delete(regHelperPath);
@@ -60,26 +49,26 @@ namespace FrapsPortable
                         SilDev.Reg.ImportFile(regHelperPath);
                         File.Delete(regHelperPath);
                     }
+
                     string dataPath = Path.Combine(Application.StartupPath, "Data");
                     if (!Directory.Exists(dataPath))
                         Directory.CreateDirectory(dataPath);
-                    if (SilDev.Reg.SubKeyExist(@"HKEY_CURRENT_USER\SOFTWARE\Fraps3"))
-                    {
-                        if (string.IsNullOrWhiteSpace(SilDev.Reg.ReadValue(@"HKEY_CURRENT_USER\SOFTWARE\Fraps3", "Portable App")))
-                        {
-                            backupMode = true;
-                            SilDev.Reg.RenameSubKey(@"HKEY_CURRENT_USER\SOFTWARE\Fraps3", @"SOFTWARE\SI13N7-BACKUP: Fraps");
-                        }
-                    }
+
+                    if (!SilDev.Reg.ValueExist(@"HKEY_CURRENT_USER\SOFTWARE\Fraps3", "Portable App"))
+                        SilDev.Reg.RenameSubKey(@"HKEY_CURRENT_USER\SOFTWARE\Fraps3", @"SOFTWARE\SI13N7-BACKUP: Fraps");
+
                     string settingsPath = Path.Combine(dataPath, "settings.reg");
                     if (File.Exists(settingsPath))
                         SilDev.Reg.ImportFile(settingsPath);
+
                     SilDev.Reg.WriteValue(@"HKEY_CURRENT_USER\SOFTWARE\Fraps3", "Portable App", true);
+
+                    SilDev.Reg.WriteValue(@"HKEY_CURRENT_USER\SOFTWARE\Fraps3", "Directory", Path.GetDirectoryName(appPath));
+
+                    string tmp = SilDev.Reg.ReadValue(@"HKEY_CURRENT_USER\SOFTWARE\Fraps3", "Benchmark Directory");
                     string outputPath = Path.Combine(dataPath, "Output");
                     if (!Directory.Exists(outputPath))
                         Directory.CreateDirectory(outputPath);
-                    SilDev.Reg.WriteValue(@"HKEY_CURRENT_USER\SOFTWARE\Fraps3", "Directory", Path.GetDirectoryName(appPath));
-                    string tmp = SilDev.Reg.ReadValue(@"HKEY_CURRENT_USER\SOFTWARE\Fraps3", "Benchmark Directory");
                     if (string.IsNullOrWhiteSpace(tmp) || tmp.Contains("portable"))
                         SilDev.Reg.WriteValue(@"HKEY_CURRENT_USER\SOFTWARE\Fraps3", "Benchmark Directory", outputPath);
                     tmp = SilDev.Reg.ReadValue(@"HKEY_CURRENT_USER\SOFTWARE\Fraps3", "Movie Directory");
@@ -116,6 +105,7 @@ namespace FrapsPortable
 #endif
                     }
                     SilDev.Run.App(new ProcessStartInfo() { FileName = appPath }, 0);
+
                     appProcess = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(appPath));
                     while (appProcess.Length > 0)
                     {
@@ -123,6 +113,7 @@ namespace FrapsPortable
                             p.WaitForExit();
                         appProcess = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(appPath));
                     }
+
                     SilDev.Reg.ExportFile(@"HKEY_CURRENT_USER\SOFTWARE\Fraps3", settingsPath);
                     SilDev.Reg.RemoveExistSubKey(@"HKEY_CURRENT_USER\SOFTWARE\Fraps3");
 #if x86
@@ -130,16 +121,18 @@ namespace FrapsPortable
 #else
                     SilDev.Reg.RemoveExistSubKey(@"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Fraps");
 #endif
-                    if (backupMode)
-                    {
-                        SilDev.Reg.RenameSubKey(@"HKEY_CURRENT_USER\SOFTWARE\SI13N7-BACKUP: Fraps3", @"SOFTWARE\Fraps3");
+
+                    bool backupMode = false;
+                    if (SilDev.Reg.RenameSubKey(@"HKEY_CURRENT_USER\SOFTWARE\SI13N7-BACKUP: Fraps3", @"SOFTWARE\Fraps3"))
+                        backupMode = true;
 #if x86
-                        SilDev.Reg.RenameSubKey(@"HKEY_LOCAL_MACHINE\SOFTWARE\SI13N7-BACKUP: Fraps", @"SOFTWARE\Fraps");
+                    if (!backupMode && SilDev.Reg.RenameSubKey(@"HKEY_LOCAL_MACHINE\SOFTWARE\SI13N7-BACKUP: Fraps", @"SOFTWARE\Fraps"))
+                        backupMode = true;
 #else
-                        SilDev.Reg.RenameSubKey(@"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\SI13N7-BACKUP: Fraps", @"SOFTWARE\Fraps");
+                    if (!backupMode && SilDev.Reg.RenameSubKey(@"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\SI13N7-BACKUP: Fraps", @"SOFTWARE\Fraps"))
+                        backupMode = true;
 #endif
-                    }
-                    else
+                    if (!backupMode)
                     {
                         if (File.Exists(regHelperPath))
                             File.Delete(regHelperPath);
