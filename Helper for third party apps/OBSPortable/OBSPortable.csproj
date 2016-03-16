@@ -54,6 +54,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="..\..\_libs\SilDev.Crypt.cs" />
+    <Compile Include="..\..\_libs\SilDev.Elevation.cs" />
     <Compile Include="..\..\_libs\SilDev.Log.cs" />
     <Compile Include="..\..\_libs\SilDev.Run.cs" />
 	<Compile Include="..\..\_libs\SilDev.WinAPI.cs" />

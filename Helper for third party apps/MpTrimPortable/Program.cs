@@ -22,10 +22,10 @@ namespace mpTrimPortable
                     string iniPath = SilDev.Run.EnvironmentVariableFilter("%CurrentDir%\\mpTrim\\mpTrim.ini");
 
                     int Left = 0;
-                    if (!int.TryParse(SilDev.Initialization.ReadValue("Settings", "Left", iniPath), out Left))
+                    if (!int.TryParse(SilDev.Ini.Read("Settings", "Left", iniPath), out Left))
                         Left = (int)Math.Round((Screen.PrimaryScreen.WorkingArea.Width / 2f) - (335f / 2f));
                     int Top = 0;
-                    if (!int.TryParse(SilDev.Initialization.ReadValue("Settings", "Top", iniPath), out Top))
+                    if (!int.TryParse(SilDev.Ini.Read("Settings", "Top", iniPath), out Top))
                         Top = (int)Math.Round((Screen.PrimaryScreen.WorkingArea.Height / 2f) - (410f / 2f));
                     SilDev.Reg.CreateNewSubKey("HKCU\\Software\\mpTrim");
                     SilDev.Reg.WriteValue("HKCU", "Software\\mpTrim", "MainFormLeft", Left, SilDev.Reg.RegValueKind.DWord);
@@ -38,9 +38,9 @@ namespace mpTrimPortable
                     if (!string.IsNullOrWhiteSpace(left) && left != Left.ToString() &&
                         !string.IsNullOrWhiteSpace(top) && top != Top.ToString())
                     {
-                        SilDev.Initialization.File(iniPath);
-                        SilDev.Initialization.WriteValue("Settings", "Left", left);
-                        SilDev.Initialization.WriteValue("Settings", "Top", top);
+                        SilDev.Ini.File(iniPath);
+                        SilDev.Ini.Write("Settings", "Left", left);
+                        SilDev.Ini.Write("Settings", "Top", top);
                     }
                     SilDev.Reg.RemoveExistSubKey("HKCU\\Software\\mpTrim");
                 }

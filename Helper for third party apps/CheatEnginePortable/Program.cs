@@ -39,7 +39,7 @@ namespace CheatEnginePortable
                         File.WriteAllLines(dataSettings, defaultSettings);
                     }
                     if (File.Exists(dataSettings))
-                        SilDev.Initialization.WriteValue("HKEY_CURRENT_USER\\Software\\Cheat Engine", "\"Initial tables dir\"", $"\"{dataTables.Replace("\\", "\\\\")}\"", dataSettings);
+                        SilDev.Ini.Write("HKEY_CURRENT_USER\\Software\\Cheat Engine", "\"Initial tables dir\"", $"\"{dataTables.Replace("\\", "\\\\")}\"", dataSettings);
                     if (!SilDev.Reg.ValueExist("HKEY_CURRENT_USER\\Software\\Cheat Engine", "Portable App"))
                         SilDev.Reg.RenameSubKey("HKEY_CURRENT_USER\\Software\\Cheat Engine", "Software\\SI13N7-BACKUP: Cheat Engine");
                     SilDev.Reg.ImportFile(dataSettings);

@@ -27,9 +27,9 @@ namespace WinSize2Portable
                             File.Create(Path.Combine(dataPath, "WinSize2_FullScreen.INI")).Close();
                         }
                         string appdataPath = Path.Combine(Environment.GetEnvironmentVariable("APPDATA"), "MagraSoft");
-                        SilDev.Initialization.File(appdataPath, "WinSize2_Root.INI");
-                        SilDev.Initialization.WriteValue("Settings", "INIWithScreenSize", 0);
-                        SilDev.Initialization.WriteValue("Settings", "INIFile_Path", dataPath);
+                        SilDev.Ini.File(appdataPath, "WinSize2_Root.INI");
+                        SilDev.Ini.Write("Settings", "INIWithScreenSize", 0);
+                        SilDev.Ini.Write("Settings", "INIFile_Path", dataPath);
                         SilDev.Run.App(new ProcessStartInfo() { FileName = "%CurrentDir%\\App\\WinSize2\\_WinSize2_Launcher.exe" }, 0);
                         bool isRunning = true;
                         while (isRunning)

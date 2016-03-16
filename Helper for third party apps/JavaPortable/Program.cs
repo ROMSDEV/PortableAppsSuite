@@ -20,7 +20,7 @@ namespace JavaPortableLauncher
         static void Main()
         {
             SilDev.Log.AllowDebug();
-            SilDev.Initialization.File(Application.StartupPath, "JavaPortable.ini");
+            SilDev.Ini.File(Application.StartupPath, "JavaPortable.ini");
             Java.Add("exe", "bin\\javaw.exe");
             if (!JavaExists())
             {
@@ -51,7 +51,7 @@ namespace JavaPortableLauncher
 
                     if (File.Exists(JavaPath))
                     {
-                        SilDev.Initialization.WriteValue("Location", JavaVar, JavaDir.Replace(Application.StartupPath, "%CurrentDir%"));
+                        SilDev.Ini.Write("Location", JavaVar, JavaDir.Replace(Application.StartupPath, "%CurrentDir%"));
                         throw new OperationCanceledException($"Java found in '{JavaDir}'.");
                     }
 
@@ -75,7 +75,7 @@ namespace JavaPortableLauncher
                         break;
                     }
                     if (!string.IsNullOrWhiteSpace(JavaDir))
-                        SilDev.Initialization.WriteValue("Location", JavaVar, JavaDir);
+                        SilDev.Ini.Write("Location", JavaVar, JavaDir);
                 }
                 catch (Exception ex)
                 {
@@ -87,7 +87,7 @@ namespace JavaPortableLauncher
                 MessageBox.Show("Sorry, Java not found.", $"Java Portable{(Environment.Is64BitProcess ? " (x64)" : string.Empty)}", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 Environment.Exit(-1);
             }
-            if (File.Exists(SilDev.Initialization.File()))
+            if (File.Exists(SilDev.Ini.File()))
             {
                 string AppPath = null;
                 if (SilDev.Run.CommandLineArgs(false).Count < 1)
@@ -111,7 +111,7 @@ namespace JavaPortableLauncher
                     if (!string.IsNullOrWhiteSpace(AppPath))
                     {
                         string AppPathMD5 = SilDev.Crypt.MD5.Encrypt(AppPath);
-                        if (string.IsNullOrWhiteSpace(SilDev.Initialization.ReadValue("Shortcuts", AppPathMD5)))
+                        if (string.IsNullOrWhiteSpace(SilDev.Ini.Read("Shortcuts", AppPathMD5)))
                         {
                             if (MessageBox.Show("You wanna create a desktop shortcut?", "Question", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                             {
@@ -128,13 +128,13 @@ namespace JavaPortableLauncher
                                 }
                             }
                             if (MessageBox.Show("Ask again for this file?", "Question", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
-                                SilDev.Initialization.WriteValue("Shortcuts", AppPathMD5, "True");
+                                SilDev.Ini.Write("Shortcuts", AppPathMD5, "True");
                         }
-                        string JavaDir = SilDev.Run.EnvironmentVariableFilter(SilDev.Initialization.ReadValue("Location", JavaVar));
+                        string JavaDir = SilDev.Run.EnvironmentVariableFilter(SilDev.Ini.Read("Location", JavaVar));
                         object output = SilDev.Run.App(new ProcessStartInfo()
                         {
                             Arguments = $"-jar {(SilDev.Run.CommandLineArgs(false).Count > 0 ? SilDev.Run.CommandLine(false) : $"\"{AppPath}\"")}",
-                            FileName = Path.Combine(SilDev.Run.EnvironmentVariableFilter(SilDev.Initialization.ReadValue("Location", JavaVar)), Java["exe"]),
+                            FileName = Path.Combine(SilDev.Run.EnvironmentVariableFilter(SilDev.Ini.Read("Location", JavaVar)), Java["exe"]),
                             WorkingDirectory = Path.GetDirectoryName(AppPath)
                         });
                         if (output is int)
@@ -155,11 +155,11 @@ namespace JavaPortableLauncher
 
         private static bool JavaExists()
         {
-            if (File.Exists(SilDev.Initialization.File()))
+            if (File.Exists(SilDev.Ini.File()))
             {
                 try
                 {
-                    string JavaPath = SilDev.Run.EnvironmentVariableFilter(SilDev.Initialization.ReadValue("Location", JavaVar));
+                    string JavaPath = SilDev.Run.EnvironmentVariableFilter(SilDev.Ini.Read("Location", JavaVar));
                     if (!Directory.Exists(JavaPath))
                         throw new OperationCanceledException("Path not found.");
                     JavaPath = Path.Combine(JavaPath, Java["exe"]);

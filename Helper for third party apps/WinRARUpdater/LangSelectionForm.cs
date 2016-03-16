@@ -15,9 +15,9 @@ namespace WinRARUpdater
         {
             try
             {
-                string Lang = SilDev.Initialization.ReadValue("Settings", "Language");
+                string Lang = SilDev.Ini.Read("Settings", "Language");
                 LangSelectBox.SelectedItem = Lang;
-                string Bit = SilDev.Initialization.ReadValue("Settings", "Architecture");
+                string Bit = SilDev.Ini.Read("Settings", "Architecture");
                 BitSelectBox.SelectedItem = Bit;
             }
             catch
@@ -28,9 +28,9 @@ namespace WinRARUpdater
 
         private void OkBtn_Click(object sender, EventArgs e)
         {
-            SilDev.Initialization.WriteValue("Settings", "Language", LangSelectBox.GetItemText(LangSelectBox.SelectedItem));
-            SilDev.Initialization.WriteValue("Settings", "Architecture", BitSelectBox.GetItemText(BitSelectBox.SelectedItem));
-            SilDev.Initialization.WriteValue("Settings", "DoNotAskAgain", DoNotAskAgainCheck.Checked);
+            SilDev.Ini.Write("Settings", "Language", LangSelectBox.GetItemText(LangSelectBox.SelectedItem));
+            SilDev.Ini.Write("Settings", "Architecture", BitSelectBox.GetItemText(BitSelectBox.SelectedItem));
+            SilDev.Ini.Write("Settings", "DoNotAskAgain", DoNotAskAgainCheck.Checked);
             DialogResult = DialogResult.OK;
         }
 

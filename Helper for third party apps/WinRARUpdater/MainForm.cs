@@ -23,16 +23,16 @@ namespace WinRARUpdater
             string IniFile = Path.Combine(Application.StartupPath, string.Format("{0}.ini", Path.GetFileNameWithoutExtension(Application.ExecutablePath)));
             if (!File.Exists(IniFile))
             {
-                SilDev.Initialization.File(IniFile);
-                SilDev.Initialization.WriteValue("Settings", "Language", "English");
-                SilDev.Initialization.WriteValue("Settings", "Architecture", Environment.Is64BitProcess ? "64 bit" : "32 bit");
-                SilDev.Initialization.WriteValue("Settings", "DoNotAskAgain", false);
+                SilDev.Ini.File(IniFile);
+                SilDev.Ini.Write("Settings", "Language", "English");
+                SilDev.Ini.Write("Settings", "Architecture", Environment.Is64BitProcess ? "64 bit" : "32 bit");
+                SilDev.Ini.Write("Settings", "DoNotAskAgain", false);
             }
             else
-                SilDev.Initialization.File(IniFile);
+                SilDev.Ini.File(IniFile);
 
             bool DoNotAskAgain = false;
-            if (!bool.TryParse(SilDev.Initialization.ReadValue("Settings", "DoNotAskAgain"), out DoNotAskAgain) || !DoNotAskAgain)
+            if (!bool.TryParse(SilDev.Ini.Read("Settings", "DoNotAskAgain"), out DoNotAskAgain) || !DoNotAskAgain)
             {
                 Form LangSelection = new LangSelectionForm();
                 if (LangSelection.ShowDialog() != DialogResult.OK)
@@ -88,10 +88,10 @@ namespace WinRARUpdater
             string FileName = string.Empty;
             foreach (var item in OnlineInfo)
             {
-                string Lang = SilDev.Initialization.ReadValue("Settings", "Language");
+                string Lang = SilDev.Ini.Read("Settings", "Language");
                 if (string.IsNullOrWhiteSpace(Lang))
                     Lang = "English";
-                string Bits = SilDev.Initialization.ReadValue("Settings", "Architecture");
+                string Bits = SilDev.Ini.Read("Settings", "Architecture");
                 if (string.IsNullOrWhiteSpace(Lang))
                     Bits = Environment.Is64BitProcess ? "64 bit" : "32 bit";
                 if (item.Key.ToLower() == $"{Lang.ToLower()} ({Bits.ToLower()})")

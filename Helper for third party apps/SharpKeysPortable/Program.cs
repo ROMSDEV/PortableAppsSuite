@@ -16,14 +16,14 @@ namespace SharpKeysPortable
             {
                 if (newInstance)
                 {
-                    SilDev.Initialization.File(Application.StartupPath, $"{Path.GetFileNameWithoutExtension(Application.ExecutablePath)}.ini");
-                    if (SilDev.Initialization.ReadValue("Settings", "ShowWarning").ToLower() == "true")
+                    SilDev.Ini.File(Application.StartupPath, $"{Path.GetFileNameWithoutExtension(Application.ExecutablePath)}.ini");
+                    if (SilDev.Ini.Read("Settings", "ShowWarning").ToLower() == "true")
                     {
                         SilDev.Reg.CreateNewSubKey(SilDev.Reg.RegKey.CurrentUser, "Software\\RandyRants\\SharpKeys");
                         SilDev.Reg.WriteValue(SilDev.Reg.RegKey.CurrentUser, "Software\\RandyRants\\SharpKeys", "ShowWarning", "1", SilDev.Reg.RegValueKind.DWord);
                     }
                     SilDev.Run.App(new ProcessStartInfo() { FileName = "%CurrentDir%\\SharpKeys\\SharpKeys.exe" }, 0);
-                    SilDev.Initialization.WriteValue("Settings", "ShowWarning", true);
+                    SilDev.Ini.Write("Settings", "ShowWarning", true);
                     SilDev.Reg.RemoveExistSubKey(SilDev.Reg.RegKey.CurrentUser, "Software\\RandyRants\\SharpKeys");
                     if (SilDev.Reg.GetSubKeys(SilDev.Reg.RegKey.CurrentUser, "Software\\RandyRants").Count <= 0)
                         SilDev.Reg.RemoveExistSubKey(SilDev.Reg.RegKey.CurrentUser, "Software\\RandyRants");

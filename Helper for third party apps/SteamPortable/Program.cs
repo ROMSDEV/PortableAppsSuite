@@ -45,7 +45,7 @@ namespace SteamPortable
                     if (File.Exists(iniPath))
                     {
                         bool improveSteamStart = false;
-                        bool.TryParse(SilDev.Initialization.ReadValue("Settings", "ImproveSteamStartTime", iniPath), out improveSteamStart);
+                        bool.TryParse(SilDev.Ini.Read("Settings", "ImproveSteamStartTime", iniPath), out improveSteamStart);
                         if (improveSteamStart)
                         {
                             try
@@ -86,7 +86,7 @@ namespace SteamPortable
                                 SilDev.Log.Debug(ex);
                             }
                         }
-                        string steamAppsDir = SilDev.Initialization.ReadValue("Settings", "SteamAppsPathOverride", iniPath);
+                        string steamAppsDir = SilDev.Ini.Read("Settings", "SteamAppsPathOverride", iniPath);
                         if (!string.IsNullOrWhiteSpace(steamAppsDir))
                         {
                             string defaultSteamAppsPath = Path.Combine(appDir, "steamapps");
@@ -139,7 +139,7 @@ namespace SteamPortable
 
                     if (File.Exists(iniPath))
                     {
-                        cmdLineArgs = $"{SilDev.Initialization.ReadValue("Settings", "StartArguments", iniPath)} {cmdLineArgs}";
+                        cmdLineArgs = $"{SilDev.Ini.Read("Settings", "StartArguments", iniPath)} {cmdLineArgs}";
                         cmdLineArgs = cmdLineArgs.Trim();
                     }
 
@@ -270,7 +270,7 @@ namespace SteamPortable
 
                     if (File.Exists(iniPath))
                     {
-                        string steamAppsPath = SilDev.Initialization.ReadValue("Settings", "SteamAppsPathOverride", iniPath);
+                        string steamAppsPath = SilDev.Ini.Read("Settings", "SteamAppsPathOverride", iniPath);
                         if (!string.IsNullOrWhiteSpace(steamAppsPath))
                         {
                             string defaultSteamAppsPath = Path.Combine(appDir, "steamapps");

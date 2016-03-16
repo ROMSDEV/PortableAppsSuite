@@ -22,24 +22,24 @@ namespace WinSCP_PuTTY_Launcher
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            SilDev.Initialization.File(Application.StartupPath, "WinSCP+PuTTYPortable.ini");
-            if (File.Exists(SilDev.Initialization.File()))
+            SilDev.Ini.File(Application.StartupPath, "WinSCP+PuTTYPortable.ini");
+            if (File.Exists(SilDev.Ini.File()))
             {
                 int left = short.MinValue, top = short.MinValue, width = short.MinValue, height = short.MinValue;
-                string value = SilDev.Initialization.ReadValue("Settings", "Left");
+                string value = SilDev.Ini.Read("Settings", "Left");
                 if (!string.IsNullOrWhiteSpace(value))
                     int.TryParse(value, out left);
-                value = SilDev.Initialization.ReadValue("Settings", "Top");
+                value = SilDev.Ini.Read("Settings", "Top");
                 if (!string.IsNullOrWhiteSpace(value))
                     int.TryParse(value, out top);
-                value = SilDev.Initialization.ReadValue("Settings", "Width");
+                value = SilDev.Ini.Read("Settings", "Width");
                 if (!string.IsNullOrWhiteSpace(value))
                     int.TryParse(value, out width);
-                value = SilDev.Initialization.ReadValue("Settings", "Height");
+                value = SilDev.Ini.Read("Settings", "Height");
                 if (!string.IsNullOrWhiteSpace(value)) 
                     int.TryParse(value, out height);
                 bool maximized = false;
-                value = SilDev.Initialization.ReadValue("Settings", "Maximized");
+                value = SilDev.Ini.Read("Settings", "Maximized");
                 if (!string.IsNullOrWhiteSpace(value))
                     bool.TryParse(value, out maximized);
                 if (width >= 640 && height >= 480)
@@ -110,12 +110,12 @@ namespace WinSCP_PuTTY_Launcher
             {
                 if (WindowState != FormWindowState.Maximized)
                 {
-                    SilDev.Initialization.WriteValue("Settings", "Left", Left);
-                    SilDev.Initialization.WriteValue("Settings", "Top", Top);
-                    SilDev.Initialization.WriteValue("Settings", "Width", Width);
-                    SilDev.Initialization.WriteValue("Settings", "Height", Height);
+                    SilDev.Ini.Write("Settings", "Left", Left);
+                    SilDev.Ini.Write("Settings", "Top", Top);
+                    SilDev.Ini.Write("Settings", "Width", Width);
+                    SilDev.Ini.Write("Settings", "Height", Height);
                 }
-                SilDev.Initialization.WriteValue("Settings", "Maximized", WindowState == FormWindowState.Maximized);
+                SilDev.Ini.Write("Settings", "Maximized", WindowState == FormWindowState.Maximized);
                 foreach (Process p in Process.GetProcessesByName("PUTTY"))
                 {
                     p.CloseMainWindow();
@@ -137,18 +137,18 @@ namespace WinSCP_PuTTY_Launcher
             if (!File.Exists(WinSCPPortable_ini))
                 File.Create(WinSCPPortable_ini).Close();
             if (File.Exists(WinSCPPortable_ini))
-                SilDev.Initialization.WriteValue("AppInfo", "Name", "Portable", WinSCPPortable_ini);
+                SilDev.Ini.Write("AppInfo", "Name", "Portable", WinSCPPortable_ini);
             string WinSCPPortableSettings_ini = Path.Combine(Main.WinSCPPath, @"Data\settings\WinSCPPortableSettings.ini");
             if (File.Exists(WinSCPPortableSettings_ini))
             {
-                string oldPath = SilDev.Initialization.ReadValue("WinSCPPortableSettings", "LastDrive", WinSCPPortableSettings_ini);
+                string oldPath = SilDev.Ini.Read("WinSCPPortableSettings", "LastDrive", WinSCPPortableSettings_ini);
                 if (string.IsNullOrWhiteSpace(oldPath))
                 {
                     oldPath = Main.WinSCPPath.Replace(" ", "%20").Replace(@"\", "%5C");
-                    SilDev.Initialization.WriteValue("WinSCPPortableSettings", "LastDrive", oldPath, WinSCPPortableSettings_ini);
+                    SilDev.Ini.Write("WinSCPPortableSettings", "LastDrive", oldPath, WinSCPPortableSettings_ini);
                 }
                 string newPath = Main.WinSCPPath.Replace(" ", "%20").Replace(@"\", "%5C");
-                SilDev.Initialization.WriteValue("WinSCPPortableSettings", "LastDrive", newPath, WinSCPPortableSettings_ini);
+                SilDev.Ini.Write("WinSCPPortableSettings", "LastDrive", newPath, WinSCPPortableSettings_ini);
                 if (oldPath != newPath)
                 {
                     string settingsPath = Path.Combine(Main.WinSCPPath, @"Data\settings\winscp.ini");

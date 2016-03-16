@@ -41,14 +41,14 @@ namespace TeamViewerPortable
                     string iniPath = Path.Combine(rootDir, "TeamViewer.ini");
                     if (!File.Exists(iniPath))
                         File.Create(iniPath).Close();
-                    SilDev.Initialization.WriteValue("Settings", "nosave", 1, iniPath);
-                    SilDev.Initialization.WriteValue("Settings", "importsettings", 1, iniPath);
+                    SilDev.Ini.Write("Settings", "nosave", 1, iniPath);
+                    SilDev.Ini.Write("Settings", "importsettings", 1, iniPath);
 
                     string tvIniPath = Path.Combine(rootDir, "tv.ini");
-                    SilDev.Initialization.File(Application.StartupPath, "TeamViewerPortable.ini");
+                    SilDev.Ini.File(Application.StartupPath, "TeamViewerPortable.ini");
                     Version CurVer = Assembly.GetExecutingAssembly().GetName().Version;
                     Version LastVer = Version.Parse("1.0.0.0");
-                    if (!File.Exists(tvIniPath) || !Version.TryParse(SilDev.Initialization.ReadValue("History", "LastPortableVersion"), out LastVer) || CurVer != LastVer)
+                    if (!File.Exists(tvIniPath) || !Version.TryParse(SilDev.Ini.Read("History", "LastPortableVersion"), out LastVer) || CurVer != LastVer)
                     {
                         try
                         {
@@ -63,7 +63,7 @@ namespace TeamViewerPortable
                                     using (ZipArchive zip = ZipFile.OpenRead(archivePath))
                                         zip.ExtractToDirectory(rootDir);
                                     File.Delete(archivePath);
-                                    SilDev.Initialization.WriteValue("History", "LastVersion", CurVer);
+                                    SilDev.Ini.Write("History", "LastVersion", CurVer);
                                 }
                                 catch (Exception ex)
                                 {
@@ -78,7 +78,7 @@ namespace TeamViewerPortable
                     }
 
                     string CurrentDate = DateTime.Now.ToString("M/d/yyyy", System.Globalization.CultureInfo.CreateSpecificCulture("en-US"));
-                    string LastUpdateCheck = SilDev.Initialization.ReadValue("History", "LastUpdateCheck");
+                    string LastUpdateCheck = SilDev.Ini.Read("History", "LastUpdateCheck");
                     if (LastUpdateCheck != CurrentDate)
                     {
                         SilDev.Run.App(new ProcessStartInfo()
@@ -87,7 +87,7 @@ namespace TeamViewerPortable
                             Arguments = "/silent",
                             Verb = "runas"
                         }, 0);
-                        SilDev.Initialization.WriteValue("History", "LastUpdateCheck", CurrentDate);
+                        SilDev.Ini.Write("History", "LastUpdateCheck", CurrentDate);
                     }
 
                     string defKey = $"SOFTWARE\\TeamViewer";

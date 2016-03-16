@@ -18,10 +18,10 @@ namespace GyazoPortable
                 if (newInstance)
                 {
                     bool secondRunMode = false;
-                    SilDev.Initialization.File(Application.StartupPath, "GyazoPortable.ini");
-                    if (File.Exists(SilDev.Initialization.File()))
+                    SilDev.Ini.File(Application.StartupPath, "GyazoPortable.ini");
+                    if (File.Exists(SilDev.Ini.File()))
                     {
-                        if (SilDev.Initialization.ReadValue("Settings", "SecondRunMode").ToLower() == "true")
+                        if (SilDev.Ini.Read("Settings", "SecondRunMode").ToLower() == "true")
                         {
                             secondRunMode = true;
                             SilDev.Run.App(new ProcessStartInfo() { FileName = "%CurrentDir%\\Gyazo\\Gyazowin.exe" }, 0);
@@ -35,12 +35,12 @@ namespace GyazoPortable
                             SilDev.Reg.CreateNewSubKey(SilDev.Reg.RegKey.CurrentUser, "Software\\Gyazo");
                             SilDev.Reg.CreateNewSubKey(SilDev.Reg.RegKey.CurrentUser, "Software\\Gyazo\\Gyazo");
                             SilDev.Reg.CreateNewSubKey(SilDev.Reg.RegKey.CurrentUser, "Software\\Gyazo\\Gyazo\\Settings");
-                            string entries = SilDev.Initialization.ReadValue("Registry", "Entries", iniSettings);
+                            string entries = SilDev.Ini.Read("Registry", "Entries", iniSettings);
                             if (entries.Contains(","))
                             {
                                 foreach (var ent in entries.Split(','))
                                 {
-                                    string val = SilDev.Initialization.ReadValue("Settings", ent, iniSettings);
+                                    string val = SilDev.Ini.Read("Settings", ent, iniSettings);
                                     if (!string.IsNullOrWhiteSpace(val))
                                         SilDev.Reg.WriteValue(SilDev.Reg.RegKey.CurrentUser, "Software\\Gyazo\\Gyazo\\Settings", ent, val, SilDev.Reg.RegValueKind.DWord);
                                 }
@@ -62,9 +62,9 @@ namespace GyazoPortable
                         {
                             if (!string.IsNullOrWhiteSpace(ent.Value) && ent.Value.ToLower() != "dword")
                             {
-                                string entries = SilDev.Initialization.ReadValue("Registry", "Entries", iniSettings);
-                                SilDev.Initialization.WriteValue("Registry", "Entries", !string.IsNullOrWhiteSpace(entries) ? string.Format("{0},{1}", entries, ent.Key) : ent.Key, iniSettings);
-                                SilDev.Initialization.WriteValue("Settings", ent.Key, ent.Value, iniSettings);
+                                string entries = SilDev.Ini.Read("Registry", "Entries", iniSettings);
+                                SilDev.Ini.Write("Registry", "Entries", !string.IsNullOrWhiteSpace(entries) ? string.Format("{0},{1}", entries, ent.Key) : ent.Key, iniSettings);
+                                SilDev.Ini.Write("Settings", ent.Key, ent.Value, iniSettings);
                             }
                         }
                         SilDev.Reg.RemoveExistSubKey(SilDev.Reg.RegKey.CurrentUser, "Software\\Gyazo");

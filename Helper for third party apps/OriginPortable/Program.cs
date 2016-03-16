@@ -245,12 +245,12 @@ namespace OriginPortable
                     string iniPath = Path.Combine(Application.StartupPath, string.Format("{0}.ini", Path.GetFileNameWithoutExtension(Application.ExecutablePath).Replace("64", string.Empty)));
 
                     bool StartMinimized = false;
-                    bool.TryParse(SilDev.Initialization.ReadValue("Settings", "StartMinimized", iniPath), out StartMinimized);
+                    bool.TryParse(SilDev.Ini.Read("Settings", "StartMinimized", iniPath), out StartMinimized);
                     if (StartMinimized)
                         MinimizedAtStart = 0;
 
                     bool RunPunkBusterOnlyWithOrigin = false;
-                    bool.TryParse(SilDev.Initialization.ReadValue("Settings", "RunPunkBusterOnlyWithOrigin", iniPath), out RunPunkBusterOnlyWithOrigin);
+                    bool.TryParse(SilDev.Ini.Read("Settings", "RunPunkBusterOnlyWithOrigin", iniPath), out RunPunkBusterOnlyWithOrigin);
                     if (RunPunkBusterOnlyWithOrigin)
                     {
                         SilDev.Run.Cmd("sc config \"PnkBstrA\" start= auto");

@@ -13,9 +13,9 @@ namespace WinRARPortable
         {
             SilDev.Log.AllowDebug();
             string appPath = Environment.Is64BitProcess ? "%CurrentDir%\\winrar-x64\\WinRAR.exe" : "%CurrentDir%\\winrar\\WinRAR.exe";
-            SilDev.Initialization.File(Application.StartupPath, Environment.Is64BitProcess ? "WinRAR64Portable.ini" : "WinRARPortable.ini");
+            SilDev.Ini.File(Application.StartupPath, Environment.Is64BitProcess ? "WinRAR64Portable.ini" : "WinRARPortable.ini");
             bool ContextMenuEntriesAllowed = false;
-            bool.TryParse(SilDev.Initialization.ReadValue("ContextMenu", "EntriesAllowed"), out ContextMenuEntriesAllowed);
+            bool.TryParse(SilDev.Ini.Read("ContextMenu", "EntriesAllowed"), out ContextMenuEntriesAllowed);
             if (!ContextMenuEntriesAllowed && SilDev.Elevation.IsAdministrator && Environment.CommandLine.EndsWith(".exe\" /ClearRegistryAsAdmin", StringComparison.OrdinalIgnoreCase))
             {
                 SilDev.Reg.RemoveExistSubKey(SilDev.Reg.RegKey.ClassesRoot, "WinRAR");
@@ -33,7 +33,7 @@ namespace WinRARPortable
                 if (newInstance)
                 {
                     string CurrentDate = DateTime.Now.ToString("M/d/yyyy", System.Globalization.CultureInfo.CreateSpecificCulture("en-US"));
-                    string LastUpdateCheck = SilDev.Initialization.ReadValue("History", "LastUpdateCheck");
+                    string LastUpdateCheck = SilDev.Ini.Read("History", "LastUpdateCheck");
                     if (LastUpdateCheck != CurrentDate || !File.Exists(appPath))
                     {
                         SilDev.Run.App(new ProcessStartInfo()
@@ -41,7 +41,7 @@ namespace WinRARPortable
                             Arguments = "/silent",
                             FileName = Environment.Is64BitProcess ? "%CurrentDir%\\winrar-x64\\WinRARUpdater64.exe" : "%CurrentDir%\\winrar\\WinRARUpdater.exe"
                         }, 0);
-                        SilDev.Initialization.WriteValue("History", "LastUpdateCheck", CurrentDate);
+                        SilDev.Ini.Write("History", "LastUpdateCheck", CurrentDate);
                     }
                     string ini = Path.Combine(Application.StartupPath, Environment.Is64BitProcess ? "winrar-x64\\WinRAR.ini" : "winrar\\WinRAR.ini");
                     if (!File.Exists(ini))

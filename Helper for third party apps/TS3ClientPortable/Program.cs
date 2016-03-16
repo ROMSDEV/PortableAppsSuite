@@ -28,8 +28,8 @@ namespace TS3ClientPortable
                 if (newInstance)
                 {
                     SilDev.Log.AllowDebug();
-                    SilDev.Initialization.File(Application.StartupPath, iniName);
-                    string waitForNetwork = SilDev.Initialization.ReadValue("Settings", "WaitForNetwork");
+                    SilDev.Ini.File(Application.StartupPath, iniName);
+                    string waitForNetwork = SilDev.Ini.Read("Settings", "WaitForNetwork");
                     int ms;
                     if (int.TryParse(waitForNetwork, out ms))
                     {
@@ -53,7 +53,7 @@ namespace TS3ClientPortable
                     if (!Directory.Exists(configPath))
                         Directory.CreateDirectory(configPath);
                     SilDev.Run.App(new ProcessStartInfo() { FileName = appPath, WindowStyle = ProcessWindowStyle.Normal }, 0, -1);
-                    bool hideInTaskBar = SilDev.Initialization.ReadValue("Settings", "HideInTaskBar").ToLower() == "true";
+                    bool hideInTaskBar = SilDev.Ini.Read("Settings", "HideInTaskBar").ToLower() == "true";
                     Process[] runningProcess = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(appPath));
                     while (runningProcess.Length > 0)
                     {
