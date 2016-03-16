@@ -54,13 +54,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\_libs\SilDev.Crypt.cs" />
-    <Compile Include="..\..\_libs\SilDev.Elevation.cs" />
-    <Compile Include="..\..\_libs\SilDev.Initialization.cs" />
-    <Compile Include="..\..\_libs\SilDev.Log.cs" />
-    <Compile Include="..\..\_libs\SilDev.Registry.cs" />
-    <Compile Include="..\..\_libs\SilDev.Run.cs" />
-	<Compile Include="..\..\_libs\SilDev.WinAPI.cs" />
+    <Compile Include="..\..\SilDev.Libs\SilDev.Crypt.cs" />
+    <Compile Include="..\..\SilDev.Libs\SilDev.Elevation.cs" />
+    <Compile Include="..\..\SilDev.Libs\SilDev.Initialization.cs" />
+    <Compile Include="..\..\SilDev.Libs\SilDev.Log.cs" />
+    <Compile Include="..\..\SilDev.Libs\SilDev.Registry.cs" />
+    <Compile Include="..\..\SilDev.Libs\SilDev.Run.cs" />
+	<Compile Include="..\..\SilDev.Libs\SilDev.WinAPI.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
