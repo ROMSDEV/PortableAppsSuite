@@ -27,6 +27,7 @@ namespace CCleanerUpdater
             {
                 if (newInstance)
                 {
+                    SilDev.Log.AllowDebug();
                     if (!SilDev.Elevation.WritableLocation())
                         SilDev.Elevation.RestartAsAdministrator();
                     Application.EnableVisualStyles();

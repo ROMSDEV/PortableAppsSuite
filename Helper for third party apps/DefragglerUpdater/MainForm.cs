@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
@@ -37,7 +38,7 @@ namespace DefragglerUpdater
                 string FileName = SilDev.Network.GetOnlineFileName(UpdateURL);
                 CheckClose(FileName, "FileName");
 
-                string OnlineVersion = Regex.Match(FileName, "dfsetup(.+?).zip").Groups[1].Value;
+                string OnlineVersion = string.Concat(FileName.Where(c => char.IsDigit(c)).ToArray());
                 CheckClose(OnlineVersion, "OnlineVersion");
 
                 if (Convert.ToInt32(LocalVersion) < Convert.ToInt32(OnlineVersion))
@@ -152,6 +153,9 @@ namespace DefragglerUpdater
                             string EntPath = Path.Combine(Application.StartupPath, ent.FullName);
                             if (File.Exists(EntPath))
                                 File.Delete(EntPath);
+                            string EntDir = Path.GetDirectoryName(EntPath);
+                            if (!Directory.Exists(EntDir))
+                                Directory.CreateDirectory(EntDir);
                             ent.ExtractToFile(EntPath, true);
                         }
                     }

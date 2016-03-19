@@ -41,7 +41,7 @@ namespace CCleanerUpdater
             string FileName = SilDev.Network.GetOnlineFileName(UpdateURL);
             CheckClose(FileName, "FileName");
 
-            string OnlineVersion = string.Concat(FileName.Where(x => char.IsDigit(x)).ToArray());
+            string OnlineVersion = string.Concat(FileName.Where(c => char.IsDigit(c)).ToArray());
             CheckClose(OnlineVersion, "OnlineVersion");
 
             if (Convert.ToInt32(LocalVersion) < Convert.ToInt32(OnlineVersion))
@@ -136,6 +136,9 @@ namespace CCleanerUpdater
                             string EntPath = Path.Combine(Application.StartupPath, ent.FullName);
                             if (File.Exists(EntPath))
                                 File.Delete(EntPath);
+                            string EntDir = Path.GetDirectoryName(EntPath);
+                            if (!Directory.Exists(EntDir))
+                                Directory.CreateDirectory(EntDir);
                             ent.ExtractToFile(EntPath, true);
                         }
                     }
