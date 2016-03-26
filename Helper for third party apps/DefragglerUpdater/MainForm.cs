@@ -3,14 +3,14 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace DefragglerUpdater
 {
     public partial class MainForm : Form
     {
-        int count = 0;
+        SilDev.Network.AsyncTransfer Transfer = new SilDev.Network.AsyncTransfer();
+        int DownloadFinishedCount = 0;
         string ZipPath = string.Empty;
 
         public MainForm()
@@ -58,7 +58,7 @@ namespace DefragglerUpdater
                         ZipPath = Path.Combine(Application.StartupPath, FileName);
                         if (!File.Exists(ZipPath))
                         {
-                            SilDev.Network.DownloadFileAsync(UpdateURL, ZipPath);
+                            Transfer.DownloadFile(UpdateURL, ZipPath);
                             CheckDownload.Enabled = true;
                             if (Environment.CommandLine.Contains("/silent"))
                             {
@@ -120,12 +120,12 @@ namespace DefragglerUpdater
 
         private void CheckDownload_Tick(object sender, EventArgs e)
         {
-            DLSpeed.Text = SilDev.Network.LatestAsyncDownloadInfo.TransferSpeed;
-            DLPercentage.Value = SilDev.Network.LatestAsyncDownloadInfo.ProgressPercentage;
-            DLLoaded.Text = SilDev.Network.LatestAsyncDownloadInfo.DataReceived;
-            if (!SilDev.Network.AsyncDownloadIsBusy())
-                count++;
-            if (count == 1)
+            DLSpeed.Text = $"{(int)Math.Round(Transfer.TransferSpeed)} kb/s";
+            DLPercentage.Value = Transfer.ProgressPercentage;
+            DLLoaded.Text = Transfer.DataReceived;
+            if (!Transfer.IsBusy)
+                DownloadFinishedCount++;
+            if (DownloadFinishedCount == 1)
             {
                 DLPercentage.Maximum = 1000;
                 DLPercentage.Value = 1000;
@@ -133,7 +133,7 @@ namespace DefragglerUpdater
                 DLPercentage.Maximum = 100;
                 DLPercentage.Value = 100;
             }
-            if (count >= 10)
+            if (DownloadFinishedCount >= 10)
             {
                 CheckDownload.Enabled = false;
                 ExtractDownload.RunWorkerAsync();

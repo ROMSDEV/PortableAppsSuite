@@ -7,7 +7,8 @@ namespace TeamViewerUpdater
 {
     public partial class MainForm : Form
     {
-        int count = 0;
+        SilDev.Network.AsyncTransfer Transfer = new SilDev.Network.AsyncTransfer();
+        int DownloadFinishedCount = 0;
         string ZipPath = string.Empty;
         string TeamViewer = Path.Combine(Application.StartupPath, "TeamViewer.exe");
 
@@ -30,7 +31,7 @@ namespace TeamViewerUpdater
                     ZipPath = Path.Combine(Application.StartupPath, FileName);
                     if (!File.Exists(ZipPath))
                     {
-                        SilDev.Network.DownloadFileAsync(UpdateURL, ZipPath);
+                        Transfer.DownloadFile(UpdateURL, ZipPath);
                         CheckDownload.Enabled = true;
                         Opacity = 1f;
                     }
@@ -84,14 +85,14 @@ namespace TeamViewerUpdater
 
         private void CheckDownload_Tick(object sender, EventArgs e)
         {
-            DLSpeed.Text = SilDev.Network.LatestAsyncDownloadInfo.TransferSpeed;
-            DLPercentage.Value = SilDev.Network.LatestAsyncDownloadInfo.ProgressPercentage;
-            DLLoaded.Text = SilDev.Network.LatestAsyncDownloadInfo.DataReceived;
+            DLSpeed.Text = $"{(int)Math.Round(Transfer.TransferSpeed)} kb/s";
+            DLPercentage.Value = Transfer.ProgressPercentage;
+            DLLoaded.Text = Transfer.DataReceived;
             if (DLPercentage.Value > 0 && WindowState != FormWindowState.Normal)
                 WindowState = FormWindowState.Normal;
-            if (!SilDev.Network.AsyncDownloadIsBusy())
-                count++;
-            if (count == 1)
+            if (!Transfer.IsBusy)
+                DownloadFinishedCount++;
+            if (DownloadFinishedCount == 1)
             {
                 DLPercentage.Maximum = 1000;
                 DLPercentage.Value = 1000;
@@ -99,7 +100,7 @@ namespace TeamViewerUpdater
                 DLPercentage.Maximum = 100;
                 DLPercentage.Value = 100;
             }
-            if (count >= 10)
+            if (DownloadFinishedCount >= 10)
             {
                 CheckDownload.Enabled = false;
                 if (!ExtractDownload.IsBusy)

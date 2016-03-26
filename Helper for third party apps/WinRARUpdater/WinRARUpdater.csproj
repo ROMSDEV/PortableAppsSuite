@@ -18,7 +18,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\_bin\</OutputPath>
+    <OutputPath>..\.bin\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -27,7 +27,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\_bin\</OutputPath>
+    <OutputPath>..\.bin\</OutputPath>
     <DefineConstants>TRACE;x86</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -59,9 +59,10 @@
     <Compile Include="LangSelectionForm.Designer.cs">
       <DependentUpon>LangSelectionForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="..\..\SilDev.Libs\SilDev.Convert.cs" />
     <Compile Include="..\..\SilDev.Libs\SilDev.Crypt.cs" />
     <Compile Include="..\..\SilDev.Libs\SilDev.Elevation.cs" />
-    <Compile Include="..\..\SilDev.Libs\SilDev.Initialization.cs" />
+    <Compile Include="..\..\SilDev.Libs\SilDev.Ini.cs" />
     <Compile Include="..\..\SilDev.Libs\SilDev.Log.cs" />
     <Compile Include="..\..\SilDev.Libs\SilDev.Network.cs" />
     <Compile Include="..\..\SilDev.Libs\SilDev.Resource.cs" />

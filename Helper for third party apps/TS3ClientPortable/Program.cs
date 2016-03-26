@@ -52,7 +52,7 @@ namespace TS3ClientPortable
                     }
                     if (!Directory.Exists(configPath))
                         Directory.CreateDirectory(configPath);
-                    SilDev.Run.App(new ProcessStartInfo() { FileName = appPath, WindowStyle = ProcessWindowStyle.Normal }, 0, -1);
+                    SilDev.Run.App(new ProcessStartInfo() { FileName = appPath, WindowStyle = ProcessWindowStyle.Normal }, 0, null);
                     bool hideInTaskBar = SilDev.Ini.Read("Settings", "HideInTaskBar").ToLower() == "true";
                     Process[] runningProcess = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(appPath));
                     while (runningProcess.Length > 0)

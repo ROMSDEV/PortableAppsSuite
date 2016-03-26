@@ -9,8 +9,9 @@ namespace RunPHP
 {
     public partial class DownloadForm : Form
     {
-        string php = string.Empty;
-        int count = 0;
+        SilDev.Network.AsyncTransfer Transfer = new SilDev.Network.AsyncTransfer();
+        int DownloadFinishedCount = 0;
+        string phpPath = string.Empty;
 
         public DownloadForm()
         {
@@ -19,18 +20,18 @@ namespace RunPHP
 
         private void DownloadForm_Load(object sender, EventArgs e)
         {
-            php = Path.Combine(Application.StartupPath, "php\\php.exe");
+            phpPath = Path.Combine(Application.StartupPath, "php\\php.exe");
             Download();
             CheckDownload.Enabled = true;
         }
 
         private void DownloadForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-            if (SilDev.Network.AsyncDownloadIsBusy())
-                SilDev.Network.CancelAsyncDownload();
+            if (Transfer.IsBusy)
+                Transfer.CancelAsync();
             if (ExtractDownload.IsBusy)
                 ExtractDownload.CancelAsync();
-            if (!File.Exists(php))
+            if (!File.Exists(phpPath))
                 Environment.Exit(-1);
         }
 
@@ -56,7 +57,7 @@ namespace RunPHP
                 }
                 if (!archive.EndsWith(".zip"))
                     archive = archive.Substring(0, archive.Length - 40).Trim();
-                SilDev.Network.DownloadFileAsync(string.Format("http://windows.php.net/downloads/releases/{0}", archive), Path.Combine(Application.StartupPath, archive));
+                Transfer.DownloadFile($"http://windows.php.net/downloads/releases/{archive}", Path.Combine(Application.StartupPath, archive));
             }
             catch
             {
@@ -66,12 +67,12 @@ namespace RunPHP
 
         private void CheckDownload_Tick(object sender, EventArgs e)
         {
-            DLSpeed.Text = SilDev.Network.LatestAsyncDownloadInfo.TransferSpeed;
-            DLPercentage.Value = SilDev.Network.LatestAsyncDownloadInfo.ProgressPercentage;
-            DLLoaded.Text = SilDev.Network.LatestAsyncDownloadInfo.DataReceived;
-            if (!SilDev.Network.AsyncDownloadIsBusy())
-                count++;
-            if (count == 1)
+            DLSpeed.Text = $"{(int)Math.Round(Transfer.TransferSpeed)} kb/s";
+            DLPercentage.Value = Transfer.ProgressPercentage;
+            DLLoaded.Text = Transfer.DataReceived;
+            if (!Transfer.IsBusy)
+                DownloadFinishedCount++;
+            if (DownloadFinishedCount == 1)
             {
                 DLPercentage.Maximum = 1000;
                 DLPercentage.Value = 1000;
@@ -79,7 +80,7 @@ namespace RunPHP
                 DLPercentage.Maximum = 100;
                 DLPercentage.Value = 100;
             }
-            if (count >= 10)
+            if (DownloadFinishedCount >= 10)
             {
                 CheckDownload.Enabled = false;
                 ExtractDownload.RunWorkerAsync();
@@ -91,16 +92,16 @@ namespace RunPHP
             try
             {
                 string path = Path.Combine(Application.StartupPath, "php");
-                if (File.Exists(SilDev.Network.LatestAsyncDownloadInfo.FilePath))
+                if (File.Exists(Transfer.FilePath))
                 {
-                    using (ZipArchive zip = ZipFile.Open(SilDev.Network.LatestAsyncDownloadInfo.FilePath, ZipArchiveMode.Read))
+                    using (ZipArchive zip = ZipFile.Open(Transfer.FilePath, ZipArchiveMode.Read))
                     {
                         if (Directory.Exists(path))
                             Directory.Delete(path, true);
                         zip.ExtractToDirectory(path);
                         zip.Dispose();
                     }
-                    File.Delete(SilDev.Network.LatestAsyncDownloadInfo.FilePath);
+                    File.Delete(Transfer.FilePath);
                 }
             }
             catch
@@ -113,8 +114,7 @@ namespace RunPHP
         {
             if (!e.Cancelled)
             {
-                if (!string.IsNullOrWhiteSpace(SilDev.Network.LatestAsyncDownloadInfo.StatusMessage))
-                  SilDev.MsgBox.Show(this, SilDev.Network.LatestAsyncDownloadInfo.StatusMessage, "Info", MessageBoxButtons.OK, MessageBoxIcon.None);
+                SilDev.MsgBox.Show(this, !Transfer.HasCanceled ? "Operation completed!" : "Operation failed!", "Info", MessageBoxButtons.OK, MessageBoxIcon.None);
                 Close();
             }
         }

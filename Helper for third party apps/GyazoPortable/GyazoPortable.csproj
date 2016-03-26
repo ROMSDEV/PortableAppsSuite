@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\_bin\</OutputPath>
+    <OutputPath>..\.bin\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -27,7 +27,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\_bin\</OutputPath>
+    <OutputPath>..\.bin\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -53,13 +53,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\SilDev.Libs\SilDev.Elevation.cs" />
-    <Compile Include="..\..\SilDev.Libs\SilDev.Initialization.cs" />
+    <Compile Include="..\..\SilDev.Libs\SilDev.Ini.cs" />
     <Compile Include="..\..\SilDev.Libs\SilDev.Log.cs" />
     <Compile Include="..\..\SilDev.Libs\SilDev.Registry.cs" />
     <Compile Include="..\..\SilDev.Libs\SilDev.Run.cs" />
 	<Compile Include="..\..\SilDev.Libs\SilDev.WinAPI.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="..\..\SilDev.Libs\SilDev.Convert.cs" />
     <Compile Include="..\..\SilDev.Libs\SilDev.Crypt.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

@@ -23,8 +23,8 @@ namespace WinRARUpdater
                     SilDev.Log.AllowDebug();
                     if (!SilDev.Elevation.WritableLocation())
                         SilDev.Elevation.RestartAsAdministrator(Environment.CommandLine);
-                    SilDev.Source.AddFile("aceed86b06a889a33d71e8f0e65735bf", "UnRAR.exe");
-                    SilDev.Source.LoadAssemblies(Properties.Resources._UnRAR);
+                    SilDev.Source.AddTempAssembly("aceed86b06a889a33d71e8f0e65735bf", "UnRAR.exe");
+                    SilDev.Source.LoadTempAssemblies(Properties.Resources._UnRAR);
                     Application.EnableVisualStyles();
                     Application.SetCompatibleTextRenderingDefault(false);
                     Application.Run(new MainForm());

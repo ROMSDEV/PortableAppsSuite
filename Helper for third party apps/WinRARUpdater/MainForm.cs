@@ -9,7 +9,8 @@ namespace WinRARUpdater
 {
     public partial class MainForm : Form
     {
-        int count = 0;
+        SilDev.Network.AsyncTransfer Transfer = new SilDev.Network.AsyncTransfer();
+        int DownloadFinishedCount = 0;
         string SetupPath = string.Empty;
 
         public MainForm()
@@ -20,7 +21,7 @@ namespace WinRARUpdater
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            string IniFile = Path.Combine(Application.StartupPath, string.Format("{0}.ini", Path.GetFileNameWithoutExtension(Application.ExecutablePath)));
+            string IniFile = Path.Combine(Application.StartupPath, $"{Path.GetFileNameWithoutExtension(Application.ExecutablePath)}.ini");
             if (!File.Exists(IniFile))
             {
                 SilDev.Ini.File(IniFile);
@@ -73,7 +74,7 @@ namespace WinRARUpdater
                     {
                         if (item.Key == Language)
                         {
-                            SilDev.Log.Debug(string.Format("Key: {0} - Value[0]: {1} - Value[1]: {2}", item.Key, item.Value[0], item.Value[1]), "OnlineInfo");
+                            SilDev.Log.Debug($"Key: {item.Key} - Value[0]: {item.Value[0]} - Value[1]: {item.Value[1]}");
                             break;
                         }
                     }
@@ -119,7 +120,7 @@ namespace WinRARUpdater
                         Opacity = 1d;
                         ShowInTaskbar = true;
                         WindowState = FormWindowState.Normal;
-                        SilDev.Network.DownloadFileAsync(string.Format("http://www.rarsoft.com/rar/{0}", FileName), SetupPath);
+                        Transfer.DownloadFile(string.Format("http://www.rarsoft.com/rar/{0}", FileName), SetupPath);
                         CheckDownload.Enabled = true;
                     }
                 }
@@ -170,12 +171,12 @@ namespace WinRARUpdater
 
         private void CheckDownload_Tick(object sender, EventArgs e)
         {
-            DLSpeed.Text = SilDev.Network.LatestAsyncDownloadInfo.TransferSpeed;
-            DLPercentage.Value = SilDev.Network.LatestAsyncDownloadInfo.ProgressPercentage;
-            DLLoaded.Text = SilDev.Network.LatestAsyncDownloadInfo.DataReceived;
-            if (!SilDev.Network.AsyncDownloadIsBusy())
-                count++;
-            if (count == 1)
+            DLSpeed.Text = $"{(int)Math.Round(Transfer.TransferSpeed)} kb/s";
+            DLPercentage.Value = Transfer.ProgressPercentage;
+            DLLoaded.Text = Transfer.DataReceived;
+            if (!Transfer.IsBusy)
+                DownloadFinishedCount++;
+            if (DownloadFinishedCount == 1)
             {
                 DLPercentage.Maximum = 1000;
                 DLPercentage.Value = 1000;
@@ -183,7 +184,7 @@ namespace WinRARUpdater
                 DLPercentage.Maximum = 100;
                 DLPercentage.Value = 100;
             }
-            if (count >= 10)
+            if (DownloadFinishedCount >= 10)
             {
                 CheckDownload.Enabled = false;
                 ExtractDownload.RunWorkerAsync();
@@ -196,7 +197,7 @@ namespace WinRARUpdater
             {
                 if (File.Exists(SetupPath))
                 {
-                    string UnRAR = SilDev.Source.GetFilePath("UnRAR.exe");
+                    string UnRAR = SilDev.Source.TempAssembliesFilePath("UnRAR.exe");
                     if (!File.Exists(UnRAR))
                         throw new Exception("UnRAR.exe not exists");
                     string ContentPath = Path.Combine(Application.StartupPath, "Update");

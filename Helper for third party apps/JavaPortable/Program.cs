@@ -110,7 +110,7 @@ namespace JavaPortableLauncher
                 {
                     if (!string.IsNullOrWhiteSpace(AppPath))
                     {
-                        string AppPathMD5 = SilDev.Crypt.MD5.Encrypt(AppPath);
+                        string AppPathMD5 = SilDev.Crypt.MD5.EncryptString(AppPath);
                         if (string.IsNullOrWhiteSpace(SilDev.Ini.Read("Shortcuts", AppPathMD5)))
                         {
                             if (MessageBox.Show("You wanna create a desktop shortcut?", "Question", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
