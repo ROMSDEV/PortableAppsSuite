@@ -1,4 +1,4 @@
-﻿namespace RunPHP
+namespace RunPHP
 {
     partial class MainForm
     {

@@ -1,4 +1,4 @@
-﻿namespace WinSCP_PuTTY_Launcher
+namespace WinSCP_PuTTY_Launcher
 {
     partial class MainForm
     {

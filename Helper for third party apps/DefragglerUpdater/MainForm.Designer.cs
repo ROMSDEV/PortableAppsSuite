@@ -1,4 +1,4 @@
-﻿namespace DefragglerUpdater
+namespace DefragglerUpdater
 {
     partial class MainForm
     {

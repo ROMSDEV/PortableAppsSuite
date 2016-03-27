@@ -1,4 +1,4 @@
-﻿namespace CCleanerUpdater
+namespace CCleanerUpdater
 {
     partial class MainForm
     {

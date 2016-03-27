@@ -1,4 +1,4 @@
-﻿namespace WinRARUpdater
+namespace WinRARUpdater
 {
     partial class LangSelectionForm
     {

@@ -1,4 +1,4 @@
-﻿namespace TeamViewerUpdater
+namespace TeamViewerUpdater
 {
     partial class MainForm
     {
