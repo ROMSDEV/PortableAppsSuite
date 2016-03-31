@@ -20,7 +20,7 @@ namespace CCleanerUpdater
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            SilDev.WinAPI.TaskBarProgress.SetState(Handle, SilDev.WinAPI.TaskBarProgress.States.Indeterminate);
+            SilDev.Taskbar.Progress.SetState(Handle, SilDev.Taskbar.Progress.States.Indeterminate);
 
             string CCleaner = Path.Combine(Application.StartupPath, "CCleaner.exe");
             string UpdateURL = "https://www.piriform.com/ccleaner/download/portable/downloadfile";
@@ -116,7 +116,7 @@ namespace CCleanerUpdater
                 DLPercentage.Maximum = 100;
                 DLPercentage.Value = 100;
             }
-            SilDev.WinAPI.TaskBarProgress.SetValue(Handle, DLPercentage.Value, DLPercentage.Maximum);
+            SilDev.Taskbar.Progress.SetValue(Handle, DLPercentage.Value, DLPercentage.Maximum);
             if (DownloadFinishedCount >= 10)
             {
                 CheckDownload.Enabled = false;
@@ -156,7 +156,7 @@ namespace CCleanerUpdater
         private void ExtractDownload_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
         {
             WindowState = FormWindowState.Minimized;
-            SilDev.WinAPI.TaskBarProgress.SetState(Handle, SilDev.WinAPI.TaskBarProgress.States.Indeterminate);
+            SilDev.Taskbar.Progress.SetState(Handle, SilDev.Taskbar.Progress.States.Indeterminate);
             ShowInfoBox(e.Result.ToString(), MessageBoxButtons.OK);
             Close();
         }

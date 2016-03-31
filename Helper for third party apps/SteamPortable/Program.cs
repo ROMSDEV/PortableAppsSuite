@@ -121,7 +121,7 @@ namespace SteamPortable
                     SilDev.Reg.WriteValue("HKLM\\SOFTWARE\\Wow6432Node\\Valve\\Steam", "InstallPath", appDir);
 #endif
                     string serviceName = "Steam Client Service";
-                    if (SilDev.Elevation.IsAdministrator && !SilDev.WinAPI.ServiceTools.ServiceExists(serviceName))
+                    if (SilDev.Elevation.IsAdministrator && !SilDev.Service.Exists(serviceName))
                     {
                         try
                         {
@@ -133,8 +133,8 @@ namespace SteamPortable
                         {
                             SilDev.Log.Debug(ex);
                         }
-                        SilDev.WinAPI.ServiceTools.InstallService(serviceName, serviceName, Path.Combine(defServiceDir, "SteamService.exe"), "/RunAsService");
-                        SilDev.WinAPI.ServiceTools.StartService(serviceName);
+                        SilDev.Service.Install(serviceName, serviceName, Path.Combine(defServiceDir, "SteamService.exe"), "/RunAsService");
+                        SilDev.Service.Start(serviceName);
                     }
 
                     if (File.Exists(iniPath))
@@ -155,10 +155,10 @@ namespace SteamPortable
                         Thread.Sleep(300);
                     }
 
-                    if (SilDev.Elevation.IsAdministrator && SilDev.WinAPI.ServiceTools.ServiceExists(serviceName) && SilDev.Data.DirIsLink(defServiceDir))
+                    if (SilDev.Elevation.IsAdministrator && SilDev.Service.Exists(serviceName) && SilDev.Data.DirIsLink(defServiceDir))
                     {
-                        SilDev.WinAPI.ServiceTools.StopService(serviceName);
-                        SilDev.WinAPI.ServiceTools.UninstallService(serviceName);
+                        SilDev.Service.Stop(serviceName);
+                        SilDev.Service.Uninstall(serviceName);
                     }
 
                     SilDev.Reg.ImportFile(new string[] { "Windows Registry Editor Version 5.00", "[-HKEY_CLASSES_ROOT\\steam]", Environment.NewLine }, true);

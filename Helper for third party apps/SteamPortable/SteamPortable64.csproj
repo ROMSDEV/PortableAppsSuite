@@ -53,7 +53,6 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Compile Include="..\..\SilDev.Libs\SilDev.WinAPI.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\SilDev.Libs\SilDev.Convert.cs" />
@@ -64,6 +63,7 @@
     <Compile Include="..\..\SilDev.Libs\SilDev.Log.cs" />
     <Compile Include="..\..\SilDev.Libs\SilDev.Registry.cs" />
     <Compile Include="..\..\SilDev.Libs\SilDev.Run.cs" />
+    <Compile Include="..\..\SilDev.Libs\SilDev.Service.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">

@@ -61,7 +61,6 @@
     <Compile Include="..\..\SilDev.Libs\SilDev.Elevation.cs" />
     <Compile Include="..\..\SilDev.Libs\SilDev.Log.cs" />
     <Compile Include="..\..\SilDev.Libs\SilDev.Run.cs" />
-	<Compile Include="..\..\SilDev.Libs\SilDev.WinAPI.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">

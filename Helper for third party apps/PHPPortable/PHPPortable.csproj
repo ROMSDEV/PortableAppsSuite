@@ -75,7 +75,6 @@
     <Compile Include="..\..\SilDev.Libs\SilDev.MsgBox.cs" />
     <Compile Include="..\..\SilDev.Libs\SilDev.Network.cs" />
     <Compile Include="..\..\SilDev.Libs\SilDev.Run.cs" />
-	<Compile Include="..\..\SilDev.Libs\SilDev.WinAPI.cs" />
     <EmbeddedResource Include="DownloadForm.resx">
       <DependentUpon>DownloadForm.cs</DependentUpon>
     </EmbeddedResource>

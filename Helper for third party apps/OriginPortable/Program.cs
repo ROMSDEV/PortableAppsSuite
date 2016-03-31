@@ -267,10 +267,10 @@ namespace OriginPortable
                     }
 
                     string serviceName = "Origin Client Service";
-                    if (SilDev.Elevation.IsAdministrator && SilDev.WinAPI.ServiceTools.ServiceExists(serviceName) && !SilDev.Reg.SubKeyExist(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\SI13N7-BACKUP: Origin"))
+                    if (SilDev.Elevation.IsAdministrator && SilDev.Service.Exists(serviceName) && !SilDev.Reg.SubKeyExist(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\SI13N7-BACKUP: Origin"))
                     {
-                        SilDev.WinAPI.ServiceTools.StopService(serviceName);
-                        SilDev.WinAPI.ServiceTools.UninstallService(serviceName);
+                        SilDev.Service.Stop(serviceName);
+                        SilDev.Service.Uninstall(serviceName);
                     }
 
                     # region Registry Export
@@ -487,7 +487,7 @@ namespace OriginPortable
                                 if (p.MainWindowTitle.ToLower() == name)
                                 {
                                     MinimizedAtStart++;
-                                    SilDev.WinAPI.SafeNativeMethods.ShowWindow(p.MainWindowHandle, SilDev.WinAPI.Win32HookAction.SW_MINIMIZE);
+                                    SilDev.WinAPI.SafeNativeMethods.ShowWindow(p.MainWindowHandle, (int)SilDev.WinAPI.ShowWindowFunc.SW_MINIMIZE);
                                 }
                             }
                         }

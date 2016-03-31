@@ -60,7 +60,6 @@
     <Compile Include="..\..\SilDev.Libs\SilDev.Network.cs" />
     <Compile Include="..\..\SilDev.Libs\SilDev.Run.cs" />
     <Compile Include="..\..\SilDev.Libs\SilDev.Ini.cs" />
-	<Compile Include="..\..\SilDev.Libs\SilDev.WinAPI.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>

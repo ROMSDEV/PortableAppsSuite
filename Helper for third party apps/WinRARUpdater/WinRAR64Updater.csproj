@@ -69,7 +69,6 @@
     <Compile Include="..\..\SilDev.Libs\SilDev.Resource.cs" />
     <Compile Include="..\..\SilDev.Libs\SilDev.Run.cs" />
     <Compile Include="..\..\SilDev.Libs\SilDev.Source.cs" />
-	<Compile Include="..\..\SilDev.Libs\SilDev.WinAPI.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
