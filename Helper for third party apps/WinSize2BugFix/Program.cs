@@ -31,7 +31,8 @@ namespace ProcessRun
                             if (p.MainWindowHandle == IntPtr.Zero)
                                 continue;
                             StringBuilder title = new StringBuilder(32);
-                            if (SilDev.WinAPI.SafeNativeMethods.SendMessageTimeoutText(p.MainWindowHandle, 0xd, 32, title, 0x2, 200, 0) > 0)
+                            IntPtr result = IntPtr.Zero;
+                            if ((int)SilDev.WinAPI.SafeNativeMethods.SendMessageTimeoutText(p.MainWindowHandle, 0xd, (UIntPtr)32, title, 0x2, 200, out result) > 0)
                             {
                                 if (title.ToString().ToLower().Contains("winsize2"))
                                 {
