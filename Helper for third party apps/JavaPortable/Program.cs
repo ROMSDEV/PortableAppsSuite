@@ -130,19 +130,17 @@ namespace JavaPortableLauncher
                             if (MessageBox.Show("Ask again for this file?", "Question", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
                                 SilDev.Ini.Write("Shortcuts", AppPathMD5, "True");
                         }
-                        string JavaDir = SilDev.Run.EnvironmentVariableFilter(SilDev.Ini.Read("Location", JavaVar));
-                        object output = SilDev.Run.App(new ProcessStartInfo()
+                        string jreUsageDir = SilDev.Run.EnvironmentVariableFilter("%UserProfile%\\.oracle_jre_usage");
+                        if (!Directory.Exists(jreUsageDir))
+                            Directory.CreateDirectory(jreUsageDir);
+                        SilDev.Data.SetAttributes(jreUsageDir, FileAttributes.Hidden);
+                        int pid = SilDev.Run.App(new ProcessStartInfo()
                         {
                             Arguments = $"-jar {(SilDev.Run.CommandLineArgs(false).Count > 0 ? SilDev.Run.CommandLine(false) : $"\"{AppPath}\"")}",
                             FileName = Path.Combine(SilDev.Run.EnvironmentVariableFilter(SilDev.Ini.Read("Location", JavaVar)), Java["exe"]),
                             WorkingDirectory = Path.GetDirectoryName(AppPath)
                         });
-                        if (output is int)
-                        {
-                            if ((int)output < 0)
-                                throw new Exception();
-                        }
-                        else
+                        if (pid < 0)
                             throw new Exception();
                     }
                 }
