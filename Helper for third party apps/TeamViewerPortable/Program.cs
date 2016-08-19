@@ -1,7 +1,6 @@
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.IO.Compression;
 using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
@@ -38,45 +37,6 @@ namespace TeamViewerPortable
                     if (!File.Exists(appPath) || !File.Exists(updaterPath))
                         return;
 
-                    string iniPath = Path.Combine(rootDir, "TeamViewer.ini");
-                    if (!File.Exists(iniPath))
-                        File.Create(iniPath).Close();
-                    SilDev.Ini.Write("Settings", "nosave", 1, iniPath);
-                    SilDev.Ini.Write("Settings", "importsettings", 1, iniPath);
-
-                    string tvIniPath = Path.Combine(rootDir, "tv.ini");
-                    SilDev.Ini.File(Application.StartupPath, "TeamViewerPortable.ini");
-                    Version CurVer = Assembly.GetExecutingAssembly().GetName().Version;
-                    Version LastVer = Version.Parse("1.0.0.0");
-                    if (!File.Exists(tvIniPath) || !Version.TryParse(SilDev.Ini.Read("History", "LastPortableVersion"), out LastVer) || CurVer != LastVer)
-                    {
-                        try
-                        {
-                            if (File.Exists(tvIniPath))
-                                File.Delete(tvIniPath);
-                            string archivePath = Path.Combine(Application.StartupPath, "temp.zip");
-                            SilDev.Resource.ExtractConvert(Properties.Resources._default_settings, archivePath);
-                            if (File.Exists(archivePath))
-                            {
-                                try
-                                {
-                                    using (ZipArchive zip = ZipFile.OpenRead(archivePath))
-                                        zip.ExtractToDirectory(rootDir);
-                                    File.Delete(archivePath);
-                                    SilDev.Ini.Write("History", "LastVersion", CurVer);
-                                }
-                                catch (Exception ex)
-                                {
-                                    SilDev.Log.Debug(ex);
-                                }
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            SilDev.Log.Debug(ex);
-                        }
-                    }
-
                     string CurrentDate = DateTime.Now.ToString("M/d/yyyy", System.Globalization.CultureInfo.CreateSpecificCulture("en-US"));
                     string LastUpdateCheck = SilDev.Ini.Read("History", "LastUpdateCheck");
                     if (LastUpdateCheck != CurrentDate)
@@ -88,6 +48,31 @@ namespace TeamViewerPortable
                             Verb = "runas"
                         }, 0);
                         SilDev.Ini.Write("History", "LastUpdateCheck", CurrentDate);
+                    }
+
+                    string iniPath = Path.Combine(rootDir, "TeamViewer.ini");
+                    if (!File.Exists(iniPath))
+                        File.Create(iniPath).Close();
+                    SilDev.Ini.Write("Settings", "nosave", 1, iniPath);
+                    SilDev.Ini.Write("Settings", "importsettings", 1, iniPath);
+
+                    string tvIniPath = Path.Combine(rootDir, "tv.ini");
+                    SilDev.Ini.File(Application.StartupPath, "TeamViewerPortable.ini");
+                    Version CurVer = Assembly.GetExecutingAssembly().GetName().Version;
+                    Version LastVer = SilDev.Ini.ReadVersion("History", "LastVersion");
+                    if (!File.Exists(tvIniPath) || CurVer != LastVer)
+                    {
+                        try
+                        {
+                            if (File.Exists(tvIniPath))
+                                File.Delete(tvIniPath);
+                            File.WriteAllText(tvIniPath, Properties.Resources._default_settings);
+                            SilDev.Ini.Write("History", "LastVersion", CurVer);
+                        }
+                        catch (Exception ex)
+                        {
+                            SilDev.Log.Debug(ex);
+                        }
                     }
 
                     string defKey = $"SOFTWARE\\TeamViewer";
