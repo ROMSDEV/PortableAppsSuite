@@ -32,16 +32,15 @@ namespace WinRARPortable
             {
                 if (newInstance)
                 {
-                    string CurrentDate = DateTime.Now.ToString("M/d/yyyy", System.Globalization.CultureInfo.CreateSpecificCulture("en-US"));
-                    string LastUpdateCheck = SilDev.Ini.Read("History", "LastUpdateCheck");
-                    if (LastUpdateCheck != CurrentDate || !File.Exists(appPath))
+                    DateTime LastUpdateCheck = SilDev.Ini.ReadDateTime("History", "LastUpdateCheck");
+                    if ((DateTime.Now - LastUpdateCheck).TotalDays >= 1d || !File.Exists(SilDev.Run.EnvironmentVariableFilter(appPath)))
                     {
                         SilDev.Run.App(new ProcessStartInfo()
                         {
                             Arguments = "/silent",
                             FileName = Environment.Is64BitProcess ? "%CurrentDir%\\winrar-x64\\WinRARUpdater64.exe" : "%CurrentDir%\\winrar\\WinRARUpdater.exe"
                         }, 0);
-                        SilDev.Ini.Write("History", "LastUpdateCheck", CurrentDate);
+                        SilDev.Ini.Write("History", "LastUpdateCheck", DateTime.Now);
                     }
                     string ini = Path.Combine(Application.StartupPath, Environment.Is64BitProcess ? "winrar-x64\\WinRAR.ini" : "winrar\\WinRAR.ini");
                     if (!File.Exists(ini))
