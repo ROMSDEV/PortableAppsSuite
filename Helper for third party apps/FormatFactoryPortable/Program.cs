@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
@@ -47,7 +48,16 @@ namespace FFactoryPortable
 #else
                     SilDev.Reg.WriteValue(HKCU, appSubKey, "Skin", 6, SilDev.Reg.RegValueKind.DWord);
                     SilDev.Reg.WriteValue(HKCU, appSubKey, "StartMethodTab", 0, SilDev.Reg.RegValueKind.DWord);
-                    SilDev.Reg.WriteValue(HKCU, appSubKey, "Version", "3.8.0", SilDev.Reg.RegValueKind.String);
+
+                    try
+                    {
+                        FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(Path.Combine(Application.StartupPath, "App\\FormatFactory\\FormatFactory.exe"));
+                        SilDev.Reg.WriteValue(HKCU, appSubKey, "Version", $"{string.Join(".", new List<string>(fvi.ProductVersion.Split('.')).GetRange(0, 3))}", SilDev.Reg.RegValueKind.String);
+                    }
+                    catch (Exception ex)
+                    {
+                        SilDev.Log.Debug(ex);
+                    }
 #endif
                     SilDev.Run.App(new ProcessStartInfo()
                     {
