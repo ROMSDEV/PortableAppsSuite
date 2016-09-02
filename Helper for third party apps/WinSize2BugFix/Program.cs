@@ -23,7 +23,7 @@ namespace ProcessRun
                         {
                             if (i > 0)
                                 i = 0;
-                            SilDev.Run.App(new ProcessStartInfo() { FileName = Path.Combine(SilDev.Run.EnvironmentVariableFilter("%CurrentDir%"), file) }, 100);
+                            SilDev.Run.App(new ProcessStartInfo() { FileName = Path.Combine(SilDev.Run.EnvVarFilter("%CurrentDir%"), file) }, 100);
                         }
                         Thread.Sleep(100);
                         foreach (Process p in Process.GetProcessesByName("WinSize2"))

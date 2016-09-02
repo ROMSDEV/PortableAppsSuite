@@ -33,7 +33,7 @@ namespace WinRARPortable
                 if (newInstance)
                 {
                     DateTime LastUpdateCheck = SilDev.Ini.ReadDateTime("History", "LastUpdateCheck");
-                    if ((DateTime.Now - LastUpdateCheck).TotalDays >= 1d || !File.Exists(SilDev.Run.EnvironmentVariableFilter(appPath)))
+                    if ((DateTime.Now - LastUpdateCheck).TotalDays >= 1d || !File.Exists(SilDev.Run.EnvVarFilter(appPath)))
                     {
                         SilDev.Run.App(new ProcessStartInfo()
                         {

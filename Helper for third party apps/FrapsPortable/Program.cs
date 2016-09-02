@@ -39,7 +39,7 @@ namespace FrapsPortable
                         SilDev.Reg.RenameSubKey(@"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Fraps", @"SOFTWARE\Wow6432Node\SI13N7-BACKUP: Fraps");
                     SilDev.Reg.WriteValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Fraps", "Install_Dir", Path.GetDirectoryName(appPath));
 #endif
-                    string regHelperPath = SilDev.Run.EnvironmentVariableFilter(string.Format(@"%TEMP%\{0}.reg", SilDev.Crypt.MD5.EncryptString(appPath)));
+                    string regHelperPath = SilDev.Run.EnvVarFilter(string.Format(@"%TEMP%\{0}.reg", SilDev.Crypt.MD5.EncryptString(appPath)));
                     if (File.Exists(regHelperPath))
                         File.Delete(regHelperPath);
                     SilDev.Crypt.Base64 Base64 = new SilDev.Crypt.Base64();

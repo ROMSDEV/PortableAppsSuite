@@ -22,7 +22,7 @@ namespace Cinebench64Portable // CINEBENCH_R15
                             app.WaitForExit();
                     try
                     {
-                        string cachePath = SilDev.Run.EnvironmentVariableFilter("%AppData%\\MAXON");
+                        string cachePath = SilDev.Run.EnvVarFilter("%AppData%\\MAXON");
                         foreach (var dir in Directory.GetDirectories(cachePath, "cinebench64_*", SearchOption.TopDirectoryOnly))
                             Directory.Delete(dir, true);
                         if (Directory.GetFiles(cachePath, "*", SearchOption.AllDirectories).Length == 0)

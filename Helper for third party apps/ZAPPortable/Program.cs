@@ -66,10 +66,10 @@ namespace ZAPPortable
                             return;
                         }
 
-                        string PortableProfile = SilDev.Run.EnvironmentVariableFilter("%CurrentDir%\\Data");
+                        string PortableProfile = SilDev.Run.EnvVarFilter("%CurrentDir%\\Data");
                         if (!Directory.Exists(PortableProfile))
                             Directory.CreateDirectory(PortableProfile);
-                        string UserProfile = SilDev.Run.EnvironmentVariableFilter("%UserProfile%\\OWASP ZAP");
+                        string UserProfile = SilDev.Run.EnvVarFilter("%UserProfile%\\OWASP ZAP");
                         SilDev.Data.DirLink(UserProfile, PortableProfile, true);
 
                         string cmdLine = Environment.CommandLine.Replace($"\"{Application.ExecutablePath}\"", string.Empty).TrimStart();

@@ -19,7 +19,7 @@ namespace mpTrimPortable
                 {
                     SilDev.Log.AllowDebug();
 
-                    string iniPath = SilDev.Run.EnvironmentVariableFilter("%CurrentDir%\\mpTrim\\mpTrim.ini");
+                    string iniPath = SilDev.Run.EnvVarFilter("%CurrentDir%\\mpTrim\\mpTrim.ini");
 
                     int Left = 0;
                     if (!int.TryParse(SilDev.Ini.Read("Settings", "Left", iniPath), out Left))

@@ -14,25 +14,25 @@ namespace LMMSPortable
             using (Mutex mutex = new Mutex(true, Process.GetCurrentProcess().ProcessName, out newInstance))
             {
 #if x86
-                string appDir = SilDev.Run.EnvironmentVariableFilter("%CurrentDir%\\App\\lmms");
+                string appDir = SilDev.Run.EnvVarFilter("%CurrentDir%\\App\\lmms");
 #else
-                string appDir = SilDev.Run.EnvironmentVariableFilter("%CurrentDir%\\App\\lmms64");
+                string appDir = SilDev.Run.EnvVarFilter("%CurrentDir%\\App\\lmms64");
 #endif
                 string appPath = Path.Combine(appDir, "lmms.exe");
                 if (!File.Exists(appPath))
                     return;
                 if (newInstance)
                 {
-                    string dataDir = SilDev.Run.EnvironmentVariableFilter("%CurrentDir%\\Data\\lmms");
+                    string dataDir = SilDev.Run.EnvVarFilter("%CurrentDir%\\Data\\lmms");
                     if (!Directory.Exists(dataDir))
                     {
                         Directory.CreateDirectory(Path.Combine(dataDir, "presets"));
                         Directory.CreateDirectory(Path.Combine(dataDir, "projects"));
                         Directory.CreateDirectory(Path.Combine(dataDir, "samples"));
                     }
-                    string defCfgPath = SilDev.Run.EnvironmentVariableFilter("%UserProfile%\\.lmmsrc.xml");
+                    string defCfgPath = SilDev.Run.EnvVarFilter("%UserProfile%\\.lmmsrc.xml");
                     string bakCfgPath = $"{defCfgPath}.SI13N7-BACKUP";
-                    string cfgPath = SilDev.Run.EnvironmentVariableFilter("%CurrentDir%\\Data\\.lmmsrc.xml");
+                    string cfgPath = SilDev.Run.EnvVarFilter("%CurrentDir%\\Data\\.lmmsrc.xml");
                     if (File.Exists(defCfgPath))
                     {
                         File.Move(defCfgPath, bakCfgPath);

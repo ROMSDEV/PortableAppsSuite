@@ -85,7 +85,7 @@ namespace JDownloader2Portable
                 {
                     if (newInstance)
                     {
-                        string jreUsageDir = SilDev.Run.EnvironmentVariableFilter("%UserProfile%\\.oracle_jre_usage");
+                        string jreUsageDir = SilDev.Run.EnvVarFilter("%UserProfile%\\.oracle_jre_usage");
                         if (!Directory.Exists(jreUsageDir))
                             Directory.CreateDirectory(jreUsageDir);
                         SilDev.Data.SetAttributes(jreUsageDir, FileAttributes.Hidden);

@@ -19,10 +19,10 @@ namespace HeidiSQLPortable  // BETA
                     string settingsPath = Path.Combine(Application.StartupPath, "HeidiSQL\\portable_settings.txt");
                     if (!File.Exists(settingsPath))
                         File.Create(settingsPath).Close();
-                    string PortableProfile = SilDev.Run.EnvironmentVariableFilter("%CurrentDir%\\Data");
+                    string PortableProfile = SilDev.Run.EnvVarFilter("%CurrentDir%\\Data");
                     if (!Directory.Exists(PortableProfile))
                         Directory.CreateDirectory(PortableProfile);
-                    string UserProfile = SilDev.Run.EnvironmentVariableFilter("%AppData%\\HeidiSQL");
+                    string UserProfile = SilDev.Run.EnvVarFilter("%AppData%\\HeidiSQL");
                     SilDev.Data.DirLink(UserProfile, PortableProfile, true);
                     SilDev.Run.App(new ProcessStartInfo() { FileName = "%CurrentDir%\\HeidiSQL\\heidisql.exe" }, 0);
                     SilDev.Data.DirUnLink(UserProfile, true);

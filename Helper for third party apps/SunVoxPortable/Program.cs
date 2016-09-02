@@ -22,7 +22,7 @@ namespace SunVoxPortable
                     SilDev.Log.AllowDebug();
                     try
                     {
-                        foreach (string f in Directory.GetFiles(SilDev.Run.EnvironmentVariableFilter("%AppData%"), "*", SearchOption.TopDirectoryOnly))
+                        foreach (string f in Directory.GetFiles(SilDev.Run.EnvVarFilter("%AppData%"), "*", SearchOption.TopDirectoryOnly))
                         {
                             if (!f.ToLower().Contains("sunvox") || f.ToUpper().EndsWith("SI13N7-BACKUP"))
                                 continue;
@@ -43,7 +43,7 @@ namespace SunVoxPortable
                         {
                             foreach (string f in Directory.GetFiles(dataPath, "*", SearchOption.TopDirectoryOnly))
                                 if (f.ToLower().Contains("sunvox"))
-                                    File.Move(f, f.Replace(dataPath, SilDev.Run.EnvironmentVariableFilter("%AppData%")));
+                                    File.Move(f, f.Replace(dataPath, SilDev.Run.EnvVarFilter("%AppData%")));
                         }
                     }
                     catch (Exception ex)
@@ -57,13 +57,13 @@ namespace SunVoxPortable
                     }, 0);
                     try
                     {
-                        foreach (string f in Directory.GetFiles(SilDev.Run.EnvironmentVariableFilter("%AppData%"), "*", SearchOption.TopDirectoryOnly))
+                        foreach (string f in Directory.GetFiles(SilDev.Run.EnvVarFilter("%AppData%"), "*", SearchOption.TopDirectoryOnly))
                         {
                             if (!f.ToLower().Contains("sunvox") || f.ToUpper().EndsWith("SI13N7-BACKUP"))
                                 continue;
                             if (!Directory.Exists(dataPath))
                                 Directory.CreateDirectory(dataPath);
-                            File.Move(f, f.Replace(SilDev.Run.EnvironmentVariableFilter("%AppData%"), dataPath));
+                            File.Move(f, f.Replace(SilDev.Run.EnvVarFilter("%AppData%"), dataPath));
                         }
                     }
                     catch (Exception ex)
@@ -72,7 +72,7 @@ namespace SunVoxPortable
                     }
                     try
                     {
-                        foreach (string b in Directory.GetFiles(SilDev.Run.EnvironmentVariableFilter("%AppData%"), "*", SearchOption.TopDirectoryOnly))
+                        foreach (string b in Directory.GetFiles(SilDev.Run.EnvVarFilter("%AppData%"), "*", SearchOption.TopDirectoryOnly))
                         {
                             if (!b.ToLower().Contains("sunvox") || !b.ToUpper().EndsWith("SI13N7-BACKUP"))
                                 continue;

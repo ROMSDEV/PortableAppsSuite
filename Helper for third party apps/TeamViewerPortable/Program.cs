@@ -81,7 +81,7 @@ namespace TeamViewerPortable
                         SilDev.Reg.RenameSubKey($"HKLM\\{defKey}", bakKey);
                     SilDev.Reg.WriteValue($"HKLM\\{defKey}", "Portable App", "True");
 
-                    string defLogDir = SilDev.Run.EnvironmentVariableFilter("%AppData%\\TeamViewer");
+                    string defLogDir = SilDev.Run.EnvVarFilter("%AppData%\\TeamViewer");
                     SilDev.Data.DirLink(defLogDir, rootDir, true);
 
                     SilDev.Run.App(new ProcessStartInfo()

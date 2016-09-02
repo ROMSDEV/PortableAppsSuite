@@ -12,7 +12,7 @@ namespace SteamPortable
         static void Main()
         {
             SilDev.Log.AllowDebug();
-            string appDir = SilDev.Run.EnvironmentVariableFilter("%CurrentDir%\\App\\Steam");
+            string appDir = SilDev.Run.EnvVarFilter("%CurrentDir%\\App\\Steam");
             string cmdLineArgs = Environment.CommandLine.Replace(Application.ExecutablePath, string.Empty).Replace("\"\"", string.Empty).Trim();
             bool newInstance = true;
             using (Mutex mutex = new Mutex(true, Process.GetCurrentProcess().ProcessName, out newInstance))
@@ -33,12 +33,12 @@ namespace SteamPortable
                     if (isRunning(appDir, "steam"))
                         killAll(appDir, "steam");
 
-                    string defServiceDir = SilDev.Run.EnvironmentVariableFilter("%CommonProgramFiles(x86)%\\Steam");
-                    string serviceDir = SilDev.Run.EnvironmentVariableFilter("%CurrentDir%\\App\\Service");
+                    string defServiceDir = SilDev.Run.EnvVarFilter("%CommonProgramFiles(x86)%\\Steam");
+                    string serviceDir = SilDev.Run.EnvVarFilter("%CurrentDir%\\App\\Service");
                     SilDev.Data.DirLink(defServiceDir, serviceDir, true);
 
-                    string defCacheDir = SilDev.Run.EnvironmentVariableFilter("%LocalAppData%\\Steam");
-                    string cacheDir = SilDev.Run.EnvironmentVariableFilter("%CurrentDir%\\Data\\Cache");
+                    string defCacheDir = SilDev.Run.EnvVarFilter("%LocalAppData%\\Steam");
+                    string cacheDir = SilDev.Run.EnvVarFilter("%CurrentDir%\\Data\\Cache");
                     SilDev.Data.DirLink(defCacheDir, cacheDir, true);
 
                     string iniPath = Path.Combine(Application.StartupPath, string.Format("{0}.ini", Path.GetFileNameWithoutExtension(Application.ExecutablePath).Replace("64", string.Empty)));
@@ -90,7 +90,7 @@ namespace SteamPortable
                         if (!string.IsNullOrWhiteSpace(steamAppsDir))
                         {
                             string defaultSteamAppsPath = Path.Combine(appDir, "steamapps");
-                            steamAppsDir = SilDev.Run.EnvironmentVariableFilter(steamAppsDir);
+                            steamAppsDir = SilDev.Run.EnvVarFilter(steamAppsDir);
                             SilDev.Data.DirLink(defaultSteamAppsPath, steamAppsDir, true);
                         }
                     }
@@ -104,7 +104,7 @@ namespace SteamPortable
                     if (!SilDev.Reg.ValueExist("HKLM\\SOFTWARE\\Valve", "Portable App"))
                         SilDev.Reg.RenameSubKey("HKLM\\SOFTWARE\\Valve", "SOFTWARE\\SI13N7-BACKUP: Valve");
 
-                    string settingsKeyPath = SilDev.Run.EnvironmentVariableFilter("%CurrentDir%\\Data\\settings.reg");
+                    string settingsKeyPath = SilDev.Run.EnvVarFilter("%CurrentDir%\\Data\\settings.reg");
                     SilDev.Reg.ImportFile(settingsKeyPath);
 
                     SilDev.Reg.WriteValue("HKCU\\Software\\Valve", "Portable App", "True");
@@ -163,7 +163,7 @@ namespace SteamPortable
 
                     SilDev.Reg.ImportFile(new string[] { "Windows Registry Editor Version 5.00", "[-HKEY_CLASSES_ROOT\\steam]", Environment.NewLine }, true);
 
-                    string tempRegPath = SilDev.Run.EnvironmentVariableFilter("%CurrentDir%\\Data\\temp.reg");
+                    string tempRegPath = SilDev.Run.EnvVarFilter("%CurrentDir%\\Data\\temp.reg");
                     string regFileContent = string.Empty;
                     try
                     {

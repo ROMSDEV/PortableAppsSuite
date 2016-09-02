@@ -10,9 +10,9 @@ namespace VLCPortable
         static void Main()
         {
 #if x86
-            string appPath = SilDev.Run.EnvironmentVariableFilter("%CurrentDir%\\App\\vlc\\vlc.exe");
+            string appPath = SilDev.Run.EnvVarFilter("%CurrentDir%\\App\\vlc\\vlc.exe");
 #else
-            string appPath = SilDev.Run.EnvironmentVariableFilter("%CurrentDir%\\App\\vlc64\\vlc.exe");
+            string appPath = SilDev.Run.EnvVarFilter("%CurrentDir%\\App\\vlc64\\vlc.exe");
 #endif
             bool newInstance = true;
             using (Mutex mutex = new Mutex(true, Process.GetCurrentProcess().ProcessName, out newInstance))
@@ -20,7 +20,7 @@ namespace VLCPortable
                 SilDev.Log.AllowDebug();
                 if (newInstance)
                 {
-                    SilDev.Data.DirLink(SilDev.Run.EnvironmentVariableFilter("%AppData%\\vlc"), SilDev.Run.EnvironmentVariableFilter("%CurrentDir%\\Data"), true);
+                    SilDev.Data.DirLink(SilDev.Run.EnvVarFilter("%AppData%\\vlc"), SilDev.Run.EnvVarFilter("%CurrentDir%\\Data"), true);
                     SilDev.Run.App(new ProcessStartInfo()
                     {
                         Arguments = $"{SilDev.Run.CommandLine()} --no-plugins-cache".Trim(),
@@ -31,7 +31,7 @@ namespace VLCPortable
                         foreach (Process app in Process.GetProcessesByName("vlc"))
                             app.WaitForExit();
                     }
-                    SilDev.Data.DirUnLink(SilDev.Run.EnvironmentVariableFilter("%AppData%\\vlc"), true);
+                    SilDev.Data.DirUnLink(SilDev.Run.EnvVarFilter("%AppData%\\vlc"), true);
                 }
                 else
                     SilDev.Run.App(new ProcessStartInfo()

@@ -20,8 +20,8 @@ namespace YoloMousePortable
                 if (newInstance)
                 {
                     SilDev.Log.AllowDebug();
-                    string dataDir = SilDev.Run.EnvironmentVariableFilter("%CurrentDir%\\Data");
-                    string defDataDir = SilDev.Run.EnvironmentVariableFilter("%LocalAppData%\\YoloMouse");
+                    string dataDir = SilDev.Run.EnvVarFilter("%CurrentDir%\\Data");
+                    string defDataDir = SilDev.Run.EnvVarFilter("%LocalAppData%\\YoloMouse");
                     SilDev.Data.DirLink(defDataDir, dataDir, true);
                     SilDev.Run.App(new ProcessStartInfo() { FileName = appPath }, 0);
                     SilDev.Data.DirUnLink(defDataDir, true);

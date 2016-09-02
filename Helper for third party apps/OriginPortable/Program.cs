@@ -40,68 +40,68 @@ namespace OriginPortable
 
                     SilDev.Data.DirLink
                     (
-                        SilDev.Run.EnvironmentVariableFilter(@"%SystemDrive%\temp"),
-                        SilDev.Run.EnvironmentVariableFilter(@"%CurrentDir%\Data\Temp"), true
+                        SilDev.Run.EnvVarFilter(@"%SystemDrive%\temp"),
+                        SilDev.Run.EnvVarFilter(@"%CurrentDir%\Data\Temp"), true
                     );
 
                     SilDev.Data.DirLink
                     (
-                        SilDev.Run.EnvironmentVariableFilter(@"%CommonProgramFiles(x86)%\EAInstaller"),
-                        SilDev.Run.EnvironmentVariableFilter(@"%CurrentDir%\App\Common\EAInstaller"), true
+                        SilDev.Run.EnvVarFilter(@"%CommonProgramFiles(x86)%\EAInstaller"),
+                        SilDev.Run.EnvVarFilter(@"%CurrentDir%\App\Common\EAInstaller"), true
                     );
 
                     SilDev.Data.DirLink
                     (
-                        SilDev.Run.EnvironmentVariableFilter(@"%AppData%\EA Games"),
-                        SilDev.Run.EnvironmentVariableFilter(@"%CurrentDir%\Data\AppData\Roaming\EA Games"), true
+                        SilDev.Run.EnvVarFilter(@"%AppData%\EA Games"),
+                        SilDev.Run.EnvVarFilter(@"%CurrentDir%\Data\AppData\Roaming\EA Games"), true
                     );
 
                     SilDev.Data.DirLink
                     (
-                        SilDev.Run.EnvironmentVariableFilter(@"%AppData%\Electronic Arts"),
-                        SilDev.Run.EnvironmentVariableFilter(@"%CurrentDir%\Data\AppData\Roaming\Electronic Arts"), true
+                        SilDev.Run.EnvVarFilter(@"%AppData%\Electronic Arts"),
+                        SilDev.Run.EnvVarFilter(@"%CurrentDir%\Data\AppData\Roaming\Electronic Arts"), true
                     );
 
                     SilDev.Data.DirLink
                     (
-                        SilDev.Run.EnvironmentVariableFilter(@"%AppData%\Origin"),
-                        SilDev.Run.EnvironmentVariableFilter(@"%CurrentDir%\Data\AppData\Roaming\Origin"), true
+                        SilDev.Run.EnvVarFilter(@"%AppData%\Origin"),
+                        SilDev.Run.EnvVarFilter(@"%CurrentDir%\Data\AppData\Roaming\Origin"), true
                     );
 
                     SilDev.Data.DirLink
                     (
-                        SilDev.Run.EnvironmentVariableFilter(@"%LocalAppData%\EA Games"),
-                        SilDev.Run.EnvironmentVariableFilter(@"%CurrentDir%\Data\AppData\Local\EA Games"), true
+                        SilDev.Run.EnvVarFilter(@"%LocalAppData%\EA Games"),
+                        SilDev.Run.EnvVarFilter(@"%CurrentDir%\Data\AppData\Local\EA Games"), true
                     );
 
                     SilDev.Data.DirLink
                     (
-                        SilDev.Run.EnvironmentVariableFilter(@"%LocalAppData%\Electronic Arts"),
-                        SilDev.Run.EnvironmentVariableFilter(@"%CurrentDir%\Data\AppData\Local\Electronic Arts"), true
+                        SilDev.Run.EnvVarFilter(@"%LocalAppData%\Electronic Arts"),
+                        SilDev.Run.EnvVarFilter(@"%CurrentDir%\Data\AppData\Local\Electronic Arts"), true
                     );
 
                     SilDev.Data.DirLink
                     (
-                        SilDev.Run.EnvironmentVariableFilter(@"%LocalAppData%\Origin"),
-                        SilDev.Run.EnvironmentVariableFilter(@"%CurrentDir%\Data\AppData\Local\Origin"), true
+                        SilDev.Run.EnvVarFilter(@"%LocalAppData%\Origin"),
+                        SilDev.Run.EnvVarFilter(@"%CurrentDir%\Data\AppData\Local\Origin"), true
                     );
 
                     SilDev.Data.DirLink
                     (
-                        SilDev.Run.EnvironmentVariableFilter(@"%ProgramData%\EA Games"),
-                        SilDev.Run.EnvironmentVariableFilter(@"%CurrentDir%\Data\ProgramData\EA Games"), true
+                        SilDev.Run.EnvVarFilter(@"%ProgramData%\EA Games"),
+                        SilDev.Run.EnvVarFilter(@"%CurrentDir%\Data\ProgramData\EA Games"), true
                     );
 
                     SilDev.Data.DirLink
                     (
-                        SilDev.Run.EnvironmentVariableFilter(@"%ProgramData%\Electronic Arts"),
-                        SilDev.Run.EnvironmentVariableFilter(@"%CurrentDir%\Data\ProgramData\Electronic Arts"), true
+                        SilDev.Run.EnvVarFilter(@"%ProgramData%\Electronic Arts"),
+                        SilDev.Run.EnvVarFilter(@"%CurrentDir%\Data\ProgramData\Electronic Arts"), true
                     );
 
                     SilDev.Data.DirLink
                     (
-                        SilDev.Run.EnvironmentVariableFilter(@"%ProgramData%\Origin"),
-                        SilDev.Run.EnvironmentVariableFilter(@"%CurrentDir%\Data\ProgramData\Origin"), true
+                        SilDev.Run.EnvVarFilter(@"%ProgramData%\Origin"),
+                        SilDev.Run.EnvVarFilter(@"%CurrentDir%\Data\ProgramData\Origin"), true
                     );
 
                     #endregion
@@ -275,7 +275,7 @@ namespace OriginPortable
 
                     # region Registry Export
 
-                    string tempRegPath = SilDev.Run.EnvironmentVariableFilter("%CurrentDir%\\Data\\temp.reg");
+                    string tempRegPath = SilDev.Run.EnvVarFilter("%CurrentDir%\\Data\\temp.reg");
                     string regFileContent = string.Empty;
                     if (File.Exists(tempRegPath))
                         File.Delete(tempRegPath);
@@ -394,20 +394,20 @@ namespace OriginPortable
 
                     #region Unlink Directories
 
-                    SilDev.Data.DirUnLink(SilDev.Run.EnvironmentVariableFilter(@"%SystemDrive%\temp"), true);
-                    SilDev.Data.DirUnLink(SilDev.Run.EnvironmentVariableFilter(@"%CommonProgramFiles(x86)%\EAInstaller"), true);
+                    SilDev.Data.DirUnLink(SilDev.Run.EnvVarFilter(@"%SystemDrive%\temp"), true);
+                    SilDev.Data.DirUnLink(SilDev.Run.EnvVarFilter(@"%CommonProgramFiles(x86)%\EAInstaller"), true);
 
-                    SilDev.Data.DirUnLink(SilDev.Run.EnvironmentVariableFilter(@"%AppData%\EA Games"), true);
-                    SilDev.Data.DirUnLink(SilDev.Run.EnvironmentVariableFilter(@"%AppData%\Electronic Arts"), true);
-                    SilDev.Data.DirUnLink(SilDev.Run.EnvironmentVariableFilter(@"%AppData%\Origin"), true);
+                    SilDev.Data.DirUnLink(SilDev.Run.EnvVarFilter(@"%AppData%\EA Games"), true);
+                    SilDev.Data.DirUnLink(SilDev.Run.EnvVarFilter(@"%AppData%\Electronic Arts"), true);
+                    SilDev.Data.DirUnLink(SilDev.Run.EnvVarFilter(@"%AppData%\Origin"), true);
 
-                    SilDev.Data.DirUnLink(SilDev.Run.EnvironmentVariableFilter(@"%LocalAppData%\EA Games"), true);
-                    SilDev.Data.DirUnLink(SilDev.Run.EnvironmentVariableFilter(@"%LocalAppData%\Electronic Arts"), true);
-                    SilDev.Data.DirUnLink(SilDev.Run.EnvironmentVariableFilter(@"%LocalAppData%\Origin"), true);
+                    SilDev.Data.DirUnLink(SilDev.Run.EnvVarFilter(@"%LocalAppData%\EA Games"), true);
+                    SilDev.Data.DirUnLink(SilDev.Run.EnvVarFilter(@"%LocalAppData%\Electronic Arts"), true);
+                    SilDev.Data.DirUnLink(SilDev.Run.EnvVarFilter(@"%LocalAppData%\Origin"), true);
 
-                    SilDev.Data.DirUnLink(SilDev.Run.EnvironmentVariableFilter(@"%ProgramData%\EA Games"), true);
-                    SilDev.Data.DirUnLink(SilDev.Run.EnvironmentVariableFilter(@"%ProgramData%\Electronic Arts"), true);
-                    SilDev.Data.DirUnLink(SilDev.Run.EnvironmentVariableFilter(@"%ProgramData%\Origin"), true);
+                    SilDev.Data.DirUnLink(SilDev.Run.EnvVarFilter(@"%ProgramData%\EA Games"), true);
+                    SilDev.Data.DirUnLink(SilDev.Run.EnvVarFilter(@"%ProgramData%\Electronic Arts"), true);
+                    SilDev.Data.DirUnLink(SilDev.Run.EnvVarFilter(@"%ProgramData%\Origin"), true);
 
                     #endregion
 
