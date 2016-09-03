@@ -20,7 +20,7 @@ namespace ZAPPortable
                     {
                         SilDev.Log.AllowDebug();
 
-                        string appPath = Path.Combine(Application.StartupPath, "App\\ZedAttackProxy\\zap-2.4.3.jar");
+                        string appPath = Path.Combine(Application.StartupPath, "App\\ZedAttackProxy\\zap-2.5.0.jar");
                         if (!File.Exists(appPath) || Process.GetProcessesByName("zap").Length > 0)
                             return;
 
