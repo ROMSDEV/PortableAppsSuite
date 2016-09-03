@@ -2,7 +2,6 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
-using System.Windows.Forms;
 
 namespace CDBurnerXPPortable
 {
@@ -17,10 +16,15 @@ namespace CDBurnerXPPortable
                 if (newInstance)
                 {
                     SilDev.Log.AllowDebug();
-                    string appPath = Path.Combine(Application.StartupPath, "CDBurnerXP\\cdbxpp.exe");
+#if x86
+                    string appDir = SilDev.Run.EnvVarFilter("%CurrentDir%\\CDBurnerXP");
+#else
+                    string appDir = SilDev.Run.EnvVarFilter("%CurrentDir%\\CDBurnerXP64");
+#endif
+                    string appPath = Path.Combine(appDir, "cdbxpp.exe");
                     if (!File.Exists(appPath) || Process.GetProcessesByName(Path.GetFileNameWithoutExtension(appPath)).Length > 0)
                         return;
-                    string iniPath = Path.Combine(Application.StartupPath, "CDBurnerXP\\Config.ini");
+                    string iniPath = Path.Combine(appDir, "Config.ini");
                     if (!File.Exists(iniPath))
                         File.WriteAllLines(iniPath, new string[] { "[CDBurnerXP]", "Portable=1" });
                     SilDev.Run.App(new ProcessStartInfo() { FileName = appPath }, 0);

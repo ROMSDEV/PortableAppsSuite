@@ -2,11 +2,16 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
+#if x86
 [assembly: AssemblyTitle("CDBurnerXP Portable")]
+[assembly: AssemblyProduct("CDBurnerXPPortable")]
+#else
+[assembly: AssemblyTitle("CDBurnerXP (64-bit) Portable")]
+[assembly: AssemblyProduct("CDBurnerXP64Portable")]
+#endif
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Si13n7 Dev. ®")]
-[assembly: AssemblyProduct("CDBurnerXPPortable")]
 [assembly: AssemblyCopyright("Copyright © Si13n7 Dev. ® 2016")]
 [assembly: AssemblyTrademark("Si13n7 Dev. ®")]
 [assembly: AssemblyCulture("")]
