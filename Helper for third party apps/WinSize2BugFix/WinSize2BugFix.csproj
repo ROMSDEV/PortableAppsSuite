@@ -47,7 +47,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\SilDev.Libs\SilDev.Convert.cs" />
-    <Compile Include="..\..\SilDev.Libs\SilDev.Crypt.cs" />
     <Compile Include="..\..\SilDev.Libs\SilDev.Elevation.cs" />
     <Compile Include="..\..\SilDev.Libs\SilDev.Log.cs" />
     <Compile Include="..\..\SilDev.Libs\SilDev.Run.cs" />
