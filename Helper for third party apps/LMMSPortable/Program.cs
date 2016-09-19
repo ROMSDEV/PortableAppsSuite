@@ -1,3 +1,4 @@
+using SilDev;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -14,29 +15,29 @@ namespace LMMSPortable
             using (Mutex mutex = new Mutex(true, Process.GetCurrentProcess().ProcessName, out newInstance))
             {
 #if x86
-                string appDir = SilDev.Run.EnvVarFilter("%CurrentDir%\\App\\lmms");
+                string appDir = PATH.Combine("%CurDir%\\App\\lmms");
 #else
-                string appDir = SilDev.Run.EnvVarFilter("%CurrentDir%\\App\\lmms64");
+                string appDir = PATH.Combine("%CurDir%\\App\\lmms64");
 #endif
                 string appPath = Path.Combine(appDir, "lmms.exe");
                 if (!File.Exists(appPath))
                     return;
                 if (newInstance)
                 {
-                    string dataDir = SilDev.Run.EnvVarFilter("%CurrentDir%\\Data\\lmms");
+                    string dataDir = PATH.Combine("%CurDir%\\Data\\lmms");
                     if (!Directory.Exists(dataDir))
                     {
                         Directory.CreateDirectory(Path.Combine(dataDir, "presets"));
                         Directory.CreateDirectory(Path.Combine(dataDir, "projects"));
                         Directory.CreateDirectory(Path.Combine(dataDir, "samples"));
                     }
-                    string defCfgPath = SilDev.Run.EnvVarFilter("%UserProfile%\\.lmmsrc.xml");
+                    string defCfgPath = PATH.Combine("%UserProfile%\\.lmmsrc.xml");
                     string bakCfgPath = $"{defCfgPath}.SI13N7-BACKUP";
-                    string cfgPath = SilDev.Run.EnvVarFilter("%CurrentDir%\\Data\\.lmmsrc.xml");
+                    string cfgPath = PATH.Combine("%CurDir%\\Data\\.lmmsrc.xml");
                     if (File.Exists(defCfgPath))
                     {
                         File.Move(defCfgPath, bakCfgPath);
-                        SilDev.Data.SetAttributes(bakCfgPath, FileAttributes.Hidden);
+                        DATA.SetAttributes(bakCfgPath, FileAttributes.Hidden);
                     }
                     if (!File.Exists(defCfgPath))
                     {
@@ -45,10 +46,10 @@ namespace LMMSPortable
                         File.WriteAllText(defCfgPath, cfgCon);
                     }
                     if (File.Exists(defCfgPath))
-                        SilDev.Data.SetAttributes(defCfgPath, FileAttributes.Hidden);
-                    SilDev.Run.App(new ProcessStartInfo()
+                        DATA.SetAttributes(defCfgPath, FileAttributes.Hidden);
+                    RUN.App(new ProcessStartInfo()
                     {
-                        Arguments = SilDev.Run.CommandLine(false),
+                        Arguments = RUN.CommandLine(false),
                         FileName = appPath
                     }, 0);
                     bool isRunning = true;
@@ -72,12 +73,12 @@ namespace LMMSPortable
                     if (File.Exists(bakCfgPath))
                         File.Move(bakCfgPath, defCfgPath);
                     if (File.Exists(defCfgPath))
-                        SilDev.Data.SetAttributes(defCfgPath, FileAttributes.Normal);
+                        DATA.SetAttributes(defCfgPath, FileAttributes.Normal);
                 }
                 else
-                    SilDev.Run.App(new ProcessStartInfo()
+                    RUN.App(new ProcessStartInfo()
                     {
-                        Arguments = SilDev.Run.CommandLine(false),
+                        Arguments = RUN.CommandLine(false),
                         FileName = appPath
                     });
             }

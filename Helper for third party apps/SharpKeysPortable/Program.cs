@@ -1,3 +1,4 @@
+using SilDev;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -16,17 +17,17 @@ namespace SharpKeysPortable
             {
                 if (newInstance)
                 {
-                    SilDev.Ini.File(Application.StartupPath, $"{Path.GetFileNameWithoutExtension(Application.ExecutablePath)}.ini");
-                    if (SilDev.Ini.Read("Settings", "ShowWarning").ToLower() == "true")
+                    INI.File($"%CurDir%\\{Path.GetFileNameWithoutExtension(Application.ExecutablePath)}.ini");
+                    if (INI.Read("Settings", "ShowWarning").ToLower() == "true")
                     {
-                        SilDev.Reg.CreateNewSubKey(SilDev.Reg.RegKey.CurrentUser, "Software\\RandyRants\\SharpKeys");
-                        SilDev.Reg.WriteValue(SilDev.Reg.RegKey.CurrentUser, "Software\\RandyRants\\SharpKeys", "ShowWarning", "1", SilDev.Reg.RegValueKind.DWord);
+                        REG.CreateNewSubKey(REG.RegKey.CurrentUser, "Software\\RandyRants\\SharpKeys");
+                        REG.WriteValue(REG.RegKey.CurrentUser, "Software\\RandyRants\\SharpKeys", "ShowWarning", "1", REG.RegValueKind.DWord);
                     }
-                    SilDev.Run.App(new ProcessStartInfo() { FileName = "%CurrentDir%\\SharpKeys\\SharpKeys.exe" }, 0);
-                    SilDev.Ini.Write("Settings", "ShowWarning", true);
-                    SilDev.Reg.RemoveExistSubKey(SilDev.Reg.RegKey.CurrentUser, "Software\\RandyRants\\SharpKeys");
-                    if (SilDev.Reg.GetSubKeys(SilDev.Reg.RegKey.CurrentUser, "Software\\RandyRants").Count <= 0)
-                        SilDev.Reg.RemoveExistSubKey(SilDev.Reg.RegKey.CurrentUser, "Software\\RandyRants");
+                    RUN.App(new ProcessStartInfo() { FileName = "%CurDir%\\SharpKeys\\SharpKeys.exe" }, 0);
+                    INI.Write("Settings", "ShowWarning", true);
+                    REG.RemoveExistSubKey(REG.RegKey.CurrentUser, "Software\\RandyRants\\SharpKeys");
+                    if (REG.GetSubKeys(REG.RegKey.CurrentUser, "Software\\RandyRants").Count <= 0)
+                        REG.RemoveExistSubKey(REG.RegKey.CurrentUser, "Software\\RandyRants");
                 }
             }
         }

@@ -1,3 +1,4 @@
+using SilDev;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -16,7 +17,7 @@ namespace DefragglerPortable
             {
                 if (newInstance)
                 {
-                    string rootDir = Path.Combine(Application.StartupPath, "Defraggler");
+                    string rootDir = PATH.Combine("%CurDir%\\Defraggler");
                     if (!Directory.Exists(rootDir))
                         return;
                     string appPath = Path.Combine(rootDir, "Defraggler.exe");
@@ -24,15 +25,15 @@ namespace DefragglerPortable
                     if (!File.Exists(appPath) || Process.GetProcessesByName(Path.GetFileNameWithoutExtension(appPath)).Length > 0 ||
                         !File.Exists(updaterPath) || Process.GetProcessesByName(Path.GetFileNameWithoutExtension(updaterPath)).Length > 0)
                         return;
-                    SilDev.Log.AllowDebug();
+                    LOG.AllowDebug();
                     string cmdLine = Environment.CommandLine.Replace($"\"{Application.ExecutablePath}\"", string.Empty).TrimStart();
-                    SilDev.Run.App(new ProcessStartInfo()
+                    RUN.App(new ProcessStartInfo()
                     {
                         Arguments = "/silent",
                         FileName = updaterPath,
                         Verb = "runas"
                     }, -1, 0);
-                    SilDev.Run.App(new ProcessStartInfo()
+                    RUN.App(new ProcessStartInfo()
                     {
                         Arguments = cmdLine,
                         FileName = appPath,

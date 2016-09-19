@@ -1,3 +1,4 @@
+using SilDev;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -12,7 +13,7 @@ namespace ProcessRun
         [STAThread]
         static void Main()
         {
-            string file = Path.Combine(Application.StartupPath, "WinSize2.EXE");
+            string file = PATH.Combine("%CurDir%\\WinSize2.EXE");
             if (File.Exists(file))
             {
                 try
@@ -23,7 +24,7 @@ namespace ProcessRun
                         {
                             if (i > 0)
                                 i = 0;
-                            SilDev.Run.App(new ProcessStartInfo() { FileName = Path.Combine(SilDev.Run.EnvVarFilter("%CurrentDir%"), file) }, 100);
+                            RUN.App(new ProcessStartInfo() { FileName = PATH.Combine("%CurDir%", file) }, 100);
                         }
                         Thread.Sleep(100);
                         foreach (Process p in Process.GetProcessesByName("WinSize2"))
@@ -32,7 +33,7 @@ namespace ProcessRun
                                 continue;
                             StringBuilder title = new StringBuilder(32);
                             IntPtr result = IntPtr.Zero;
-                            if ((int)SilDev.WinAPI.SafeNativeMethods.SendMessageTimeoutText(p.MainWindowHandle, 0xd, (UIntPtr)32, title, 0x2, 200, out result) > 0)
+                            if ((int)WINAPI.SafeNativeMethods.SendMessageTimeoutText(p.MainWindowHandle, 0xd, (UIntPtr)32, title, 0x2, 200, out result) > 0)
                             {
                                 if (title.ToString().ToLower().Contains("winsize2"))
                                 {
@@ -45,7 +46,7 @@ namespace ProcessRun
                 }
                 catch (Exception ex)
                 {
-                    SilDev.Log.Debug(ex);
+                    LOG.Debug(ex);
                 }
             }
         }

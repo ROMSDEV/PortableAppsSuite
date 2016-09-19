@@ -1,3 +1,4 @@
+using SilDev;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -16,26 +17,26 @@ namespace AIDA64Portable
             {
                 if (newInstance)
                 {
-                    string appPath = Path.Combine(Application.StartupPath, "AIDA64\\aida64.exe");
+                    string appPath = PATH.Combine("%CurDir%\\AIDA64\\aida64.exe");
                     if (!File.Exists(appPath) || Process.GetProcessesByName("aida64").Length > 0)
                         return;
-                    SilDev.Log.AllowDebug();
+                    LOG.AllowDebug();
                     bool regBackup = false;
-                    if (SilDev.Reg.SubKeyExist("HKEY_CURRENT_USER\\Software\\FinalWire"))
+                    if (REG.SubKeyExist("HKEY_CURRENT_USER\\Software\\FinalWire"))
                     {
-                        if (string.IsNullOrWhiteSpace(SilDev.Reg.ReadValue("HKEY_CURRENT_USER\\Software\\FinalWire", "Portable App")))
+                        if (string.IsNullOrWhiteSpace(REG.ReadValue("HKEY_CURRENT_USER\\Software\\FinalWire", "Portable App")))
                         {
-                            SilDev.Reg.RenameSubKey("HKEY_CURRENT_USER\\Software\\FinalWire", "Software\\SI13N7-BACKUP: FinalWire");
+                            REG.RenameSubKey("HKEY_CURRENT_USER\\Software\\FinalWire", "Software\\SI13N7-BACKUP: FinalWire");
                             regBackup = true;
                         }
                     }
-                    SilDev.Reg.ImportFile(Path.Combine(Application.StartupPath, "settings.reg"));
-                    SilDev.Reg.WriteValue("HKEY_CURRENT_USER\\Software\\FinalWire", "Portable App", "True");
-                    SilDev.Run.App(new ProcessStartInfo() { FileName = appPath }, 0);
-                    SilDev.Reg.ExportFile("HKEY_CURRENT_USER\\Software\\FinalWire", Path.Combine(Application.StartupPath, "settings.reg"));
-                    SilDev.Reg.RemoveExistSubKey(SilDev.Reg.RegKey.CurrentUser, "Software\\FinalWire");
+                    REG.ImportFile(PATH.Combine("%CurDir%\\settings.reg"));
+                    REG.WriteValue("HKEY_CURRENT_USER\\Software\\FinalWire", "Portable App", "True");
+                    RUN.App(new ProcessStartInfo() { FileName = appPath }, 0);
+                    REG.ExportFile("HKEY_CURRENT_USER\\Software\\FinalWire", PATH.Combine("%CurDir%\\settings.reg"));
+                    REG.RemoveExistSubKey(REG.RegKey.CurrentUser, "Software\\FinalWire");
                     if (regBackup)
-                        SilDev.Reg.RenameSubKey("HKEY_CURRENT_USER\\Software\\SI13N7-BACKUP: FinalWire", "Software\\FinalWire");
+                        REG.RenameSubKey("HKEY_CURRENT_USER\\Software\\SI13N7-BACKUP: FinalWire", "Software\\FinalWire");
                 }
             }
         }

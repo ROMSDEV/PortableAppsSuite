@@ -1,3 +1,4 @@
+using SilDev;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -11,16 +12,16 @@ namespace JDownloader2Portable
         [STAThread]
         static void Main()
         {
-            SilDev.Log.AllowDebug();
+            LOG.AllowDebug();
             try
             {
                 string JavaPath = string.Empty;
-                string ExePath = Path.Combine(Application.StartupPath, "JDownloader_v2.0\\JDownloader2.exe");
+                string ExePath = PATH.Combine("%CurDir%\\JDownloader_v2.0\\JDownloader2.exe");
                 if (!File.Exists(ExePath))
                 {
-                    string drive = new DriveInfo(Application.StartupPath).RootDirectory.Root.Name;
+                    string drive = new DriveInfo(PATH.GetEnvironmentVariableValue("CurDir")).RootDirectory.Root.Name;
                     string JavaDir = drive;
-                    foreach (string dirName in Application.StartupPath.Split('\\'))
+                    foreach (string dirName in PATH.GetEnvironmentVariableValue("CurDir").Split('\\'))
                     {
                         try
                         {
@@ -57,14 +58,14 @@ namespace JDownloader2Portable
                         }
                         catch (Exception ex)
                         {
-                            SilDev.Log.Debug(ex);
+                            LOG.Debug(ex);
                         }
                     }
                     if (!File.Exists(JavaPath))
                     {
                         if (File.Exists($"{ExePath}.disabled"))
                             File.Move($"{ExePath}.disabled", ExePath);
-                        string UpdExePath = Path.Combine(Application.StartupPath, "JDownloader_v2.0\\JDownloader2Update.exe");
+                        string UpdExePath = PATH.Combine("%CurDir%\\JDownloader_v2.0\\JDownloader2Update.exe");
                         if (File.Exists($"{UpdExePath}.disabled"))
                             File.Move($"{UpdExePath}.disabled", UpdExePath);
                     }
@@ -74,7 +75,7 @@ namespace JDownloader2Portable
                     MessageBox.Show("Java Portable not found!", "JDownloader 2 Portable", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
-                string JDownloader = Path.Combine(Application.StartupPath, "JDownloader_v2.0\\JDownloader.jar");
+                string JDownloader = PATH.Combine("%CurDir%\\JDownloader_v2.0\\JDownloader.jar");
                 if (!File.Exists(JDownloader))
                 {
                     MessageBox.Show("JDownloader 2 not found!", "JDownloader 2 Portable", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -85,20 +86,20 @@ namespace JDownloader2Portable
                 {
                     if (newInstance)
                     {
-                        string jreUsageDir = SilDev.Run.EnvVarFilter("%UserProfile%\\.oracle_jre_usage");
+                        string jreUsageDir = PATH.Combine("%UserProfile%\\.oracle_jre_usage");
                         if (!Directory.Exists(jreUsageDir))
                             Directory.CreateDirectory(jreUsageDir);
-                        SilDev.Data.SetAttributes(jreUsageDir, FileAttributes.Hidden);
+                        DATA.SetAttributes(jreUsageDir, FileAttributes.Hidden);
                         if (File.Exists(ExePath))
-                            SilDev.Run.App(new ProcessStartInfo()
+                            RUN.App(new ProcessStartInfo()
                             {
-                                Arguments = SilDev.Run.CommandLine(false),
+                                Arguments = RUN.CommandLine(false),
                                 FileName = ExePath,
                             }, 0);
                         else
-                            SilDev.Run.App(new ProcessStartInfo()
+                            RUN.App(new ProcessStartInfo()
                             {
-                                Arguments = $"-jar \"{JDownloader}\" {SilDev.Run.CommandLine(false)}".Trim(),
+                                Arguments = $"-jar \"{JDownloader}\" {RUN.CommandLine(false)}".Trim(),
                                 FileName = JavaPath,
                                 WorkingDirectory = Path.GetDirectoryName(JDownloader)
                             }, 0);
@@ -108,15 +109,15 @@ namespace JDownloader2Portable
                     else
                     {
                         if (File.Exists(ExePath))
-                            SilDev.Run.App(new ProcessStartInfo()
+                            RUN.App(new ProcessStartInfo()
                             {
-                                Arguments = SilDev.Run.CommandLine(false),
+                                Arguments = RUN.CommandLine(false),
                                 FileName = ExePath,
                             }, 0);
                         else
-                            SilDev.Run.App(new ProcessStartInfo()
+                            RUN.App(new ProcessStartInfo()
                             {
-                                Arguments = $"-jar \"{JDownloader}\" {SilDev.Run.CommandLine(false)}".Trim(),
+                                Arguments = $"-jar \"{JDownloader}\" {RUN.CommandLine(false)}".Trim(),
                                 FileName = JavaPath,
                                 WorkingDirectory = Path.GetDirectoryName(JDownloader)
                             }, 0);
@@ -125,7 +126,7 @@ namespace JDownloader2Portable
             }
             catch (Exception ex)
             {
-                SilDev.Log.Debug(ex);
+                LOG.Debug(ex);
             }
         }
     }

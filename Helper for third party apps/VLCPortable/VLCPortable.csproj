@@ -42,6 +42,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
@@ -49,6 +50,7 @@
     <Compile Include="..\..\SilDev.Libs\SilDev.Data.cs" />
     <Compile Include="..\..\SilDev.Libs\SilDev.Elevation.cs" />
     <Compile Include="..\..\SilDev.Libs\SilDev.Log.cs" />
+    <Compile Include="..\..\SilDev.Libs\SilDev.Path.cs" />
     <Compile Include="..\..\SilDev.Libs\SilDev.Run.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

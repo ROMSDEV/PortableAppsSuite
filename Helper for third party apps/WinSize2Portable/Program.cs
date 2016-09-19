@@ -1,3 +1,4 @@
+using SilDev;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -11,7 +12,7 @@ namespace WinSize2Portable
         [STAThread]
         static void Main()
         {
-            SilDev.Log.AllowDebug();
+            LOG.AllowDebug();
             bool newInstance = true;
             using (Mutex mutex = new Mutex(true, Process.GetCurrentProcess().ProcessName, out newInstance))
             {
@@ -19,7 +20,7 @@ namespace WinSize2Portable
                 {
                     try
                     {
-                        string dataPath = Path.Combine(Application.StartupPath, "Data");
+                        string dataPath = PATH.Combine("%CurDir%\\Data");
                         if (!Directory.Exists(dataPath))
                         {
                             Directory.CreateDirectory(dataPath);
@@ -27,10 +28,10 @@ namespace WinSize2Portable
                             File.Create(Path.Combine(dataPath, "WinSize2_FullScreen.INI")).Close();
                         }
                         string appdataPath = Path.Combine(Environment.GetEnvironmentVariable("APPDATA"), "MagraSoft");
-                        SilDev.Ini.File(appdataPath, "WinSize2_Root.INI");
-                        SilDev.Ini.Write("Settings", "INIWithScreenSize", 0);
-                        SilDev.Ini.Write("Settings", "INIFile_Path", dataPath);
-                        SilDev.Run.App(new ProcessStartInfo() { FileName = "%CurrentDir%\\App\\WinSize2\\_WinSize2_Launcher.exe" }, 0);
+                        INI.File(appdataPath, "WinSize2_Root.INI");
+                        INI.Write("Settings", "INIWithScreenSize", 0);
+                        INI.Write("Settings", "INIFile_Path", dataPath);
+                        RUN.App(new ProcessStartInfo() { FileName = "%CurDir%\\App\\WinSize2\\_WinSize2_Launcher.exe" }, 0);
                         bool isRunning = true;
                         while (isRunning)
                         {
@@ -42,7 +43,7 @@ namespace WinSize2Portable
                     }
                     catch (Exception ex)
                     {
-                        SilDev.Log.Debug(ex);
+                        LOG.Debug(ex);
                     }
                 }
             }

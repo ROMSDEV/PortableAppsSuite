@@ -24,10 +24,7 @@ namespace ProcessRun
                         foreach (Process p in Process.GetProcessesByName(arg))
                             p.WaitForExit();
                 }
-                catch
-                {
-                    // DO NOTHING
-                }
+                catch { }
                 finally
                 {
                     run();

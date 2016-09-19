@@ -1,3 +1,4 @@
+using SilDev;
 using System;
 using System.Diagnostics;
 using System.Threading;
@@ -14,11 +15,11 @@ namespace HeavenBenchmarkPortable // Heaven Benchmark 4.0
             {
                 if (newInstance)
                 {
-                    SilDev.Data.DirLink(SilDev.Run.EnvVarFilter("%UserProfile%\\Heaven"), SilDev.Run.EnvVarFilter("%CurrentDir%\\Data"), true);
-                    SilDev.Run.App(new ProcessStartInfo()
+                    DATA.DirLink(PATH.Combine("%UserProfile%\\Heaven"), PATH.Combine("%CurDir%\\Data"), true);
+                    RUN.App(new ProcessStartInfo()
                     {
-                        Arguments = $"-config \"{SilDev.Run.EnvVarFilter("%CurrentDir%\\App\\heaven\\data\\launcher\\launcher.xml")}\"",
-                        FileName = "%CurrentDir%\\App\\heaven\\bin\\browser_x86.exe"
+                        Arguments = $"-config \"{PATH.Combine("%CurDir%\\App\\heaven\\data\\launcher\\launcher.xml")}\"",
+                        FileName = "%CurDir%\\App\\heaven\\bin\\browser_x86.exe"
                     }, 0);
                     while (Process.GetProcessesByName("browser_x86").Length > 0 || Process.GetProcessesByName("Heaven").Length > 0)
                     {
@@ -27,7 +28,7 @@ namespace HeavenBenchmarkPortable // Heaven Benchmark 4.0
                         foreach (Process app in Process.GetProcessesByName("Heaven"))
                             app.WaitForExit();
                     }
-                    SilDev.Data.DirUnLink(SilDev.Run.EnvVarFilter("%UserProfile%\\Heaven"), true);
+                    DATA.DirUnLink(PATH.Combine("%UserProfile%\\Heaven"), true);
                 }
             }
         }

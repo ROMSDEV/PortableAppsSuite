@@ -8,7 +8,7 @@ namespace FurMarkPortable
         [STAThread]
         static void Main()
         {
-            SilDev.Run.App(new ProcessStartInfo() { FileName = "%CurrentDir%\\FurMark\\FurMark.exe" });
+            SilDev.RUN.App(new ProcessStartInfo() { FileName = "%CurDir%\\FurMark\\FurMark.exe" });
         }
     }
 }

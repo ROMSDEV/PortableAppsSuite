@@ -1,3 +1,4 @@
+using SilDev;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -10,7 +11,7 @@ namespace WinRARUpdater
 {
     public partial class MainForm : Form
     {
-        SilDev.Network.AsyncTransfer Transfer = new SilDev.Network.AsyncTransfer();
+        NET.ASYNCTRANSFER Transfer = new NET.ASYNCTRANSFER();
         int DownloadFinishedCount = 0;
         string SetupPath = string.Empty;
 
@@ -33,19 +34,19 @@ namespace WinRARUpdater
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            string IniFile = Path.Combine(Application.StartupPath, $"{Path.GetFileNameWithoutExtension(Application.ExecutablePath)}.ini");
+            string IniFile = PATH.Combine($"%CurDir%\\{Path.GetFileNameWithoutExtension(Application.ExecutablePath)}.ini");
             if (!File.Exists(IniFile))
             {
-                SilDev.Ini.File(IniFile);
-                SilDev.Ini.Write("Settings", "Language", "English");
-                SilDev.Ini.Write("Settings", "Architecture", Environment.Is64BitProcess ? "64 bit" : "32 bit");
-                SilDev.Ini.Write("Settings", "DoNotAskAgain", false);
+                INI.File(IniFile);
+                INI.Write("Settings", "Language", "English");
+                INI.Write("Settings", "Architecture", Environment.Is64BitProcess ? "64 bit" : "32 bit");
+                INI.Write("Settings", "DoNotAskAgain", false);
             }
             else
-                SilDev.Ini.File(IniFile);
+                INI.File(IniFile);
 
             bool DoNotAskAgain = false;
-            if (!bool.TryParse(SilDev.Ini.Read("Settings", "DoNotAskAgain"), out DoNotAskAgain) || !DoNotAskAgain)
+            if (!bool.TryParse(INI.Read("Settings", "DoNotAskAgain"), out DoNotAskAgain) || !DoNotAskAgain)
             {
                 Form LangSelection = new LangSelectionForm();
                 if (LangSelection.ShowDialog() != DialogResult.OK)
@@ -58,7 +59,7 @@ namespace WinRARUpdater
 
             try
             {
-                string WinRAR = Path.Combine(Application.StartupPath, "WinRAR.exe");
+                string WinRAR = PATH.Combine("%CurDir%\\WinRAR.exe");
                 string UpdateURL = "http://www.rarsoft.com/download.htm";
 
                 string LocalVersion = "0";
@@ -71,7 +72,7 @@ namespace WinRARUpdater
                 }
                 CheckClose(LocalVersion, "LocalVersion");
 
-                string HtmContent = SilDev.Network.DownloadString(UpdateURL);
+                string HtmContent = NET.DownloadString(UpdateURL);
                 CheckClose(HtmContent, "OnlineVersion");
 
                 Dictionary<string, string[]> OnlineInfo = new Dictionary<string, string[]>();
@@ -88,7 +89,7 @@ namespace WinRARUpdater
                         {
                             if (item.Key == Language)
                             {
-                                SilDev.Log.Debug($"Key: {item.Key} - Value[0]: {item.Value[0]} - Value[1]: {item.Value[1]}");
+                                LOG.Debug($"Key: {item.Key} - Value[0]: {item.Value[0]} - Value[1]: {item.Value[1]}");
                                 break;
                             }
                         }
@@ -103,10 +104,10 @@ namespace WinRARUpdater
                 string FileName = string.Empty;
                 foreach (var item in OnlineInfo)
                 {
-                    string Lang = SilDev.Ini.Read("Settings", "Language");
+                    string Lang = INI.Read("Settings", "Language");
                     if (string.IsNullOrWhiteSpace(Lang))
                         Lang = "English";
-                    string Bits = SilDev.Ini.Read("Settings", "Architecture");
+                    string Bits = INI.Read("Settings", "Architecture");
                     if (string.IsNullOrWhiteSpace(Lang))
                         Bits = Environment.Is64BitProcess ? "64 bit" : "32 bit";
                     if (item.Key.ToLower() == $"{Lang.ToLower()} ({Bits.ToLower()})")
@@ -128,7 +129,7 @@ namespace WinRARUpdater
                 {
                     if (!File.Exists(WinRAR) || Environment.CommandLine.ToLower().Contains("/silent") || ShowInfoBox("UpdateAvailable", MessageBoxButtons.YesNo) == DialogResult.Yes)
                     {
-                        SetupPath = Path.Combine(Application.StartupPath, FileName);
+                        SetupPath = PATH.Combine("%CurDir%", FileName);
                         if (File.Exists(SetupPath))
                         {
                             try
@@ -137,7 +138,7 @@ namespace WinRARUpdater
                             }
                             catch
                             {
-                                SilDev.Run.Cmd($"DEL /F /Q \"{SetupPath}\"", true);
+                                RUN.Cmd($"DEL /F /Q \"{SetupPath}\"", true);
                             }
                         }
                         if (!File.Exists(SetupPath))
@@ -224,13 +225,13 @@ namespace WinRARUpdater
             {
                 if (File.Exists(SetupPath))
                 {
-                    string UnRAR = SilDev.Source.TempAssembliesFilePath("UnRAR.exe");
+                    string UnRAR = SOURCE.TempAssembliesFilePath("UnRAR.exe");
                     if (!File.Exists(UnRAR))
                         throw new Exception("UnRAR.exe not exists");
-                    string TempDir = Path.Combine(Application.StartupPath, "Update");
+                    string TempDir = PATH.Combine("%CurDir%\\Update");
                     if (!Directory.Exists(TempDir))
                         Directory.CreateDirectory(TempDir);
-                    SilDev.Run.App(new ProcessStartInfo()
+                    RUN.App(new ProcessStartInfo()
                     {
                         Arguments = $"x -u \"{SetupPath}\" \"{TempDir}\"",
                         FileName = UnRAR,
@@ -240,7 +241,7 @@ namespace WinRARUpdater
                     if (updFiles.Length <= 0)
                         throw new Exception("No files found to update");
                     List<string> curFiles = new List<string>();
-                    curFiles.AddRange(Directory.GetFiles(Application.StartupPath, "*", SearchOption.TopDirectoryOnly).Where(s => !WhiteList.Contains(Path.GetFileName(s).ToLower())));
+                    curFiles.AddRange(Directory.GetFiles(PATH.GetEnvironmentVariableValue("CurDir"), "*", SearchOption.TopDirectoryOnly).Where(s => !WhiteList.Contains(Path.GetFileName(s).ToLower())));
                     foreach (string file in curFiles)
                     {
                         try
@@ -251,11 +252,11 @@ namespace WinRARUpdater
                         {
                             try
                             {
-                                File.Move(file, $"{file}.{SilDev.Crypt.MD5.EncryptString(Path.GetRandomFileName())}");
+                                File.Move(file, $"{file}.{CRYPT.MD5.EncryptString(Path.GetRandomFileName())}");
                             }
                             catch (Exception ex)
                             {
-                                SilDev.Log.Debug(ex);
+                                LOG.Debug(ex);
                             }
                         }
                     }
@@ -263,11 +264,11 @@ namespace WinRARUpdater
                     {
                         try
                         {
-                            File.Move(file, file.Replace(TempDir, Application.StartupPath));
+                            File.Move(file, file.Replace(TempDir, PATH.GetEnvironmentVariableValue("CurDir")));
                         }
                         catch (Exception ex)
                         {
-                            SilDev.Log.Debug(ex);
+                            LOG.Debug(ex);
                         }
                     }
                     if (Directory.Exists(TempDir))
@@ -278,7 +279,7 @@ namespace WinRARUpdater
             catch (Exception ex)
             {
                 e.Result = "UpdateFailed";
-                SilDev.Log.Debug(ex);
+                LOG.Debug(ex);
             }
         }
 
@@ -293,7 +294,7 @@ namespace WinRARUpdater
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             if (File.Exists(SetupPath))
-                SilDev.Run.Cmd($"PING 127.0.0.1 -n 2 && DEL /F /Q \"{SetupPath}\"");
+                RUN.Cmd($"PING 127.0.0.1 -n 2 && DEL /F /Q \"{SetupPath}\"");
         }
     }
 }

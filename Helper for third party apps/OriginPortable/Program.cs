@@ -1,3 +1,4 @@
+using SilDev;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -14,8 +15,8 @@ namespace OriginPortable
         [STAThread]
         static void Main()
         {
-            SilDev.Log.AllowDebug();
-            string appDir = Path.Combine(Application.StartupPath, @"App\Origin");
+            LOG.AllowDebug();
+            string appDir = PATH.Combine(@"%CurDir%\App\Origin");
             string appPath = Path.Combine(appDir, "Origin.exe");
             bool newInstance = true;
             using (Mutex mutex = new Mutex(true, Process.GetCurrentProcess().ProcessName, out newInstance))
@@ -25,10 +26,10 @@ namespace OriginPortable
 #if x86
                     if (Environment.Is64BitOperatingSystem)
                     {
-                        SilDev.Run.App(new ProcessStartInfo()
+                        RUN.App(new ProcessStartInfo()
                         {
                             Arguments = cmdLineArgs,
-                            FileName = $"%CurrentDir%\\{Path.GetFileNameWithoutExtension(Application.ExecutablePath)}64.exe"
+                            FileName = $"%CurDir%\\{Path.GetFileNameWithoutExtension(Application.ExecutablePath)}64.exe"
                         });
                         return;
                     }
@@ -38,227 +39,227 @@ namespace OriginPortable
 
                     #region Link Directories
 
-                    SilDev.Data.DirLink
+                    DATA.DirLink
                     (
-                        SilDev.Run.EnvVarFilter(@"%SystemDrive%\temp"),
-                        SilDev.Run.EnvVarFilter(@"%CurrentDir%\Data\Temp"), true
+                        PATH.Combine(@"%SystemDrive%\temp"),
+                        PATH.Combine(@"%CurDir%\Data\Temp"), true
                     );
 
-                    SilDev.Data.DirLink
+                    DATA.DirLink
                     (
-                        SilDev.Run.EnvVarFilter(@"%CommonProgramFiles(x86)%\EAInstaller"),
-                        SilDev.Run.EnvVarFilter(@"%CurrentDir%\App\Common\EAInstaller"), true
+                        PATH.Combine(@"%CommonProgramFiles(x86)%\EAInstaller"),
+                        PATH.Combine(@"%CurDir%\App\Common\EAInstaller"), true
                     );
 
-                    SilDev.Data.DirLink
+                    DATA.DirLink
                     (
-                        SilDev.Run.EnvVarFilter(@"%AppData%\EA Games"),
-                        SilDev.Run.EnvVarFilter(@"%CurrentDir%\Data\AppData\Roaming\EA Games"), true
+                        PATH.Combine(@"%AppData%\EA Games"),
+                        PATH.Combine(@"%CurDir%\Data\AppData\Roaming\EA Games"), true
                     );
 
-                    SilDev.Data.DirLink
+                    DATA.DirLink
                     (
-                        SilDev.Run.EnvVarFilter(@"%AppData%\Electronic Arts"),
-                        SilDev.Run.EnvVarFilter(@"%CurrentDir%\Data\AppData\Roaming\Electronic Arts"), true
+                        PATH.Combine(@"%AppData%\Electronic Arts"),
+                        PATH.Combine(@"%CurDir%\Data\AppData\Roaming\Electronic Arts"), true
                     );
 
-                    SilDev.Data.DirLink
+                    DATA.DirLink
                     (
-                        SilDev.Run.EnvVarFilter(@"%AppData%\Origin"),
-                        SilDev.Run.EnvVarFilter(@"%CurrentDir%\Data\AppData\Roaming\Origin"), true
+                        PATH.Combine(@"%AppData%\Origin"),
+                        PATH.Combine(@"%CurDir%\Data\AppData\Roaming\Origin"), true
                     );
 
-                    SilDev.Data.DirLink
+                    DATA.DirLink
                     (
-                        SilDev.Run.EnvVarFilter(@"%LocalAppData%\EA Games"),
-                        SilDev.Run.EnvVarFilter(@"%CurrentDir%\Data\AppData\Local\EA Games"), true
+                        PATH.Combine(@"%LocalAppData%\EA Games"),
+                        PATH.Combine(@"%CurDir%\Data\AppData\Local\EA Games"), true
                     );
 
-                    SilDev.Data.DirLink
+                    DATA.DirLink
                     (
-                        SilDev.Run.EnvVarFilter(@"%LocalAppData%\Electronic Arts"),
-                        SilDev.Run.EnvVarFilter(@"%CurrentDir%\Data\AppData\Local\Electronic Arts"), true
+                        PATH.Combine(@"%LocalAppData%\Electronic Arts"),
+                        PATH.Combine(@"%CurDir%\Data\AppData\Local\Electronic Arts"), true
                     );
 
-                    SilDev.Data.DirLink
+                    DATA.DirLink
                     (
-                        SilDev.Run.EnvVarFilter(@"%LocalAppData%\Origin"),
-                        SilDev.Run.EnvVarFilter(@"%CurrentDir%\Data\AppData\Local\Origin"), true
+                        PATH.Combine(@"%LocalAppData%\Origin"),
+                        PATH.Combine(@"%CurDir%\Data\AppData\Local\Origin"), true
                     );
 
-                    SilDev.Data.DirLink
+                    DATA.DirLink
                     (
-                        SilDev.Run.EnvVarFilter(@"%ProgramData%\EA Games"),
-                        SilDev.Run.EnvVarFilter(@"%CurrentDir%\Data\ProgramData\EA Games"), true
+                        PATH.Combine(@"%ProgramData%\EA Games"),
+                        PATH.Combine(@"%CurDir%\Data\ProgramData\EA Games"), true
                     );
 
-                    SilDev.Data.DirLink
+                    DATA.DirLink
                     (
-                        SilDev.Run.EnvVarFilter(@"%ProgramData%\Electronic Arts"),
-                        SilDev.Run.EnvVarFilter(@"%CurrentDir%\Data\ProgramData\Electronic Arts"), true
+                        PATH.Combine(@"%ProgramData%\Electronic Arts"),
+                        PATH.Combine(@"%CurDir%\Data\ProgramData\Electronic Arts"), true
                     );
 
-                    SilDev.Data.DirLink
+                    DATA.DirLink
                     (
-                        SilDev.Run.EnvVarFilter(@"%ProgramData%\Origin"),
-                        SilDev.Run.EnvVarFilter(@"%CurrentDir%\Data\ProgramData\Origin"), true
+                        PATH.Combine(@"%ProgramData%\Origin"),
+                        PATH.Combine(@"%CurDir%\Data\ProgramData\Origin"), true
                     );
 
                     #endregion
 
                     #region Registry Backup
 
-                    if (!SilDev.Reg.ValueExist(@"HKCU\origin", "Portable App"))
-                        SilDev.Reg.RenameSubKey(@"HKCU\origin", @"SOFTWARE\SI13N7-BACKUP: origin");
+                    if (!REG.ValueExist(@"HKCU\origin", "Portable App"))
+                        REG.RenameSubKey(@"HKCU\origin", @"SOFTWARE\SI13N7-BACKUP: origin");
 
-                    if (!SilDev.Reg.ValueExist(@"HKCU\origin2", "Portable App"))
-                        SilDev.Reg.RenameSubKey(@"HKCU\origin2", @"SOFTWARE\SI13N7-BACKUP: origin2");
+                    if (!REG.ValueExist(@"HKCU\origin2", "Portable App"))
+                        REG.RenameSubKey(@"HKCU\origin2", @"SOFTWARE\SI13N7-BACKUP: origin2");
 
-                    if (!SilDev.Reg.ValueExist(@"HKCU\Software\EA Games", "Portable App"))
-                        SilDev.Reg.RenameSubKey(@"HKCU\Software\EA Games", @"SOFTWARE\SI13N7-BACKUP: EA Games");
+                    if (!REG.ValueExist(@"HKCU\Software\EA Games", "Portable App"))
+                        REG.RenameSubKey(@"HKCU\Software\EA Games", @"SOFTWARE\SI13N7-BACKUP: EA Games");
 
-                    if (!SilDev.Reg.ValueExist(@"HKCU\Software\Electronic Arts", "Portable App"))
-                        SilDev.Reg.RenameSubKey(@"HKCU\Software\Electronic Arts", @"SOFTWARE\SI13N7-BACKUP: Electronic Arts");
+                    if (!REG.ValueExist(@"HKCU\Software\Electronic Arts", "Portable App"))
+                        REG.RenameSubKey(@"HKCU\Software\Electronic Arts", @"SOFTWARE\SI13N7-BACKUP: Electronic Arts");
 
-                    if (!SilDev.Reg.ValueExist(@"HKLM\SOFTWARE\EA Games", "Portable App"))
-                        SilDev.Reg.RenameSubKey(@"HKLM\SOFTWARE\EA Games", @"SOFTWARE\SI13N7-BACKUP: EA Games");
+                    if (!REG.ValueExist(@"HKLM\SOFTWARE\EA Games", "Portable App"))
+                        REG.RenameSubKey(@"HKLM\SOFTWARE\EA Games", @"SOFTWARE\SI13N7-BACKUP: EA Games");
 
-                    if (!SilDev.Reg.ValueExist(@"HKLM\SOFTWARE\Electronic Arts", "Portable App"))
-                        SilDev.Reg.RenameSubKey(@"HKLM\SOFTWARE\Electronic Arts", @"SOFTWARE\SI13N7-BACKUP: Electronic Arts");
+                    if (!REG.ValueExist(@"HKLM\SOFTWARE\Electronic Arts", "Portable App"))
+                        REG.RenameSubKey(@"HKLM\SOFTWARE\Electronic Arts", @"SOFTWARE\SI13N7-BACKUP: Electronic Arts");
 
-                    if (!SilDev.Reg.ValueExist(@"HKLM\SOFTWARE\Origin", "Portable App"))
-                        SilDev.Reg.RenameSubKey(@"HKLM\SOFTWARE\Origin", @"SOFTWARE\SI13N7-BACKUP: Origin");
+                    if (!REG.ValueExist(@"HKLM\SOFTWARE\Origin", "Portable App"))
+                        REG.RenameSubKey(@"HKLM\SOFTWARE\Origin", @"SOFTWARE\SI13N7-BACKUP: Origin");
 
-                    if (!SilDev.Reg.ValueExist(@"HKLM\SOFTWARE\Origin Games", "Portable App"))
-                        SilDev.Reg.RenameSubKey(@"HKLM\SOFTWARE\Origin Games", @"SOFTWARE\SI13N7-BACKUP: Origin Games");
+                    if (!REG.ValueExist(@"HKLM\SOFTWARE\Origin Games", "Portable App"))
+                        REG.RenameSubKey(@"HKLM\SOFTWARE\Origin Games", @"SOFTWARE\SI13N7-BACKUP: Origin Games");
 #if !x86
-                    if (!SilDev.Reg.ValueExist(@"HKLM\SOFTWARE\Wow6432Node\EA Games", "Portable App"))
-                        SilDev.Reg.RenameSubKey(@"HKLM\SOFTWARE\Wow6432Node\EA Games", @"SOFTWARE\Wow6432Node\SI13N7-BACKUP: EA Games");
+                    if (!REG.ValueExist(@"HKLM\SOFTWARE\Wow6432Node\EA Games", "Portable App"))
+                        REG.RenameSubKey(@"HKLM\SOFTWARE\Wow6432Node\EA Games", @"SOFTWARE\Wow6432Node\SI13N7-BACKUP: EA Games");
 
-                    if (!SilDev.Reg.ValueExist(@"HKLM\SOFTWARE\Wow6432Node\Electronic Arts", "Portable App"))
-                        SilDev.Reg.RenameSubKey(@"HKLM\SOFTWARE\Wow6432Node\Electronic Arts", @"SOFTWARE\Wow6432Node\SI13N7-BACKUP: Electronic Arts");
+                    if (!REG.ValueExist(@"HKLM\SOFTWARE\Wow6432Node\Electronic Arts", "Portable App"))
+                        REG.RenameSubKey(@"HKLM\SOFTWARE\Wow6432Node\Electronic Arts", @"SOFTWARE\Wow6432Node\SI13N7-BACKUP: Electronic Arts");
 
-                    if (!SilDev.Reg.ValueExist(@"HKLM\SOFTWARE\Wow6432Node\Origin", "Portable App"))
-                        SilDev.Reg.RenameSubKey(@"HKLM\SOFTWARE\Wow6432Node\Origin", @"SOFTWARE\Wow6432Node\SI13N7-BACKUP: Origin");
+                    if (!REG.ValueExist(@"HKLM\SOFTWARE\Wow6432Node\Origin", "Portable App"))
+                        REG.RenameSubKey(@"HKLM\SOFTWARE\Wow6432Node\Origin", @"SOFTWARE\Wow6432Node\SI13N7-BACKUP: Origin");
 
-                    if (!SilDev.Reg.ValueExist(@"HKLM\SOFTWARE\Wow6432Node\Origin Games", "Portable App"))
-                        SilDev.Reg.RenameSubKey(@"HKLM\SOFTWARE\Wow6432Node\Origin Games", @"SOFTWARE\Wow6432Node\SI13N7-BACKUP: Origin Games");
+                    if (!REG.ValueExist(@"HKLM\SOFTWARE\Wow6432Node\Origin Games", "Portable App"))
+                        REG.RenameSubKey(@"HKLM\SOFTWARE\Wow6432Node\Origin Games", @"SOFTWARE\Wow6432Node\SI13N7-BACKUP: Origin Games");
 
-                    if (!SilDev.Reg.ValueExist(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "Portable App"))
-                        SilDev.Reg.RenameSubKey(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", @"SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\SI13N7-BACKUP: Origin");
+                    if (!REG.ValueExist(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "Portable App"))
+                        REG.RenameSubKey(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", @"SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\SI13N7-BACKUP: Origin");
 #else
-                    if (!SilDev.Reg.ValueExist(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "Portable App"))
-                        SilDev.Reg.RenameSubKey(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\SI13N7-BACKUP: Origin");
+                    if (!REG.ValueExist(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "Portable App"))
+                        REG.RenameSubKey(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\SI13N7-BACKUP: Origin");
 #endif
                     #endregion
 
                     #region Registry Import
 
-                    string regPath = Path.Combine(Application.StartupPath, @"Data\settings.reg");
+                    string regPath = PATH.Combine(@"%CurDir%\Data\settings.reg");
                     if (!File.Exists(regPath))
                     {
-                        SilDev.Reg.WriteValue(@"HKCU\Software\EA Games", "Portable App", "True");
-                        SilDev.Reg.WriteValue(@"HKCU\Software\Electronic Arts", "Portable App", "True");
+                        REG.WriteValue(@"HKCU\Software\EA Games", "Portable App", "True");
+                        REG.WriteValue(@"HKCU\Software\Electronic Arts", "Portable App", "True");
 
-                        SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\EA Games", "Portable App", "True");
-                        SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Electronic Arts", "Portable App", "True");
-                        SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Origin", "Portable App", "True");
-                        SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Origin Games", "Portable App", "True");
+                        REG.WriteValue(@"HKLM\SOFTWARE\EA Games", "Portable App", "True");
+                        REG.WriteValue(@"HKLM\SOFTWARE\Electronic Arts", "Portable App", "True");
+                        REG.WriteValue(@"HKLM\SOFTWARE\Origin", "Portable App", "True");
+                        REG.WriteValue(@"HKLM\SOFTWARE\Origin Games", "Portable App", "True");
 #if x86
-                        SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "Portable App", "True");
+                        REG.WriteValue(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "Portable App", "True");
 
-                        SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Electronic Arts\EA Core", "ClientVersion", "7.0.0.1");
-                        SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Electronic Arts\EA Core", "EADM6Version", "7.0.0.1");
-                        SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Electronic Arts\EADM", "ClientVersion", "9.5.20.5318");
-                        SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Origin", "AutopatchGlobal", "false");
-                        SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Origin", "Autoupdate", "false");
-                        SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Origin", "InstallSuccesfull", "true");
-                        SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Origin", "IsBeta", "false");
-                        SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Origin", "Launch", "21375453");
-                        SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Origin", "ShowDirPage", "true");
-                        SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Origin", "TelemOO", "false");
+                        REG.WriteValue(@"HKLM\SOFTWARE\Electronic Arts\EA Core", "ClientVersion", "7.0.0.1");
+                        REG.WriteValue(@"HKLM\SOFTWARE\Electronic Arts\EA Core", "EADM6Version", "7.0.0.1");
+                        REG.WriteValue(@"HKLM\SOFTWARE\Electronic Arts\EADM", "ClientVersion", "9.5.20.5318");
+                        REG.WriteValue(@"HKLM\SOFTWARE\Origin", "AutopatchGlobal", "false");
+                        REG.WriteValue(@"HKLM\SOFTWARE\Origin", "Autoupdate", "false");
+                        REG.WriteValue(@"HKLM\SOFTWARE\Origin", "InstallSuccesfull", "true");
+                        REG.WriteValue(@"HKLM\SOFTWARE\Origin", "IsBeta", "false");
+                        REG.WriteValue(@"HKLM\SOFTWARE\Origin", "Launch", "21375453");
+                        REG.WriteValue(@"HKLM\SOFTWARE\Origin", "ShowDirPage", "true");
+                        REG.WriteValue(@"HKLM\SOFTWARE\Origin", "TelemOO", "false");
 
-                        SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "DisplayName", "Origin");
-                        SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "Publisher", "Electronic Arts, Inc.");
-                        SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "DisplayName", "9.5.20.5318");
-                        SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "URLInfoAbout", "http://www.ea.com");
-                        SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "NoModify", 1);
-                        SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "NoRepair", 1);
+                        REG.WriteValue(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "DisplayName", "Origin");
+                        REG.WriteValue(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "Publisher", "Electronic Arts, Inc.");
+                        REG.WriteValue(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "DisplayName", "9.5.20.5318");
+                        REG.WriteValue(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "URLInfoAbout", "http://www.ea.com");
+                        REG.WriteValue(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "NoModify", 1);
+                        REG.WriteValue(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "NoRepair", 1);
 #else
-                        SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "Portable App", "True");
+                        REG.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "Portable App", "True");
 
-                        SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\EA Games", "Portable App", "True");
-                        SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Electronic Arts", "Portable App", "True");
-                        SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Origin", "Portable App", "True");
-                        SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Origin Games", "Portable App", "True");
+                        REG.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\EA Games", "Portable App", "True");
+                        REG.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Electronic Arts", "Portable App", "True");
+                        REG.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Origin", "Portable App", "True");
+                        REG.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Origin Games", "Portable App", "True");
 
-                        SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Electronic Arts\EA Core", "ClientVersion", "7.0.0.1");
-                        SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Electronic Arts\EA Core", "EADM6Version", "7.0.0.1");
-                        SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Electronic Arts\EADM", "ClientVersion", "9.5.20.5318");
-                        SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Origin", "AutopatchGlobal", "false");
-                        SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Origin", "Autoupdate", "false");
-                        SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Origin", "InstallSuccesfull", "true");
-                        SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Origin", "IsBeta", "false");
-                        SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Origin", "Launch", "21375453");
-                        SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Origin", "ShowDirPage", "true");
-                        SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Origin", "TelemOO", "false");
+                        REG.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Electronic Arts\EA Core", "ClientVersion", "7.0.0.1");
+                        REG.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Electronic Arts\EA Core", "EADM6Version", "7.0.0.1");
+                        REG.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Electronic Arts\EADM", "ClientVersion", "9.5.20.5318");
+                        REG.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Origin", "AutopatchGlobal", "false");
+                        REG.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Origin", "Autoupdate", "false");
+                        REG.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Origin", "InstallSuccesfull", "true");
+                        REG.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Origin", "IsBeta", "false");
+                        REG.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Origin", "Launch", "21375453");
+                        REG.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Origin", "ShowDirPage", "true");
+                        REG.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Origin", "TelemOO", "false");
 
-                        SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "DisplayName", "Origin");
-                        SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "Publisher", "Electronic Arts, Inc.");
-                        SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "DisplayName", "9.5.20.5318");
-                        SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "URLInfoAbout", "http://www.ea.com");
-                        SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "NoModify", 1);
-                        SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "NoRepair", 1);
+                        REG.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "DisplayName", "Origin");
+                        REG.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "Publisher", "Electronic Arts, Inc.");
+                        REG.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "DisplayName", "9.5.20.5318");
+                        REG.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "URLInfoAbout", "http://www.ea.com");
+                        REG.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "NoModify", 1);
+                        REG.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "NoRepair", 1);
 #endif
-                        SilDev.Run.App(StartInfoHelper(appPath, "/Register"), 0);
-                        SilDev.Reg.WriteValue(@"HKCR\origin", "Portable App", "True");
-                        SilDev.Reg.WriteValue(@"HKCR\origin2", "Portable App", "True");
+                        RUN.App(StartInfoHelper(appPath, "/Register"), 0);
+                        REG.WriteValue(@"HKCR\origin", "Portable App", "True");
+                        REG.WriteValue(@"HKCR\origin2", "Portable App", "True");
                     }
                     else
-                        SilDev.Reg.ImportFile(regPath, true);
+                        REG.ImportFile(regPath, true);
 
-                    SilDev.Reg.WriteValue(@"HKEY_CLASSES_ROOT\origin\shell\open\command", null, string.Format("\"{0}\" \"%1\"", appPath));
-                    SilDev.Reg.WriteValue(@"HKEY_CLASSES_ROOT\origin2\shell\open\command", null, string.Format("\"{0}\" \"%1\"", appPath));
+                    REG.WriteValue(@"HKEY_CLASSES_ROOT\origin\shell\open\command", null, string.Format("\"{0}\" \"%1\"", appPath));
+                    REG.WriteValue(@"HKEY_CLASSES_ROOT\origin2\shell\open\command", null, string.Format("\"{0}\" \"%1\"", appPath));
 #if !x86
-                    SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Electronic Arts\EA Core", "ClientAccessDLLPath", Path.Combine(appDir, @"LegacyPM\CmdPortalClient.dll"));
-                    SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Electronic Arts\EA Core", "ClientPath", Path.Combine(appDir, @"LegacyPM\OriginLegacyCLI.dll"));
-                    SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Electronic Arts\EA Core", "EADM6InstallDir", appDir);
-                    SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Electronic Arts\EADM", "ClientPath", Path.Combine(appDir, @"Origin.exe"));
-                    SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Origin", "ClientPath", Path.Combine(appDir, @"Origin.exe"));
+                    REG.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Electronic Arts\EA Core", "ClientAccessDLLPath", Path.Combine(appDir, @"LegacyPM\CmdPortalClient.dll"));
+                    REG.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Electronic Arts\EA Core", "ClientPath", Path.Combine(appDir, @"LegacyPM\OriginLegacyCLI.dll"));
+                    REG.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Electronic Arts\EA Core", "EADM6InstallDir", appDir);
+                    REG.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Electronic Arts\EADM", "ClientPath", Path.Combine(appDir, @"Origin.exe"));
+                    REG.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Origin", "ClientPath", Path.Combine(appDir, @"Origin.exe"));
 
-                    SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "UninstallString", Path.Combine(appDir, "OriginUninstall.exe"));
-                    SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "InstallLocation", appDir);
-                    SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "DisplayIcon", Path.Combine(appDir, "OriginUninstall.exe"));
+                    REG.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "UninstallString", Path.Combine(appDir, "OriginUninstall.exe"));
+                    REG.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "InstallLocation", appDir);
+                    REG.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "DisplayIcon", Path.Combine(appDir, "OriginUninstall.exe"));
 #else
-                    SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Electronic Arts\EA Core", "ClientAccessDLLPath", Path.Combine(appDir, @"LegacyPM\CmdPortalClient.dll"));
-                    SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Electronic Arts\EA Core", "ClientPath", Path.Combine(appDir, @"LegacyPM\OriginLegacyCLI.dll"));
-                    SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Electronic Arts\EA Core", "EADM6InstallDir", appDir);
-                    SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Electronic Arts\EADM", "ClientPath", Path.Combine(appDir, @"Origin.exe"));
-                    SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Origin", "ClientPath", Path.Combine(appDir, @"Origin.exe"));
+                    REG.WriteValue(@"HKLM\SOFTWARE\Electronic Arts\EA Core", "ClientAccessDLLPath", Path.Combine(appDir, @"LegacyPM\CmdPortalClient.dll"));
+                    REG.WriteValue(@"HKLM\SOFTWARE\Electronic Arts\EA Core", "ClientPath", Path.Combine(appDir, @"LegacyPM\OriginLegacyCLI.dll"));
+                    REG.WriteValue(@"HKLM\SOFTWARE\Electronic Arts\EA Core", "EADM6InstallDir", appDir);
+                    REG.WriteValue(@"HKLM\SOFTWARE\Electronic Arts\EADM", "ClientPath", Path.Combine(appDir, @"Origin.exe"));
+                    REG.WriteValue(@"HKLM\SOFTWARE\Origin", "ClientPath", Path.Combine(appDir, @"Origin.exe"));
 
-                    SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "UninstallString", Path.Combine(appDir, "OriginUninstall.exe"));
-                    SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "InstallLocation", appDir);
-                    SilDev.Reg.WriteValue(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "DisplayIcon", Path.Combine(appDir, "OriginUninstall.exe"));
+                    REG.WriteValue(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "UninstallString", Path.Combine(appDir, "OriginUninstall.exe"));
+                    REG.WriteValue(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "InstallLocation", appDir);
+                    REG.WriteValue(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "DisplayIcon", Path.Combine(appDir, "OriginUninstall.exe"));
 #endif
                     #endregion
 
-                    string iniPath = Path.Combine(Application.StartupPath, string.Format("{0}.ini", Path.GetFileNameWithoutExtension(Application.ExecutablePath).Replace("64", string.Empty)));
+                    string iniPath = PATH.Combine($@"%CurDir%\{Path.GetFileNameWithoutExtension(Application.ExecutablePath).Replace("64", string.Empty)}.ini");
 
                     bool StartMinimized = false;
-                    bool.TryParse(SilDev.Ini.Read("Settings", "StartMinimized", iniPath), out StartMinimized);
+                    bool.TryParse(INI.Read("Settings", "StartMinimized", iniPath), out StartMinimized);
                     if (StartMinimized)
                         MinimizedAtStart = 0;
 
                     bool RunPunkBusterOnlyWithOrigin = false;
-                    bool.TryParse(SilDev.Ini.Read("Settings", "RunPunkBusterOnlyWithOrigin", iniPath), out RunPunkBusterOnlyWithOrigin);
+                    bool.TryParse(INI.Read("Settings", "RunPunkBusterOnlyWithOrigin", iniPath), out RunPunkBusterOnlyWithOrigin);
                     if (RunPunkBusterOnlyWithOrigin)
                     {
-                        SilDev.Run.Cmd("sc config \"PnkBstrA\" start= auto");
-                        SilDev.Run.Cmd("sc start \"PnkBstrA\"");
-                        SilDev.Run.Cmd("sc config \"PnkBstrB\" start= auto");
+                        RUN.Cmd("sc config \"PnkBstrA\" start= auto");
+                        RUN.Cmd("sc start \"PnkBstrA\"");
+                        RUN.Cmd("sc config \"PnkBstrB\" start= auto");
                     }
 
-                    SilDev.Run.App(StartInfoHelper(appPath, cmdLineArgs));
+                    RUN.App(StartInfoHelper(appPath, cmdLineArgs));
                     for (int i = 0; i < 10; i++)
                     {
                         while (isRunning(appDir, "origin"))
@@ -267,15 +268,15 @@ namespace OriginPortable
                     }
 
                     string serviceName = "Origin Client Service";
-                    if (SilDev.Elevation.IsAdministrator && SilDev.Service.Exists(serviceName) && !SilDev.Reg.SubKeyExist(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\SI13N7-BACKUP: Origin"))
+                    if (ELEVATION.IsAdministrator && SERVICE.Exists(serviceName) && !REG.SubKeyExist(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\SI13N7-BACKUP: Origin"))
                     {
-                        SilDev.Service.Stop(serviceName);
-                        SilDev.Service.Uninstall(serviceName);
+                        SERVICE.Stop(serviceName);
+                        SERVICE.Uninstall(serviceName);
                     }
 
                     # region Registry Export
 
-                    string tempRegPath = SilDev.Run.EnvVarFilter("%CurrentDir%\\Data\\temp.reg");
+                    string tempRegPath = PATH.Combine("%CurDir%\\Data\\temp.reg");
                     string regFileContent = string.Empty;
                     if (File.Exists(tempRegPath))
                         File.Delete(tempRegPath);
@@ -289,45 +290,45 @@ namespace OriginPortable
                         switch (i)
                         {
                             case 0:
-                                SilDev.Reg.ExportFile(@"HKCR\origin", tempRegPath);
+                                REG.ExportFile(@"HKCR\origin", tempRegPath);
                                 break;
                             case 1:
-                                SilDev.Reg.ExportFile(@"HKCR\origin2", tempRegPath);
+                                REG.ExportFile(@"HKCR\origin2", tempRegPath);
                                 break;
                             case 2: 
-                                SilDev.Reg.ExportFile(@"HKCU\Software\EA Games", tempRegPath);
+                                REG.ExportFile(@"HKCU\Software\EA Games", tempRegPath);
                                 break;
                             case 3: 
-                                SilDev.Reg.ExportFile(@"HKCU\Software\Electronic Arts", tempRegPath);
+                                REG.ExportFile(@"HKCU\Software\Electronic Arts", tempRegPath);
                                 break;
                             case 4: 
-                                SilDev.Reg.ExportFile(@"HKLM\SOFTWARE\EA Games", tempRegPath);
+                                REG.ExportFile(@"HKLM\SOFTWARE\EA Games", tempRegPath);
                                 break;
                             case 5: 
-                                SilDev.Reg.ExportFile(@"HKLM\SOFTWARE\Electronic Arts", tempRegPath);
+                                REG.ExportFile(@"HKLM\SOFTWARE\Electronic Arts", tempRegPath);
                                 break;
                             case 6: 
-                                SilDev.Reg.ExportFile(@"HKLM\SOFTWARE\Origin", tempRegPath);
+                                REG.ExportFile(@"HKLM\SOFTWARE\Origin", tempRegPath);
                                 break;
 #if x86
                             case 7:
-                                SilDev.Reg.ExportFile(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", tempRegPath);
+                                REG.ExportFile(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", tempRegPath);
                                 break;
 #else
                             case 7:
-                                SilDev.Reg.ExportFile(@"HKLM\SOFTWARE\Wow6432Node\EA Games", tempRegPath);
+                                REG.ExportFile(@"HKLM\SOFTWARE\Wow6432Node\EA Games", tempRegPath);
                                 break;
                             case 8:
-                                SilDev.Reg.ExportFile(@"HKLM\SOFTWARE\Wow6432Node\Electronic Arts", tempRegPath);
+                                REG.ExportFile(@"HKLM\SOFTWARE\Wow6432Node\Electronic Arts", tempRegPath);
                                 break;
                             case 9:
-                                SilDev.Reg.ExportFile(@"HKLM\SOFTWARE\Wow6432Node\Origin", tempRegPath);
+                                REG.ExportFile(@"HKLM\SOFTWARE\Wow6432Node\Origin", tempRegPath);
                                 break;
                             case 10:
-                                SilDev.Reg.ExportFile(@"HKLM\SOFTWARE\Wow6432Node\Origin Games", tempRegPath);
+                                REG.ExportFile(@"HKLM\SOFTWARE\Wow6432Node\Origin Games", tempRegPath);
                                 break;
                             case 11:
-                                SilDev.Reg.ExportFile(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", tempRegPath);
+                                REG.ExportFile(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", tempRegPath);
                                 break;
 #endif
                         }
@@ -357,66 +358,66 @@ namespace OriginPortable
 
                     #region Registry Cleanup
 
-                    SilDev.Reg.RemoveExistSubKey(@"HKCR\origin");
-                    SilDev.Reg.RemoveExistSubKey(@"HKCR\origin2");
-                    SilDev.Reg.RemoveExistSubKey(@"HKCU\Software\EA Games");
-                    SilDev.Reg.RemoveExistSubKey(@"HKCU\Software\Electronic Arts");
-                    SilDev.Reg.RemoveExistSubKey(@"HKLM\SOFTWARE\EA Games");
-                    SilDev.Reg.RemoveExistSubKey(@"HKLM\SOFTWARE\Electronic Arts");
-                    SilDev.Reg.RemoveExistSubKey(@"HKLM\SOFTWARE\Origin");
-                    SilDev.Reg.RemoveExistSubKey(@"HKLM\SOFTWARE\Origin Games");
-                    SilDev.Reg.RemoveExistSubKey(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin");
+                    REG.RemoveExistSubKey(@"HKCR\origin");
+                    REG.RemoveExistSubKey(@"HKCR\origin2");
+                    REG.RemoveExistSubKey(@"HKCU\Software\EA Games");
+                    REG.RemoveExistSubKey(@"HKCU\Software\Electronic Arts");
+                    REG.RemoveExistSubKey(@"HKLM\SOFTWARE\EA Games");
+                    REG.RemoveExistSubKey(@"HKLM\SOFTWARE\Electronic Arts");
+                    REG.RemoveExistSubKey(@"HKLM\SOFTWARE\Origin");
+                    REG.RemoveExistSubKey(@"HKLM\SOFTWARE\Origin Games");
+                    REG.RemoveExistSubKey(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin");
 
-                    SilDev.Reg.RenameSubKey(@"HKCR\SI13N7-BACKUP: origin", @"origin");
-                    SilDev.Reg.RenameSubKey(@"HKCR\SI13N7-BACKUP: origin2", @"origin2");
-                    SilDev.Reg.RenameSubKey(@"HKCU\Software\SI13N7-BACKUP: EA Games", @"Software\EA Games");
-                    SilDev.Reg.RenameSubKey(@"HKCU\Software\SI13N7-BACKUP: Electronic Arts", @"Software\Electronic Arts");
-                    SilDev.Reg.RenameSubKey(@"HKLM\SOFTWARE\SI13N7-BACKUP: EA Games", @"SOFTWARE\EA Games");
-                    SilDev.Reg.RenameSubKey(@"HKLM\SOFTWARE\SI13N7-BACKUP: Electronic Arts", @"SOFTWARE\Electronic Arts");
-                    SilDev.Reg.RenameSubKey(@"HKLM\SOFTWARE\SI13N7-BACKUP: Origin", @"SOFTWARE\Origin");
-                    SilDev.Reg.RenameSubKey(@"HKLM\SOFTWARE\SI13N7-BACKUP: Origin Games", @"SOFTWARE\Wow6432Node\Origin Games");
+                    REG.RenameSubKey(@"HKCR\SI13N7-BACKUP: origin", @"origin");
+                    REG.RenameSubKey(@"HKCR\SI13N7-BACKUP: origin2", @"origin2");
+                    REG.RenameSubKey(@"HKCU\Software\SI13N7-BACKUP: EA Games", @"Software\EA Games");
+                    REG.RenameSubKey(@"HKCU\Software\SI13N7-BACKUP: Electronic Arts", @"Software\Electronic Arts");
+                    REG.RenameSubKey(@"HKLM\SOFTWARE\SI13N7-BACKUP: EA Games", @"SOFTWARE\EA Games");
+                    REG.RenameSubKey(@"HKLM\SOFTWARE\SI13N7-BACKUP: Electronic Arts", @"SOFTWARE\Electronic Arts");
+                    REG.RenameSubKey(@"HKLM\SOFTWARE\SI13N7-BACKUP: Origin", @"SOFTWARE\Origin");
+                    REG.RenameSubKey(@"HKLM\SOFTWARE\SI13N7-BACKUP: Origin Games", @"SOFTWARE\Wow6432Node\Origin Games");
 #if x86
-                    SilDev.Reg.RenameSubKey(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\SI13N7-BACKUP: Origin", @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin");
+                    REG.RenameSubKey(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\SI13N7-BACKUP: Origin", @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin");
 #else
-                    SilDev.Reg.RemoveExistSubKey(@"HKLM\SOFTWARE\Wow6432Node\EA Games");
-                    SilDev.Reg.RemoveExistSubKey(@"HKLM\SOFTWARE\Wow6432Node\Electronic Arts");
-                    SilDev.Reg.RemoveExistSubKey(@"HKLM\SOFTWARE\Wow6432Node\Origin");
-                    SilDev.Reg.RemoveExistSubKey(@"HKLM\SOFTWARE\Wow6432Node\Origin Games");
-                    SilDev.Reg.RemoveExistSubKey(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin");
+                    REG.RemoveExistSubKey(@"HKLM\SOFTWARE\Wow6432Node\EA Games");
+                    REG.RemoveExistSubKey(@"HKLM\SOFTWARE\Wow6432Node\Electronic Arts");
+                    REG.RemoveExistSubKey(@"HKLM\SOFTWARE\Wow6432Node\Origin");
+                    REG.RemoveExistSubKey(@"HKLM\SOFTWARE\Wow6432Node\Origin Games");
+                    REG.RemoveExistSubKey(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin");
 
-                    SilDev.Reg.RenameSubKey(@"HKLM\SOFTWARE\Wow6432Node\SI13N7-BACKUP: EA Games", @"SOFTWARE\Wow6432Node\EA Games");
-                    SilDev.Reg.RenameSubKey(@"HKLM\SOFTWARE\Wow6432Node\SI13N7-BACKUP: Electronic Arts", @"SOFTWARE\Wow6432Node\Electronic Arts");
-                    SilDev.Reg.RenameSubKey(@"HKLM\SOFTWARE\Wow6432Node\SI13N7-BACKUP: Origin", @"SOFTWARE\Wow6432Node\Origin");
-                    SilDev.Reg.RenameSubKey(@"HKLM\SOFTWARE\Wow6432Node\SI13N7-BACKUP: Origin Games", @"SOFTWARE\Wow6432Node\Origin Games");
-                    SilDev.Reg.RenameSubKey(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\SI13N7-BACKUP: Origin", @"SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin");
+                    REG.RenameSubKey(@"HKLM\SOFTWARE\Wow6432Node\SI13N7-BACKUP: EA Games", @"SOFTWARE\Wow6432Node\EA Games");
+                    REG.RenameSubKey(@"HKLM\SOFTWARE\Wow6432Node\SI13N7-BACKUP: Electronic Arts", @"SOFTWARE\Wow6432Node\Electronic Arts");
+                    REG.RenameSubKey(@"HKLM\SOFTWARE\Wow6432Node\SI13N7-BACKUP: Origin", @"SOFTWARE\Wow6432Node\Origin");
+                    REG.RenameSubKey(@"HKLM\SOFTWARE\Wow6432Node\SI13N7-BACKUP: Origin Games", @"SOFTWARE\Wow6432Node\Origin Games");
+                    REG.RenameSubKey(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\SI13N7-BACKUP: Origin", @"SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin");
 #endif
                     #endregion
 
                     #region Unlink Directories
 
-                    SilDev.Data.DirUnLink(SilDev.Run.EnvVarFilter(@"%SystemDrive%\temp"), true);
-                    SilDev.Data.DirUnLink(SilDev.Run.EnvVarFilter(@"%CommonProgramFiles(x86)%\EAInstaller"), true);
+                    DATA.DirUnLink(PATH.Combine(@"%SystemDrive%\temp"), true);
+                    DATA.DirUnLink(PATH.Combine(@"%CommonProgramFiles(x86)%\EAInstaller"), true);
 
-                    SilDev.Data.DirUnLink(SilDev.Run.EnvVarFilter(@"%AppData%\EA Games"), true);
-                    SilDev.Data.DirUnLink(SilDev.Run.EnvVarFilter(@"%AppData%\Electronic Arts"), true);
-                    SilDev.Data.DirUnLink(SilDev.Run.EnvVarFilter(@"%AppData%\Origin"), true);
+                    DATA.DirUnLink(PATH.Combine(@"%AppData%\EA Games"), true);
+                    DATA.DirUnLink(PATH.Combine(@"%AppData%\Electronic Arts"), true);
+                    DATA.DirUnLink(PATH.Combine(@"%AppData%\Origin"), true);
 
-                    SilDev.Data.DirUnLink(SilDev.Run.EnvVarFilter(@"%LocalAppData%\EA Games"), true);
-                    SilDev.Data.DirUnLink(SilDev.Run.EnvVarFilter(@"%LocalAppData%\Electronic Arts"), true);
-                    SilDev.Data.DirUnLink(SilDev.Run.EnvVarFilter(@"%LocalAppData%\Origin"), true);
+                    DATA.DirUnLink(PATH.Combine(@"%LocalAppData%\EA Games"), true);
+                    DATA.DirUnLink(PATH.Combine(@"%LocalAppData%\Electronic Arts"), true);
+                    DATA.DirUnLink(PATH.Combine(@"%LocalAppData%\Origin"), true);
 
-                    SilDev.Data.DirUnLink(SilDev.Run.EnvVarFilter(@"%ProgramData%\EA Games"), true);
-                    SilDev.Data.DirUnLink(SilDev.Run.EnvVarFilter(@"%ProgramData%\Electronic Arts"), true);
-                    SilDev.Data.DirUnLink(SilDev.Run.EnvVarFilter(@"%ProgramData%\Origin"), true);
+                    DATA.DirUnLink(PATH.Combine(@"%ProgramData%\EA Games"), true);
+                    DATA.DirUnLink(PATH.Combine(@"%ProgramData%\Electronic Arts"), true);
+                    DATA.DirUnLink(PATH.Combine(@"%ProgramData%\Origin"), true);
 
                     #endregion
 
                     if (RunPunkBusterOnlyWithOrigin)
                     {
-                        SilDev.Run.Cmd("sc stop \"PnkBstrA\"");
-                        SilDev.Run.Cmd("sc config \"PnkBstrA\" start= disabled");
-                        SilDev.Run.Cmd("sc stop \"PnkBstrB\"");
-                        SilDev.Run.Cmd("sc config \"PnkBstrB\" start= disabled");
+                        RUN.Cmd("sc stop \"PnkBstrA\"");
+                        RUN.Cmd("sc config \"PnkBstrA\" start= disabled");
+                        RUN.Cmd("sc stop \"PnkBstrB\"");
+                        RUN.Cmd("sc config \"PnkBstrB\" start= disabled");
                     }
                 }
             }
@@ -435,7 +436,7 @@ namespace OriginPortable
             /*
             psi.UseShellExecute = false;
             
-            string appDir = Path.Combine(Application.StartupPath, "App");
+            string appDir = PATH.Combine(@"%CurDir%\App");
             psi.EnvironmentVariables["ProgramFiles"] = appDir;
             psi.EnvironmentVariables["ProgramFiles(x86)"] = appDir;
             psi.EnvironmentVariables["ProgramW6432"] = appDir;
@@ -447,7 +448,7 @@ namespace OriginPortable
             psi.EnvironmentVariables["CommonProgramFiles(x86)"] = cAppDir;
             psi.EnvironmentVariables["CommonProgramW6432"] = psi.EnvironmentVariables["CommonProgramFiles"];
 
-            string dataDir = Path.Combine(Application.StartupPath, "Data");
+            string dataDir = PATH.Combine(@"%CurDir%\Data");
             if (!Directory.Exists(Path.Combine(dataDir, "Desktop")))
                 Directory.CreateDirectory(Path.Combine(dataDir, "Desktop"));
             psi.EnvironmentVariables["ALLUSERSPROFILE"] = Path.Combine(dataDir, @"ProgramData");
@@ -458,10 +459,11 @@ namespace OriginPortable
             psi.EnvironmentVariables["ProgramData"] = psi.EnvironmentVariables["ALLUSERSPROFILE"];
             psi.EnvironmentVariables["IGOLogPath"] = psi.EnvironmentVariables["ALLUSERSPROFILE"];
 
-            psi.EnvironmentVariables["HOMEDRIVE"] = Application.StartupPath.EndsWith(@"\") ? Application.StartupPath.Substring(0, Application.StartupPath.Length - 1) : Application.StartupPath;
+			string curDir = PATH.GetEnvironmentVariableValue("CurDir");
+            psi.EnvironmentVariables["HOMEDRIVE"] = curDir.EndsWith(@"\") ? curDir.Substring(0, curDir.Length - 1) : curDir;
             psi.EnvironmentVariables["HOMEPATH"] = @"\Data";
 
-            psi.EnvironmentVariables["Path"] = string.Format("{0}\\System32;{0};{0}\\System32\\Wbem;{1}", Environment.GetFolderPath(Environment.SpecialFolder.Windows), appDir);
+            psi.EnvironmentVariables["Path"] = string.Format("{0}\\System32;{0};{0}\\System32\\Wbem;{1}", Environment.GetFolderPath(Environment.SpecialFolder.Windows), curDir);
             */
             #endregion
 
@@ -487,7 +489,7 @@ namespace OriginPortable
                                 if (p.MainWindowTitle.ToLower() == name)
                                 {
                                     MinimizedAtStart++;
-                                    SilDev.WinAPI.SafeNativeMethods.ShowWindow(p.MainWindowHandle, (int)SilDev.WinAPI.ShowWindowFunc.SW_MINIMIZE);
+                                    WINAPI.SafeNativeMethods.ShowWindow(p.MainWindowHandle, (int)WINAPI.ShowWindowFunc.SW_MINIMIZE);
                                 }
                             }
                         }
@@ -498,7 +500,7 @@ namespace OriginPortable
             }
             catch (Exception ex)
             {
-                SilDev.Log.Debug(ex);
+                LOG.Debug(ex);
                 return false;
             }
         }
@@ -523,7 +525,7 @@ namespace OriginPortable
             }
             catch (Exception ex)
             {
-                SilDev.Log.Debug(ex);
+                LOG.Debug(ex);
             }
         }
 

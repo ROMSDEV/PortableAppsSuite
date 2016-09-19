@@ -1,3 +1,4 @@
+using SilDev;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -11,7 +12,7 @@ namespace DefragglerUpdater
         [STAThread]
         static void Main()
         {
-            string Defraggler = Path.Combine(Application.StartupPath, "Defraggler.exe");
+            string Defraggler = PATH.Combine("%CurDir%\\Defraggler.exe");
             if (!File.Exists(Defraggler))
             {
                 MessageBox.Show("Defraggler not found.", new MainForm().Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -27,9 +28,9 @@ namespace DefragglerUpdater
             {
                 if (newInstance)
                 {
-                    SilDev.Log.AllowDebug();
-                    if (!SilDev.Elevation.WritableLocation())
-                        SilDev.Elevation.RestartAsAdministrator();
+                    LOG.AllowDebug();
+                    if (!ELEVATION.WritableLocation())
+                        ELEVATION.RestartAsAdministrator();
                     Application.EnableVisualStyles();
                     Application.SetCompatibleTextRenderingDefault(false);
                     Application.Run(new MainForm());

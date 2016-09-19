@@ -5,10 +5,10 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("WinSize2 Launch Fix")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("$i13n7(tm)")]
+[assembly: AssemblyCompany("Si13n7 Dev. ®")]
 [assembly: AssemblyProduct("WinSize2 Launch Fix")]
-[assembly: AssemblyCopyright("Copyright ©  2013")]
-[assembly: AssemblyTrademark("$i13n7(tm)")]
+[assembly: AssemblyCopyright("Copyright © Si13n7 Dev. ® 2016")]
+[assembly: AssemblyTrademark("Si13n7 Dev. ®")]
 [assembly: AssemblyCulture("")]
 
 [assembly: ComVisible(false)]

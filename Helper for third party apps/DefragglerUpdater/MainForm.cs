@@ -1,3 +1,4 @@
+using SilDev;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -9,7 +10,7 @@ namespace DefragglerUpdater
 {
     public partial class MainForm : Form
     {
-        SilDev.Network.AsyncTransfer Transfer = new SilDev.Network.AsyncTransfer();
+        NET.ASYNCTRANSFER Transfer = new NET.ASYNCTRANSFER();
         int DownloadFinishedCount = 0;
         string ZipPath = string.Empty;
 
@@ -22,7 +23,7 @@ namespace DefragglerUpdater
         {
             try
             {
-                string Defraggler = Path.Combine(Application.StartupPath, "Defraggler.exe");
+                string Defraggler = PATH.Combine("%CurDir%\\Defraggler.exe");
                 string UpdateURL = "https://www.piriform.com/defraggler/download/portable/downloadfile";
 
                 string LocalVersion = string.Empty;
@@ -35,7 +36,7 @@ namespace DefragglerUpdater
                     LocalVersion += split[i];
                 CheckClose(LocalVersion, "LocalVersion");
 
-                string FileName = SilDev.Network.GetOnlineFileName(UpdateURL);
+                string FileName = NET.GetFileName(UpdateURL);
                 CheckClose(FileName, "FileName");
 
                 string OnlineVersion = string.Concat(FileName.Where(c => char.IsDigit(c)).ToArray());
@@ -45,9 +46,9 @@ namespace DefragglerUpdater
                 {
                     if (ShowInfoBox("UpdateAvailable", MessageBoxButtons.YesNo) == DialogResult.Yes || Environment.CommandLine.Contains("/silent"))
                     {
-                        foreach (string d in Directory.GetDirectories(Application.StartupPath, "*", SearchOption.TopDirectoryOnly))
+                        foreach (string d in Directory.GetDirectories(PATH.GetEnvironmentVariableValue("CurDir"), "*", SearchOption.TopDirectoryOnly))
                             Directory.Delete(d, true);
-                        foreach (string f in Directory.GetFiles(Application.StartupPath, "*", SearchOption.TopDirectoryOnly))
+                        foreach (string f in Directory.GetFiles(PATH.GetEnvironmentVariableValue("CurDir"), "*", SearchOption.TopDirectoryOnly))
                         {
                             if (Path.GetFileName(f).ToLower() != Path.GetFileName(Application.ExecutablePath).ToLower() &&
                                 Path.GetFileName(f).ToLower() != Path.GetFileName(ZipPath).ToLower() &&
@@ -55,7 +56,7 @@ namespace DefragglerUpdater
                                 Path.GetFileName(f).ToLower() != "portable.dat")
                                 File.Delete(f);
                         }
-                        ZipPath = Path.Combine(Application.StartupPath, FileName);
+                        ZipPath = PATH.Combine("%CurDir%", FileName);
                         if (!File.Exists(ZipPath))
                         {
                             Transfer.DownloadFile(UpdateURL, ZipPath);
@@ -150,7 +151,7 @@ namespace DefragglerUpdater
                     {
                         foreach (var ent in zip.Entries)
                         {
-                            string EntPath = Path.Combine(Application.StartupPath, ent.FullName);
+                            string EntPath = PATH.Combine("%CurDir%", ent.FullName);
                             if (File.Exists(EntPath))
                                 File.Delete(EntPath);
                             string EntDir = Path.GetDirectoryName(EntPath);
@@ -165,7 +166,7 @@ namespace DefragglerUpdater
             catch (Exception ex)
             {
                 e.Result = "UpdateFailed";
-                SilDev.Log.Debug(ex);
+                LOG.Debug(ex);
             }
         }
 
@@ -180,7 +181,7 @@ namespace DefragglerUpdater
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             if (File.Exists(ZipPath))
-                SilDev.Run.Cmd($"PING 127.0.0.1 -n 2 & DEL /F /Q \"{ZipPath}\"");
+                RUN.Cmd($"PING 127.0.0.1 -n 2 & DEL /F /Q \"{ZipPath}\"");
         }
     }
 }

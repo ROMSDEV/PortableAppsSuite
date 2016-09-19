@@ -1,3 +1,4 @@
+using SilDev;
 using System;
 using System.Diagnostics;
 using System.Threading;
@@ -10,20 +11,20 @@ namespace VLCPortable
         static void Main()
         {
 #if x86
-            string appPath = SilDev.Run.EnvVarFilter("%CurrentDir%\\App\\vlc\\vlc.exe");
+            string appPath = PATH.Combine("%CurDir%\\App\\vlc\\vlc.exe");
 #else
-            string appPath = SilDev.Run.EnvVarFilter("%CurrentDir%\\App\\vlc64\\vlc.exe");
+            string appPath = PATH.Combine("%CurDir%\\App\\vlc64\\vlc.exe");
 #endif
             bool newInstance = true;
             using (Mutex mutex = new Mutex(true, Process.GetCurrentProcess().ProcessName, out newInstance))
             {
-                SilDev.Log.AllowDebug();
+                LOG.AllowDebug();
                 if (newInstance)
                 {
-                    SilDev.Data.DirLink(SilDev.Run.EnvVarFilter("%AppData%\\vlc"), SilDev.Run.EnvVarFilter("%CurrentDir%\\Data"), true);
-                    SilDev.Run.App(new ProcessStartInfo()
+                    DATA.DirLink(PATH.Combine("%AppData%\\vlc"), PATH.Combine("%CurDir%\\Data"), true);
+                    RUN.App(new ProcessStartInfo()
                     {
-                        Arguments = $"{SilDev.Run.CommandLine()} --no-plugins-cache".Trim(),
+                        Arguments = $"{RUN.CommandLine()} --no-plugins-cache".Trim(),
                         FileName = appPath
                     }, 0);
                     while (Process.GetProcessesByName("vlc").Length > 0)
@@ -31,12 +32,12 @@ namespace VLCPortable
                         foreach (Process app in Process.GetProcessesByName("vlc"))
                             app.WaitForExit();
                     }
-                    SilDev.Data.DirUnLink(SilDev.Run.EnvVarFilter("%AppData%\\vlc"), true);
+                    DATA.DirUnLink(PATH.Combine("%AppData%\\vlc"), true);
                 }
                 else
-                    SilDev.Run.App(new ProcessStartInfo()
+                    RUN.App(new ProcessStartInfo()
                     {
-                        Arguments = SilDev.Run.CommandLine(),
+                        Arguments = RUN.CommandLine(),
                         FileName = appPath
                     });
             }

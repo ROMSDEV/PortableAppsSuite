@@ -1,3 +1,4 @@
+using SilDev;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -11,7 +12,7 @@ namespace CCleanerUpdater
         [STAThread]
         static void Main()
         {
-            string CCleaner = Path.Combine(Application.StartupPath, "CCleaner.exe");
+            string CCleaner = PATH.Combine("%CurDir%\\CCleaner.exe");
             if (!File.Exists(CCleaner))
             {
                 MessageBox.Show("CCleaner not found.", new MainForm().Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -27,9 +28,9 @@ namespace CCleanerUpdater
             {
                 if (newInstance)
                 {
-                    SilDev.Log.AllowDebug();
-                    if (!SilDev.Elevation.WritableLocation())
-                        SilDev.Elevation.RestartAsAdministrator();
+                    LOG.AllowDebug();
+                    if (!ELEVATION.WritableLocation())
+                        ELEVATION.RestartAsAdministrator();
                     Application.EnableVisualStyles();
                     Application.SetCompatibleTextRenderingDefault(false);
                     Application.Run(new MainForm());

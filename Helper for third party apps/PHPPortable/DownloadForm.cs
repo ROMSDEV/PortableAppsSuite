@@ -1,3 +1,4 @@
+using SilDev;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -9,7 +10,7 @@ namespace RunPHP
 {
     public partial class DownloadForm : Form
     {
-        SilDev.Network.AsyncTransfer Transfer = new SilDev.Network.AsyncTransfer();
+        NET.ASYNCTRANSFER Transfer = new NET.ASYNCTRANSFER();
         int DownloadFinishedCount = 0;
         string phpPath = string.Empty;
 
@@ -20,7 +21,7 @@ namespace RunPHP
 
         private void DownloadForm_Load(object sender, EventArgs e)
         {
-            phpPath = Path.Combine(Application.StartupPath, "php\\php.exe");
+            phpPath = PATH.Combine("%CurDir%\\php\\php.exe");
             Download();
             CheckDownload.Enabled = true;
         }
@@ -32,18 +33,19 @@ namespace RunPHP
             if (ExtractDownload.IsBusy)
                 ExtractDownload.CancelAsync();
             if (!File.Exists(phpPath))
-                Environment.Exit(-1);
+                Application.Exit();
         }
 
         private void Download()
         {
             try
             {
-                string source = SilDev.Network.DownloadString("http://windows.php.net/downloads/releases/sha1sum.txt");
+                string source = NET.DownloadString("http://windows.php.net/downloads/releases/sha1sum.txt");
                 if (string.IsNullOrWhiteSpace(source))
                 {
-                    SilDev.MsgBox.Show("Sorry, no connection available.", "No Connection Available", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    Environment.Exit(1);
+                    MSGBOX.Show("Sorry, no connection available.", "No Connection Available", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    Application.Exit();
+                    return;
                 }
                 string archive = string.Empty;
                 foreach (string str in source.Split(' '))
@@ -57,7 +59,7 @@ namespace RunPHP
                 }
                 if (!archive.EndsWith(".zip"))
                     archive = archive.Substring(0, archive.Length - 40).Trim();
-                Transfer.DownloadFile($"http://windows.php.net/downloads/releases/{archive}", Path.Combine(Application.StartupPath, archive));
+                Transfer.DownloadFile($"http://windows.php.net/downloads/releases/{archive}", PATH.Combine("%CurDir%", archive));
             }
             catch
             {
@@ -91,7 +93,7 @@ namespace RunPHP
         {
             try
             {
-                string path = Path.Combine(Application.StartupPath, "php");
+                string path = PATH.Combine("%CurDir%\\php");
                 if (File.Exists(Transfer.FilePath))
                 {
                     using (ZipArchive zip = ZipFile.Open(Transfer.FilePath, ZipArchiveMode.Read))
@@ -99,14 +101,13 @@ namespace RunPHP
                         if (Directory.Exists(path))
                             Directory.Delete(path, true);
                         zip.ExtractToDirectory(path);
-                        zip.Dispose();
                     }
                     File.Delete(Transfer.FilePath);
                 }
             }
             catch
             {
-                Environment.Exit(-1);
+                Application.Exit();
             }
         }
 
@@ -114,7 +115,7 @@ namespace RunPHP
         {
             if (!e.Cancelled)
             {
-                SilDev.MsgBox.Show(this, !Transfer.HasCanceled ? "Operation completed!" : "Operation failed!", "Info", MessageBoxButtons.OK, MessageBoxIcon.None);
+                MSGBOX.Show(this, !Transfer.HasCanceled ? "Operation completed!" : "Operation failed!", "Info", MessageBoxButtons.OK, MessageBoxIcon.None);
                 Close();
             }
         }

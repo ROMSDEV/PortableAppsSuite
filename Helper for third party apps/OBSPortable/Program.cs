@@ -1,3 +1,4 @@
+using SilDev;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -16,11 +17,11 @@ namespace OBSPortable
             {
                 if (newInstance)
                 {
-                    SilDev.Log.AllowDebug();
-                    string appPath = Path.Combine(Application.StartupPath, "OBS\\OBS.exe");
+                    LOG.AllowDebug();
+                    string appPath = PATH.Combine("%CurDir%\\OBS\\OBS.exe");
                     if (!File.Exists(appPath) || Process.GetProcessesByName(Path.GetFileNameWithoutExtension(appPath)).Length > 0)
                         return;
-                    SilDev.Run.App(new ProcessStartInfo()
+                    RUN.App(new ProcessStartInfo()
                     {
                         Arguments = "-portable",
                         FileName = appPath

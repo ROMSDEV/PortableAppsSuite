@@ -1,3 +1,4 @@
+using SilDev;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -15,11 +16,11 @@ namespace CDBurnerXPPortable
             {
                 if (newInstance)
                 {
-                    SilDev.Log.AllowDebug();
+                    LOG.AllowDebug();
 #if x86
-                    string appDir = SilDev.Run.EnvVarFilter("%CurrentDir%\\CDBurnerXP");
+                    string appDir = PATH.Combine("%CurDir%\\CDBurnerXP");
 #else
-                    string appDir = SilDev.Run.EnvVarFilter("%CurrentDir%\\CDBurnerXP64");
+                    string appDir = PATH.Combine("%CurDir%\\CDBurnerXP64");
 #endif
                     string appPath = Path.Combine(appDir, "cdbxpp.exe");
                     if (!File.Exists(appPath) || Process.GetProcessesByName(Path.GetFileNameWithoutExtension(appPath)).Length > 0)
@@ -27,8 +28,8 @@ namespace CDBurnerXPPortable
                     string iniPath = Path.Combine(appDir, "Config.ini");
                     if (!File.Exists(iniPath))
                         File.WriteAllLines(iniPath, new string[] { "[CDBurnerXP]", "Portable=1" });
-                    SilDev.Run.App(new ProcessStartInfo() { FileName = appPath }, 0);
-                    SilDev.Reg.RemoveExistSubKey(SilDev.Reg.RegKey.CurrentUser, "Software\\Canneverbe Limited");
+                    RUN.App(new ProcessStartInfo() { FileName = appPath }, 0);
+                    REG.RemoveExistSubKey(REG.RegKey.CurrentUser, "Software\\Canneverbe Limited");
                 }
             }
         }

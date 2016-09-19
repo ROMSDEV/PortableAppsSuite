@@ -1,3 +1,4 @@
+using SilDev;
 using System;
 using System.Diagnostics;
 using System.Threading;
@@ -20,11 +21,11 @@ namespace WinRARUpdater
             {
                 if (newInstance)
                 {
-                    SilDev.Log.AllowDebug();
-                    if (!SilDev.Elevation.WritableLocation())
-                        SilDev.Elevation.RestartAsAdministrator(Environment.CommandLine);
-                    SilDev.Source.AddTempAssembly("aceed86b06a889a33d71e8f0e65735bf", "UnRAR.exe");
-                    SilDev.Source.LoadTempAssemblies(Properties.Resources._UnRAR);
+                    LOG.AllowDebug();
+                    if (!ELEVATION.WritableLocation())
+                        ELEVATION.RestartAsAdministrator(Environment.CommandLine);
+                    SOURCE.AddTempAssembly("aceed86b06a889a33d71e8f0e65735bf", "UnRAR.exe");
+                    SOURCE.LoadTempAssemblies(Properties.Resources._UnRAR);
                     Application.EnableVisualStyles();
                     Application.SetCompatibleTextRenderingDefault(false);
                     Application.Run(new MainForm());

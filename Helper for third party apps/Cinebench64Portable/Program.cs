@@ -1,3 +1,4 @@
+using SilDev;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -15,14 +16,14 @@ namespace Cinebench64Portable // CINEBENCH_R15
             {
                 if (newInstance)
                 {
-                    SilDev.Log.AllowDebug();
-                    SilDev.Run.App(new ProcessStartInfo() { FileName = "%CurrentDir%\\App\\cinebench64\\CINEBENCH Windows 64 Bit.exe" }, 0);
+                    LOG.AllowDebug();
+                    RUN.App(new ProcessStartInfo() { FileName = "%CurDir%\\App\\cinebench64\\CINEBENCH Windows 64 Bit.exe" }, 0);
                     while (Process.GetProcessesByName("CINEBENCH Windows 64 Bit").Length > 0)
                         foreach (Process app in Process.GetProcessesByName("CINEBENCH Windows 64 Bit"))
                             app.WaitForExit();
                     try
                     {
-                        string cachePath = SilDev.Run.EnvVarFilter("%AppData%\\MAXON");
+                        string cachePath = PATH.Combine("%AppData%\\MAXON");
                         foreach (var dir in Directory.GetDirectories(cachePath, "cinebench64_*", SearchOption.TopDirectoryOnly))
                             Directory.Delete(dir, true);
                         if (Directory.GetFiles(cachePath, "*", SearchOption.AllDirectories).Length == 0)
@@ -30,7 +31,7 @@ namespace Cinebench64Portable // CINEBENCH_R15
                     }
                     catch (Exception ex)
                     {
-                        SilDev.Log.Debug(ex);
+                        LOG.Debug(ex);
                     }
                 }
             }

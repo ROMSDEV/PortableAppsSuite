@@ -1,7 +1,6 @@
+using SilDev;
 using System;
 using System.Diagnostics;
-using System.Drawing;
-using System.IO;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -17,35 +16,35 @@ namespace mpTrimPortable
             {
                 if (newInstance)
                 {
-                    SilDev.Log.AllowDebug();
+                    LOG.AllowDebug();
 
-                    string iniPath = SilDev.Run.EnvVarFilter("%CurrentDir%\\mpTrim\\mpTrim.ini");
+                    string iniPath = PATH.Combine("%CurDir%\\mpTrim\\mpTrim.ini");
 
                     int Left = 0;
-                    if (!int.TryParse(SilDev.Ini.Read("Settings", "Left", iniPath), out Left))
+                    if (!int.TryParse(INI.Read("Settings", "Left", iniPath), out Left))
                         Left = (int)Math.Round((Screen.PrimaryScreen.WorkingArea.Width / 2f) - (335f / 2f));
                     int Top = 0;
-                    if (!int.TryParse(SilDev.Ini.Read("Settings", "Top", iniPath), out Top))
+                    if (!int.TryParse(INI.Read("Settings", "Top", iniPath), out Top))
                         Top = (int)Math.Round((Screen.PrimaryScreen.WorkingArea.Height / 2f) - (410f / 2f));
-                    SilDev.Reg.CreateNewSubKey("HKCU\\Software\\mpTrim");
-                    SilDev.Reg.WriteValue("HKCU", "Software\\mpTrim", "MainFormLeft", Left, SilDev.Reg.RegValueKind.DWord);
-                    SilDev.Reg.WriteValue("HKCU", "Software\\mpTrim", "MainFormTop", Top, SilDev.Reg.RegValueKind.DWord);
+                    REG.CreateNewSubKey("HKCU\\Software\\mpTrim");
+                    REG.WriteValue("HKCU", "Software\\mpTrim", "MainFormLeft", Left, REG.RegValueKind.DWord);
+                    REG.WriteValue("HKCU", "Software\\mpTrim", "MainFormTop", Top, REG.RegValueKind.DWord);
 
-                    SilDev.Run.App(new ProcessStartInfo() { FileName = "%CurrentDir%\\mpTrim\\mpTrim.exe" }, 0);
+                    RUN.App(new ProcessStartInfo() { FileName = "%CurDir%\\mpTrim\\mpTrim.exe" }, 0);
 
-                    string left = SilDev.Reg.ReadValue("HKCU\\Software\\mpTrim", "MainFormLeft");
-                    string top = SilDev.Reg.ReadValue("HKCU\\Software\\mpTrim", "MainFormTop");
+                    string left = REG.ReadValue("HKCU\\Software\\mpTrim", "MainFormLeft");
+                    string top = REG.ReadValue("HKCU\\Software\\mpTrim", "MainFormTop");
                     if (!string.IsNullOrWhiteSpace(left) && left != Left.ToString() &&
                         !string.IsNullOrWhiteSpace(top) && top != Top.ToString())
                     {
-                        SilDev.Ini.File(iniPath);
-                        SilDev.Ini.Write("Settings", "Left", left);
-                        SilDev.Ini.Write("Settings", "Top", top);
+                        INI.File(iniPath);
+                        INI.Write("Settings", "Left", left);
+                        INI.Write("Settings", "Top", top);
                     }
-                    SilDev.Reg.RemoveExistSubKey("HKCU\\Software\\mpTrim");
+                    REG.RemoveExistSubKey("HKCU\\Software\\mpTrim");
                 }
                 else
-                    SilDev.Run.App(new ProcessStartInfo() { FileName = "%CurrentDir%\\mpTrim\\mpTrim.exe" });
+                    RUN.App(new ProcessStartInfo() { FileName = "%CurDir%\\mpTrim\\mpTrim.exe" });
             }
         }
     }

@@ -1,3 +1,4 @@
+using SilDev;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -14,18 +15,18 @@ namespace CheatEnginePortable
             bool newInstance = true;
             using (Mutex mutex = new Mutex(true, Process.GetCurrentProcess().ProcessName, out newInstance))
             {
-                string appPath = Path.Combine(Application.StartupPath, "App\\CheatEngine");
+                string appPath = PATH.Combine("%CurDir%\\App\\CheatEngine");
                 if (!File.Exists(Path.Combine(appPath, "Cheat Engine.exe")))
                     return;
                 if (newInstance)
                 {
-                    string dataTables = Path.Combine(Application.StartupPath, "Data\\My Cheat Tables");
+                    string dataTables = PATH.Combine("%CurDir%\\Data\\My Cheat Tables");
                     if (!Directory.Exists(dataTables))
                         Directory.CreateDirectory(dataTables);
-                    string dataSettings = Path.Combine(Application.StartupPath, "Data\\settings.reg");
+                    string dataSettings = PATH.Combine("%CurDir%\\Data\\settings.reg");
                     if (!File.Exists(dataSettings))
                     {
-                        string dataDir = Path.Combine(Application.StartupPath, "Data");
+                        string dataDir = PATH.Combine("%CurDir%\\Data");
                         if (!Directory.Exists(dataDir))
                             Directory.CreateDirectory(dataDir);
                         string[] defaultSettings = new string[]
@@ -39,11 +40,11 @@ namespace CheatEnginePortable
                         File.WriteAllLines(dataSettings, defaultSettings);
                     }
                     if (File.Exists(dataSettings))
-                        SilDev.Ini.Write("HKEY_CURRENT_USER\\Software\\Cheat Engine", "\"Initial tables dir\"", $"\"{dataTables.Replace("\\", "\\\\")}\"", dataSettings);
-                    if (!SilDev.Reg.ValueExist("HKEY_CURRENT_USER\\Software\\Cheat Engine", "Portable App"))
-                        SilDev.Reg.RenameSubKey("HKEY_CURRENT_USER\\Software\\Cheat Engine", "Software\\SI13N7-BACKUP: Cheat Engine");
-                    SilDev.Reg.ImportFile(dataSettings);
-                    SilDev.Run.App(new ProcessStartInfo() { FileName = "%CurrentDir%\\App\\CheatEngine\\Cheat Engine.exe" }, 0);
+                        INI.Write("HKEY_CURRENT_USER\\Software\\Cheat Engine", "\"Initial tables dir\"", $"\"{dataTables.Replace("\\", "\\\\")}\"", dataSettings);
+                    if (!REG.ValueExist("HKEY_CURRENT_USER\\Software\\Cheat Engine", "Portable App"))
+                        REG.RenameSubKey("HKEY_CURRENT_USER\\Software\\Cheat Engine", "Software\\SI13N7-BACKUP: Cheat Engine");
+                    REG.ImportFile(dataSettings);
+                    RUN.App(new ProcessStartInfo() { FileName = "%CurDir%\\App\\CheatEngine\\Cheat Engine.exe" }, 0);
                     bool isRunning = true;
                     while (isRunning)
                     {
@@ -55,12 +56,12 @@ namespace CheatEnginePortable
                     string userTables = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "My Cheat Tables");
                     if (Directory.Exists(userTables))
                         Directory.Delete(userTables, true);
-                    SilDev.Reg.ExportFile("HKEY_CURRENT_USER\\Software\\Cheat Engine", dataSettings);
-                    SilDev.Reg.RemoveExistSubKey(SilDev.Reg.RegKey.CurrentUser, "Software\\Cheat Engine");
-                    SilDev.Reg.RenameSubKey("HKEY_CURRENT_USER\\Software\\SI13N7-BACKUP: Cheat Engine", "Software\\Cheat Engine");
+                    REG.ExportFile("HKEY_CURRENT_USER\\Software\\Cheat Engine", dataSettings);
+                    REG.RemoveExistSubKey(REG.RegKey.CurrentUser, "Software\\Cheat Engine");
+                    REG.RenameSubKey("HKEY_CURRENT_USER\\Software\\SI13N7-BACKUP: Cheat Engine", "Software\\Cheat Engine");
                 }
                 else
-                    SilDev.Run.App(new ProcessStartInfo() { FileName = "%CurrentDir%\\App\\CheatEngine\\Cheat Engine.exe" });
+                    SilDev.RUN.App(new ProcessStartInfo() { FileName = "%CurDir%\\App\\CheatEngine\\Cheat Engine.exe" });
             }
         }
     }

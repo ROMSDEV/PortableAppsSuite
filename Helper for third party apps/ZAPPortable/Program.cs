@@ -1,3 +1,4 @@
+using SilDev;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -18,15 +19,15 @@ namespace ZAPPortable
                 {
                     if (newInstance)
                     {
-                        SilDev.Log.AllowDebug();
+                        LOG.AllowDebug();
 
-                        string appPath = Path.Combine(Application.StartupPath, "App\\ZedAttackProxy\\zap-2.5.0.jar");
+                        string appPath = PATH.Combine("%CurDir%\\App\\ZedAttackProxy\\zap-2.5.0.jar");
                         if (!File.Exists(appPath) || Process.GetProcessesByName("zap").Length > 0)
                             return;
 
-                        string appDrive = new DriveInfo(Application.StartupPath).RootDirectory.Root.Name;
+                        string appDrive = new DriveInfo(PATH.GetEnvironmentVariableValue("CurDir")).RootDirectory.Root.Name;
                         string JavaPath = appDrive;
-                        foreach (string dirName in Application.StartupPath.Split('\\'))
+                        foreach (string dirName in PATH.GetEnvironmentVariableValue("CurDir").Split('\\'))
                         {
                             if (appDrive.Contains(dirName))
                                 continue;
@@ -66,27 +67,27 @@ namespace ZAPPortable
                             return;
                         }
 
-                        string PortableProfile = SilDev.Run.EnvVarFilter("%CurrentDir%\\Data");
+                        string PortableProfile = PATH.Combine("%CurDir%\\Data");
                         if (!Directory.Exists(PortableProfile))
                             Directory.CreateDirectory(PortableProfile);
-                        string UserProfile = SilDev.Run.EnvVarFilter("%UserProfile%\\OWASP ZAP");
-                        SilDev.Data.DirLink(UserProfile, PortableProfile, true);
+                        string UserProfile = PATH.Combine("%UserProfile%\\OWASP ZAP");
+                        DATA.DirLink(UserProfile, PortableProfile, true);
 
                         string cmdLine = Environment.CommandLine.Replace($"\"{Application.ExecutablePath}\"", string.Empty).TrimStart();
-                        SilDev.Run.App(new ProcessStartInfo()
+                        RUN.App(new ProcessStartInfo()
                         {
                             Arguments = $"-Xmx512m -XX:PermSize=256M -jar \"{appPath}\" {cmdLine}",
                             FileName = JavaPath,
                             WorkingDirectory = Path.GetDirectoryName(appPath)
                         }, 0);
 
-                        SilDev.Data.DirUnLink(UserProfile, true);
+                        DATA.DirUnLink(UserProfile, true);
                     }
                 }
             }
             catch (Exception ex)
             {
-                SilDev.Log.Debug(ex);
+                LOG.Debug(ex);
             }
         }
     }

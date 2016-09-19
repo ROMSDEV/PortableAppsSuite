@@ -1,7 +1,7 @@
+using SilDev;
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Windows.Forms;
 
 namespace gpuz.exe
 {
@@ -10,9 +10,9 @@ namespace gpuz.exe
         [STAThread]
         static void Main()
         {
-            string file = Path.GetFullPath($"{Application.StartupPath}\\..\\..\\..\\GPU-ZPortable\\GPU-ZPortable.exe");
-            if (File.Exists(file))
-                Process.Start(file);
+            string path = PATH.Combine("%CurDir%\\..\\..\\..\\GPU-ZPortable\\GPU-ZPortable.exe");
+            if (File.Exists(path))
+                Process.Start(path);
         }
     }
 }

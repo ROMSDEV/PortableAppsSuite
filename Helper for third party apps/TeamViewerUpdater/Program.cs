@@ -1,3 +1,4 @@
+using SilDev;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -11,8 +12,8 @@ namespace TeamViewerUpdater
         [STAThread]
         static void Main()
         {
-            SilDev.Log.AllowDebug();
-            string TeamViewer = Path.Combine(Application.StartupPath, "TeamViewer.exe");
+            LOG.AllowDebug();
+            string TeamViewer = PATH.Combine("%CurDir%\\TeamViewer.exe");
             if (!File.Exists(TeamViewer))
             {
                 MessageBox.Show("TeamViewer not found.", new MainForm().Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -38,8 +39,8 @@ namespace TeamViewerUpdater
             {
                 if (newInstance)
                 {
-                    if (!SilDev.Elevation.WritableLocation())
-                        SilDev.Elevation.RestartAsAdministrator();
+                    if (!ELEVATION.WritableLocation())
+                        ELEVATION.RestartAsAdministrator();
                     Application.EnableVisualStyles();
                     Application.SetCompatibleTextRenderingDefault(false);
                     try
@@ -48,7 +49,7 @@ namespace TeamViewerUpdater
                     }
                     catch (Exception ex)
                     {
-                        SilDev.Log.Debug(ex);
+                        LOG.Debug(ex);
                     }
                 }
             }

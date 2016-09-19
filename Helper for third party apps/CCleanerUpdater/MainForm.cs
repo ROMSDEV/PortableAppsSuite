@@ -1,3 +1,4 @@
+using SilDev;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -9,7 +10,7 @@ namespace CCleanerUpdater
 {
     public partial class MainForm : Form
     {
-        SilDev.Network.AsyncTransfer Transfer = new SilDev.Network.AsyncTransfer();
+        NET.ASYNCTRANSFER Transfer = new NET.ASYNCTRANSFER();
         int DownloadFinishedCount = 0;
         string ZipPath = string.Empty;
 
@@ -20,9 +21,9 @@ namespace CCleanerUpdater
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            SilDev.Taskbar.Progress.SetState(Handle, SilDev.Taskbar.Progress.States.Indeterminate);
+            TASKBAR.PROGRESS.SetState(Handle, TASKBAR.PROGRESS.States.Indeterminate);
 
-            string CCleaner = Path.Combine(Application.StartupPath, "CCleaner.exe");
+            string CCleaner = PATH.Combine("%CurDir%\\CCleaner.exe");
             string UpdateURL = "https://www.piriform.com/ccleaner/download/portable/downloadfile";
 
             string LocalVersion = string.Empty;
@@ -35,11 +36,11 @@ namespace CCleanerUpdater
             }
             catch (Exception ex)
             {
-                SilDev.Log.Debug(ex);
+                LOG.Debug(ex);
             }
             CheckClose(LocalVersion, "LocalVersion");
 
-            string FileName = SilDev.Network.GetOnlineFileName(UpdateURL);
+            string FileName = NET.GetFileName(UpdateURL);
             CheckClose(FileName, "FileName");
 
             string OnlineVersion = string.Concat(FileName.Where(c => char.IsDigit(c)).ToArray());
@@ -49,7 +50,7 @@ namespace CCleanerUpdater
             {
                 if (ShowInfoBox("UpdateAvailable", MessageBoxButtons.YesNo) == DialogResult.Yes || Environment.CommandLine.Contains("/silent"))
                 {
-                    ZipPath = Path.Combine(Application.StartupPath, FileName);
+                    ZipPath = PATH.Combine("%CurDir%", FileName);
                     if (!File.Exists(ZipPath))
                     {
                         Opacity = 1f;
@@ -116,7 +117,7 @@ namespace CCleanerUpdater
                 DLPercentage.Maximum = 100;
                 DLPercentage.Value = 100;
             }
-            SilDev.Taskbar.Progress.SetValue(Handle, DLPercentage.Value, DLPercentage.Maximum);
+            TASKBAR.PROGRESS.SetValue(Handle, DLPercentage.Value, DLPercentage.Maximum);
             if (DownloadFinishedCount >= 10)
             {
                 CheckDownload.Enabled = false;
@@ -134,7 +135,7 @@ namespace CCleanerUpdater
                     {
                         foreach (var ent in zip.Entries)
                         {
-                            string EntPath = Path.Combine(Application.StartupPath, ent.FullName);
+                            string EntPath = PATH.Combine("%CurDir%", ent.FullName);
                             if (File.Exists(EntPath))
                                 File.Delete(EntPath);
                             string EntDir = Path.GetDirectoryName(EntPath);
@@ -149,14 +150,14 @@ namespace CCleanerUpdater
             catch (Exception ex)
             {
                 e.Result = "UpdateFailed";
-                SilDev.Log.Debug(ex);
+                LOG.Debug(ex);
             }
         }
 
         private void ExtractDownload_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
         {
             WindowState = FormWindowState.Minimized;
-            SilDev.Taskbar.Progress.SetState(Handle, SilDev.Taskbar.Progress.States.Indeterminate);
+            TASKBAR.PROGRESS.SetState(Handle, TASKBAR.PROGRESS.States.Indeterminate);
             ShowInfoBox(e.Result.ToString(), MessageBoxButtons.OK);
             Close();
         }
@@ -164,7 +165,7 @@ namespace CCleanerUpdater
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             if (File.Exists(ZipPath))
-                SilDev.Run.Cmd($"/C PING 127.0.0.1 -n 2 & DEL /F /Q \"{ZipPath}\"");
+                RUN.Cmd($"/C PING 127.0.0.1 -n 2 & DEL /F /Q \"{ZipPath}\"");
         }
     }
 }

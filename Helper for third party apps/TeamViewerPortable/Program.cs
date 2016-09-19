@@ -1,3 +1,4 @@
+using SilDev;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -17,7 +18,7 @@ namespace TeamViewerPortable
             {
                 if (newInstance)
                 {
-                    SilDev.Log.AllowDebug();
+                    LOG.AllowDebug();
 
                     string[] pList = new string[]
                     {
@@ -31,35 +32,35 @@ namespace TeamViewerPortable
                         if (Process.GetProcessesByName(p).Length > 0)
                             return;
 
-                    string rootDir = Path.Combine(Application.StartupPath, "TeamViewer");
+                    string rootDir = PATH.Combine("%CurDir%\\TeamViewer");
                     string appPath = Path.Combine(rootDir, "TeamViewer.exe");
                     string updaterPath = Path.Combine(rootDir, "TeamViewerUpdater.exe");
                     if (!File.Exists(appPath) || !File.Exists(updaterPath))
                         return;
 
                     string CurrentDate = DateTime.Now.ToString("M/d/yyyy", System.Globalization.CultureInfo.CreateSpecificCulture("en-US"));
-                    string LastUpdateCheck = SilDev.Ini.Read("History", "LastUpdateCheck");
+                    string LastUpdateCheck = INI.Read("History", "LastUpdateCheck");
                     if (LastUpdateCheck != CurrentDate)
                     {
-                        SilDev.Run.App(new ProcessStartInfo()
+                        RUN.App(new ProcessStartInfo()
                         {
                             FileName = updaterPath,
                             Arguments = "/silent",
                             Verb = "runas"
                         }, 0);
-                        SilDev.Ini.Write("History", "LastUpdateCheck", CurrentDate);
+                        INI.Write("History", "LastUpdateCheck", CurrentDate);
                     }
 
                     string iniPath = Path.Combine(rootDir, "TeamViewer.ini");
                     if (!File.Exists(iniPath))
                         File.Create(iniPath).Close();
-                    SilDev.Ini.Write("Settings", "nosave", 1, iniPath);
-                    SilDev.Ini.Write("Settings", "importsettings", 1, iniPath);
+                    INI.Write("Settings", "nosave", 1, iniPath);
+                    INI.Write("Settings", "importsettings", 1, iniPath);
 
                     string tvIniPath = Path.Combine(rootDir, "tv.ini");
-                    SilDev.Ini.File(Application.StartupPath, "TeamViewerPortable.ini");
+                    INI.File($"%CurDir%\\{Path.GetFileNameWithoutExtension(Application.ExecutablePath)}.ini");
                     Version CurVer = Assembly.GetExecutingAssembly().GetName().Version;
-                    Version LastVer = SilDev.Ini.ReadVersion("History", "LastVersion");
+                    Version LastVer = INI.ReadVersion("History", "LastVersion");
                     if (!File.Exists(tvIniPath) || CurVer != LastVer)
                     {
                         try
@@ -67,24 +68,24 @@ namespace TeamViewerPortable
                             if (File.Exists(tvIniPath))
                                 File.Delete(tvIniPath);
                             File.WriteAllText(tvIniPath, Properties.Resources._default_settings);
-                            SilDev.Ini.Write("History", "LastVersion", CurVer);
+                            INI.Write("History", "LastVersion", CurVer);
                         }
                         catch (Exception ex)
                         {
-                            SilDev.Log.Debug(ex);
+                            LOG.Debug(ex);
                         }
                     }
 
                     string defKey = $"SOFTWARE\\TeamViewer";
                     string bakKey = $"SOFTWARE\\SI13N7-BACKUP: TeamViewer";
-                    if (!SilDev.Reg.ValueExist($"HKLM\\{defKey}", "Portable App"))
-                        SilDev.Reg.RenameSubKey($"HKLM\\{defKey}", bakKey);
-                    SilDev.Reg.WriteValue($"HKLM\\{defKey}", "Portable App", "True");
+                    if (!REG.ValueExist($"HKLM\\{defKey}", "Portable App"))
+                        REG.RenameSubKey($"HKLM\\{defKey}", bakKey);
+                    REG.WriteValue($"HKLM\\{defKey}", "Portable App", "True");
 
-                    string defLogDir = SilDev.Run.EnvVarFilter("%AppData%\\TeamViewer");
-                    SilDev.Data.DirLink(defLogDir, rootDir, true);
+                    string defLogDir = PATH.Combine("%AppData%\\TeamViewer");
+                    DATA.DirLink(defLogDir, rootDir, true);
 
-                    SilDev.Run.App(new ProcessStartInfo()
+                    RUN.App(new ProcessStartInfo()
                     {
                         FileName = appPath,
                         Verb = "runas"
@@ -109,7 +110,7 @@ namespace TeamViewerPortable
                                 }
                                 catch (Exception ex)
                                 {
-                                    SilDev.Log.Debug(ex);
+                                    LOG.Debug(ex);
                                 }
                             }
                             if (isRunning)
@@ -117,10 +118,10 @@ namespace TeamViewerPortable
                         }
                     }
 
-                    SilDev.Reg.RemoveExistSubKey($"HKLM\\{defKey}");
-                    SilDev.Reg.RenameSubKey($"HKLM\\{bakKey}", defKey);
+                    REG.RemoveExistSubKey($"HKLM\\{defKey}");
+                    REG.RenameSubKey($"HKLM\\{bakKey}", defKey);
 
-                    SilDev.Data.DirUnLink(defLogDir, true);
+                    DATA.DirUnLink(defLogDir, true);
                 }
             }
         }

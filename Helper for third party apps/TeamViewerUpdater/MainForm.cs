@@ -1,3 +1,4 @@
+using SilDev;
 using System;
 using System.IO;
 using System.IO.Compression;
@@ -7,10 +8,10 @@ namespace TeamViewerUpdater
 {
     public partial class MainForm : Form
     {
-        SilDev.Network.AsyncTransfer Transfer = new SilDev.Network.AsyncTransfer();
+        NET.ASYNCTRANSFER Transfer = new NET.ASYNCTRANSFER();
         int DownloadFinishedCount = 0;
         string ZipPath = string.Empty;
-        string TeamViewer = Path.Combine(Application.StartupPath, "TeamViewer.exe");
+        string TeamViewer = PATH.Combine("%CurDir%\\TeamViewer.exe");
 
         public MainForm()
         {
@@ -22,13 +23,13 @@ namespace TeamViewerUpdater
         {
             string UpdateURL = "http://download.teamviewer.com/download/TeamViewerPortable.zip";
             string FileName = "TeamViewerPortable.zip";
-            DateTime onlineDate = SilDev.Network.GetOnlineFileDate(UpdateURL);
+            DateTime onlineDate = NET.GetFileDate(UpdateURL);
             DateTime localDate = File.GetLastWriteTime(TeamViewer);
             if (onlineDate.Date > localDate.Date)
             {
                 if (ShowInfoBox("UpdateAvailable", MessageBoxButtons.YesNo) == DialogResult.Yes || Environment.CommandLine.Contains("/silent"))
                 {
-                    ZipPath = Path.Combine(Application.StartupPath, FileName);
+                    ZipPath = PATH.Combine("%CurDir%", FileName);
                     if (!File.Exists(ZipPath))
                     {
                         Transfer.DownloadFile(UpdateURL, ZipPath);
@@ -118,7 +119,7 @@ namespace TeamViewerUpdater
                     {
                         foreach (var ent in zip.Entries)
                         {
-                            string EntPath = Path.Combine(Application.StartupPath, ent.FullName);
+                            string EntPath = PATH.Combine("%CurDir%", ent.FullName);
                             if (File.Exists(EntPath))
                                 File.Delete(EntPath);
                             ent.ExtractToFile(EntPath, true);
@@ -137,10 +138,10 @@ namespace TeamViewerUpdater
                 }
                 catch (Exception exx)
                 {
-                    SilDev.Log.Debug(exx);
+                    LOG.Debug(exx);
                 }
                 e.Result = "UpdateFailed";
-                SilDev.Log.Debug(ex);
+                LOG.Debug(ex);
             }
         }
 
@@ -155,7 +156,7 @@ namespace TeamViewerUpdater
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             if (File.Exists(ZipPath))
-                SilDev.Run.Cmd($"PING 127.0.0.1 -n 2 & DEL /F /Q \"{ZipPath}\"");
+                RUN.Cmd($"PING 127.0.0.1 -n 2 & DEL /F /Q \"{ZipPath}\"");
         }
     }
 }

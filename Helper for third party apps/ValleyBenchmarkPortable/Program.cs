@@ -1,3 +1,4 @@
+using SilDev;
 using System;
 using System.Diagnostics;
 using System.Threading;
@@ -14,11 +15,11 @@ namespace ValleyBenchmarkPortable // Valley Benchmark 1.0
             {
                 if (newInstance)
                 {
-                    SilDev.Data.DirLink(SilDev.Run.EnvVarFilter("%UserProfile%\\Valley"), SilDev.Run.EnvVarFilter("%CurrentDir%\\Data"), true);
-                    SilDev.Run.App(new ProcessStartInfo()
+                    DATA.DirLink(PATH.Combine("%UserProfile%\\Valley"), PATH.Combine("%CurDir%\\Data"), true);
+                    RUN.App(new ProcessStartInfo()
                     {
-                        Arguments = $"-config \"{SilDev.Run.EnvVarFilter("%CurrentDir%\\App\\Valley\\data\\launcher\\launcher.xml")}\"",
-                        FileName = "%CurrentDir%\\App\\valley\\bin\\browser_x86.exe"
+                        Arguments = $"-config \"{PATH.Combine("%CurDir%\\App\\Valley\\data\\launcher\\launcher.xml")}\"",
+                        FileName = "%CurDir%\\App\\valley\\bin\\browser_x86.exe"
                     }, 0);
                     while (Process.GetProcessesByName("browser_x86").Length > 0 || Process.GetProcessesByName("Valley").Length > 0)
                     {
@@ -27,7 +28,7 @@ namespace ValleyBenchmarkPortable // Valley Benchmark 1.0
                         foreach (Process app in Process.GetProcessesByName("Valley"))
                             app.WaitForExit();
                     }
-                    SilDev.Data.DirUnLink(SilDev.Run.EnvVarFilter("%UserProfile%\\Valley"), true);
+                    DATA.DirUnLink(PATH.Combine("%UserProfile%\\Valley"), true);
                 }
             }
         }
