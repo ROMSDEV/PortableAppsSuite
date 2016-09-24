@@ -10,7 +10,7 @@ namespace RunPHP
 {
     public partial class DownloadForm : Form
     {
-        NET.ASYNCTRANSFER Transfer = new NET.ASYNCTRANSFER();
+        NET.AsyncTransfer Transfer = new NET.AsyncTransfer();
         int DownloadFinishedCount = 0;
         string phpPath = string.Empty;
 

@@ -11,7 +11,7 @@ namespace WinRARUpdater
 {
     public partial class MainForm : Form
     {
-        NET.ASYNCTRANSFER Transfer = new NET.ASYNCTRANSFER();
+        NET.AsyncTransfer Transfer = new NET.AsyncTransfer();
         int DownloadFinishedCount = 0;
         string SetupPath = string.Empty;
 

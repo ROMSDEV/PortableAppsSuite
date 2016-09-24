@@ -8,7 +8,7 @@ namespace TeamViewerUpdater
 {
     public partial class MainForm : Form
     {
-        NET.ASYNCTRANSFER Transfer = new NET.ASYNCTRANSFER();
+        NET.AsyncTransfer Transfer = new NET.AsyncTransfer();
         int DownloadFinishedCount = 0;
         string ZipPath = string.Empty;
         string TeamViewer = PATH.Combine("%CurDir%\\TeamViewer.exe");
