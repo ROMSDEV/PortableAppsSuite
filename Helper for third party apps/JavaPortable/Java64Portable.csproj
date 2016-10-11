@@ -23,7 +23,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>JavaPortableLauncher.Program</StartupObject>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <TargetFrameworkProfile />
     <ProjectGuid>{A7E068BB-35C3-4294-A243-72978F74E180}</ProjectGuid>
   </PropertyGroup>
@@ -44,19 +44,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="SilDev.CSharpLib64">
+      <HintPath>..\..\..\SilDev.CSharpLib\.bin\SilDev.CSharpLib64.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\SilDev.Libs\SilDev.Convert.cs" />
-    <Compile Include="..\..\SilDev.Libs\SilDev.Crypt.cs" />
-    <Compile Include="..\..\SilDev.Libs\SilDev.Data.cs" />
-    <Compile Include="..\..\SilDev.Libs\SilDev.Elevation.cs" />
-    <Compile Include="..\..\SilDev.Libs\SilDev.Ini.cs" />
-    <Compile Include="..\..\SilDev.Libs\SilDev.Log.cs" />
-    <Compile Include="..\..\SilDev.Libs\SilDev.Run.cs" />
-    <Compile Include="..\..\SilDev.Libs\SilDev.Path.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">

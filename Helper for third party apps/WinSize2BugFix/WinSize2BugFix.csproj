@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ProcessRun</RootNamespace>
     <AssemblyName>_WinSize2_Launcher</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -41,17 +41,14 @@
     <ApplicationIcon>WinSize2_NEW.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="SilDev.CSharpLib">
+      <HintPath>..\..\..\SilDev.CSharpLib\.bin\SilDev.CSharpLib.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\SilDev.Libs\SilDev.Convert.cs" />
-    <Compile Include="..\..\SilDev.Libs\SilDev.Elevation.cs" />
-    <Compile Include="..\..\SilDev.Libs\SilDev.Log.cs" />
-    <Compile Include="..\..\SilDev.Libs\SilDev.Path.cs" />
-    <Compile Include="..\..\SilDev.Libs\SilDev.Run.cs" />
-    <Compile Include="..\..\SilDev.Libs\SilDev.WinAPI.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">

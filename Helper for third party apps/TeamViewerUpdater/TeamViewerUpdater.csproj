@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TeamViewerUpdater</RootNamespace>
     <AssemblyName>TeamViewerUpdater</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -39,6 +39,9 @@
     <ApplicationIcon>Resources\TeamViewerUpdater.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="SilDev.CSharpLib">
+      <HintPath>..\..\..\SilDev.CSharpLib\.bin\SilDev.CSharpLib.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
@@ -47,13 +50,6 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\SilDev.Libs\SilDev.Convert.cs" />
-    <Compile Include="..\..\SilDev.Libs\SilDev.Elevation.cs" />
-    <Compile Include="..\..\SilDev.Libs\SilDev.Log.cs" />
-    <Compile Include="..\..\SilDev.Libs\SilDev.Net.cs" />
-    <Compile Include="..\..\SilDev.Libs\SilDev.Run.cs" />
-    <Compile Include="..\..\SilDev.Libs\SilDev.Path.cs" />
-    <Compile Include="..\..\SilDev.Libs\SilDev.Ini.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>

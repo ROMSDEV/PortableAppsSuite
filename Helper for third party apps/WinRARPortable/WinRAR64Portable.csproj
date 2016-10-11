@@ -1,6 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{671B0387-F855-4D41-85E5-8AAF20A0916C}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>WinSize2Portable</RootNamespace>
+    <AssemblyName>WinSize2Portable</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>..\.bin\</OutputPath>
@@ -36,20 +47,15 @@
     <OutputType>WinExe</OutputType>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="SilDev.CSharpLib64">
+      <HintPath>..\..\..\SilDev.CSharpLib\.bin\SilDev.CSharpLib64.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\SilDev.Libs\SilDev.Ini.cs" />
-    <Compile Include="..\..\SilDev.Libs\SilDev.Convert.cs" />
-    <Compile Include="..\..\SilDev.Libs\SilDev.Crypt.cs" />
-    <Compile Include="..\..\SilDev.Libs\SilDev.Elevation.cs" />
-    <Compile Include="..\..\SilDev.Libs\SilDev.Log.cs" />
-    <Compile Include="..\..\SilDev.Libs\SilDev.Reg.cs" />
-    <Compile Include="..\..\SilDev.Libs\SilDev.Run.cs" />
-    <Compile Include="..\..\SilDev.Libs\SilDev.Path.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">

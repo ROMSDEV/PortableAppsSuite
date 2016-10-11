@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>HLSWPortable</RootNamespace>
     <AssemblyName>HLSWPortable</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
@@ -75,20 +75,15 @@
     <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="SilDev.CSharpLib">
+      <HintPath>..\..\..\SilDev.CSharpLib\.bin\SilDev.CSharpLib.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\SilDev.Libs\SilDev.Convert.cs" />
-    <Compile Include="..\..\SilDev.Libs\SilDev.Crypt.cs" />
-    <Compile Include="..\..\SilDev.Libs\SilDev.Elevation.cs" />
-    <Compile Include="..\..\SilDev.Libs\SilDev.Ini.cs" />
-    <Compile Include="..\..\SilDev.Libs\SilDev.Log.cs" />
-    <Compile Include="..\..\SilDev.Libs\SilDev.Reg.cs" />
-    <Compile Include="..\..\SilDev.Libs\SilDev.Run.cs" />
-    <Compile Include="..\..\SilDev.Libs\SilDev.Path.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
