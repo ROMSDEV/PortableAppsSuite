@@ -1,33 +1,32 @@
-using SilDev;
-using System;
-using System.Diagnostics;
-using System.IO;
-using System.Threading;
-using System.Windows.Forms;
-
 namespace YoloMousePortable
 {
-    static class Program
+    using System;
+    using System.Diagnostics;
+    using System.IO;
+    using System.Threading;
+    using SilDev;
+
+    internal static class Program
     {
         [STAThread]
-        static void Main()
+        private static void Main()
         {
-            string appPath = PATH.Combine("%CurDir%\\App\\YoloMouse\\YoloMouse.exe");
+            Log.AllowLogging();
+            var appPath = PathEx.Combine("%CurDir%\\App\\YoloMouse\\YoloMouse.exe");
             if (!File.Exists(appPath) || Process.GetProcessesByName(Path.GetFileNameWithoutExtension(appPath)).Length > 0)
-                Environment.Exit(-1);
-            bool newInstance = true;
-            using (Mutex mutex = new Mutex(true, Process.GetCurrentProcess().ProcessName, out newInstance))
-            {
+                Environment.Exit(1);
+            bool newInstance;
+            using (new Mutex(true, Process.GetCurrentProcess().ProcessName, out newInstance))
                 if (newInstance)
                 {
-                    LOG.AllowDebug();
-                    string dataDir = PATH.Combine("%CurDir%\\Data");
-                    string defDataDir = PATH.Combine("%LocalAppData%\\YoloMouse");
-                    DATA.DirLink(defDataDir, dataDir, true);
-                    RUN.App(new ProcessStartInfo() { FileName = appPath }, 0);
-                    DATA.DirUnLink(defDataDir, true);
+                    var dataDir = PathEx.Combine("%CurDir%\\Data");
+                    var defDataDir = PathEx.Combine("%LocalAppData%\\YoloMouse");
+                    Data.DirLink(defDataDir, dataDir, true);
+                    using (var p = ProcessEx.Start(appPath, false, false))
+                        if (!p?.HasExited == true)
+                            p?.WaitForExit();
+                    Data.DirUnLink(defDataDir, true);
                 }
-            }
         }
     }
 }

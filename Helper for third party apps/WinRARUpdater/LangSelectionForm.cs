@@ -1,25 +1,26 @@
-using SilDev;
-using System;
-using System.Windows.Forms;
-
 namespace WinRARUpdater
 {
+    using System;
+    using System.Windows.Forms;
+    using Properties;
+    using SilDev;
+
     public partial class LangSelectionForm : Form
     {
         public LangSelectionForm()
         {
             InitializeComponent();
-            Icon = Properties.Resources.RAR;
+            Icon = Resources.RAR;
         }
 
         private void LangSelectionForm_Load(object sender, EventArgs e)
         {
             try
             {
-                string Lang = INI.Read("Settings", "Language");
-                LangSelectBox.SelectedItem = Lang;
-                string Bit = INI.Read("Settings", "Architecture");
-                BitSelectBox.SelectedItem = Bit;
+                var lang = Ini.Read("Settings", "Language");
+                LangSelectBox.SelectedItem = lang;
+                var bit = Ini.Read("Settings", "Architecture");
+                BitSelectBox.SelectedItem = bit;
             }
             catch
             {
@@ -29,9 +30,9 @@ namespace WinRARUpdater
 
         private void OkBtn_Click(object sender, EventArgs e)
         {
-            INI.Write("Settings", "Language", LangSelectBox.GetItemText(LangSelectBox.SelectedItem));
-            INI.Write("Settings", "Architecture", BitSelectBox.GetItemText(BitSelectBox.SelectedItem));
-            INI.Write("Settings", "DoNotAskAgain", DoNotAskAgainCheck.Checked);
+            Ini.Write("Settings", "Language", LangSelectBox.GetItemText(LangSelectBox.SelectedItem));
+            Ini.Write("Settings", "Architecture", BitSelectBox.GetItemText(BitSelectBox.SelectedItem));
+            Ini.Write("Settings", "DoNotAskAgain", DoNotAskAgainCheck.Checked);
             DialogResult = DialogResult.OK;
         }
 

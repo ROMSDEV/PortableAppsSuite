@@ -1,26 +1,26 @@
-using SilDev;
-using System;
-using System.Diagnostics;
-using System.IO;
-using System.Reflection;
-using System.Threading;
-using System.Windows.Forms;
-
 namespace TeamViewerPortable
 {
-    static class Program
+    using System;
+    using System.Diagnostics;
+    using System.Globalization;
+    using System.IO;
+    using System.Linq;
+    using System.Reflection;
+    using System.Threading;
+    using Properties;
+    using SilDev;
+
+    internal static class Program
     {
         [STAThread]
-        static void Main()
+        private static void Main()
         {
-            bool newInstance = true;
-            using (Mutex mutex = new Mutex(true, Process.GetCurrentProcess().ProcessName, out newInstance))
-            {
+            Log.AllowLogging();
+            bool newInstance;
+            using (new Mutex(true, Process.GetCurrentProcess().ProcessName, out newInstance))
                 if (newInstance)
                 {
-                    LOG.AllowDebug();
-
-                    string[] pList = new string[]
+                    string[] pList =
                     {
                         "TeamViewer",
                         "TeamViewer_Desktop",
@@ -28,102 +28,90 @@ namespace TeamViewerPortable
                         "tv_x64",
                         "TeamViewerUpdater"
                     };
-                    foreach (string p in pList)
-                        if (Process.GetProcessesByName(p).Length > 0)
-                            return;
+                    if (pList.Any(p => Process.GetProcessesByName(p).Length > 0))
+                        return;
 
-                    string rootDir = PATH.Combine("%CurDir%\\TeamViewer");
-                    string appPath = Path.Combine(rootDir, "TeamViewer.exe");
-                    string updaterPath = Path.Combine(rootDir, "TeamViewerUpdater.exe");
+                    var rootDir = PathEx.Combine("%CurDir%\\TeamViewer");
+                    var appPath = Path.Combine(rootDir, "TeamViewer.exe");
+                    var updaterPath = Path.Combine(rootDir, "TeamViewerUpdater.exe");
                     if (!File.Exists(appPath) || !File.Exists(updaterPath))
                         return;
 
-                    string CurrentDate = DateTime.Now.ToString("M/d/yyyy", System.Globalization.CultureInfo.CreateSpecificCulture("en-US"));
-                    string LastUpdateCheck = INI.Read("History", "LastUpdateCheck");
-                    if (LastUpdateCheck != CurrentDate)
+                    var currentDate = DateTime.Now.ToString("M/d/yyyy", CultureInfo.CreateSpecificCulture("en-US"));
+                    var lastUpdateCheck = Ini.Read("History", "LastUpdateCheck");
+                    if (lastUpdateCheck != currentDate)
                     {
-                        RUN.App(new ProcessStartInfo()
-                        {
-                            FileName = updaterPath,
-                            Arguments = "/silent",
-                            Verb = "runas"
-                        }, 0);
-                        INI.Write("History", "LastUpdateCheck", CurrentDate);
+                        using (var p = ProcessEx.Start(updaterPath, "/silent", true, false))
+                            if (!p?.HasExited == true)
+                                p?.WaitForExit();
+                        Ini.Write("History", "LastUpdateCheck", currentDate);
                     }
 
-                    string iniPath = Path.Combine(rootDir, "TeamViewer.ini");
+                    var iniPath = Path.Combine(rootDir, "TeamViewer.ini");
                     if (!File.Exists(iniPath))
                         File.Create(iniPath).Close();
-                    INI.Write("Settings", "nosave", 1, iniPath);
-                    INI.Write("Settings", "importsettings", 1, iniPath);
+                    Ini.Write("Settings", "nosave", 1, iniPath);
+                    Ini.Write("Settings", "importsettings", 1, iniPath);
 
-                    string tvIniPath = Path.Combine(rootDir, "tv.ini");
-                    INI.File($"%CurDir%\\{Path.GetFileNameWithoutExtension(Application.ExecutablePath)}.ini");
-                    Version CurVer = Assembly.GetExecutingAssembly().GetName().Version;
-                    Version LastVer = INI.ReadVersion("History", "LastVersion");
-                    if (!File.Exists(tvIniPath) || CurVer != LastVer)
-                    {
+                    var tvIniPath = Path.Combine(rootDir, "tv.ini");
+                    Ini.File($"%CurDir%\\{Path.GetFileNameWithoutExtension(PathEx.LocalPath)}.ini");
+                    var curVer = Assembly.GetExecutingAssembly().GetName().Version;
+                    var lastVer = Ini.ReadVersion("History", "LastVersion");
+                    if (!File.Exists(tvIniPath) || curVer != lastVer)
                         try
                         {
                             if (File.Exists(tvIniPath))
                                 File.Delete(tvIniPath);
-                            File.WriteAllText(tvIniPath, Properties.Resources._default_settings);
-                            INI.Write("History", "LastVersion", CurVer);
+                            File.WriteAllText(tvIniPath, Resources.DefaultSettings);
+                            Ini.Write("History", "LastVersion", curVer);
                         }
                         catch (Exception ex)
                         {
-                            LOG.Debug(ex);
+                            Log.Write(ex);
                         }
-                    }
 
-                    string defKey = $"SOFTWARE\\TeamViewer";
-                    string bakKey = $"SOFTWARE\\SI13N7-BACKUP: TeamViewer";
-                    if (!REG.ValueExist($"HKLM\\{defKey}", "Portable App"))
-                        REG.RenameSubKey($"HKLM\\{defKey}", bakKey);
-                    REG.WriteValue($"HKLM\\{defKey}", "Portable App", "True");
+                    const string defKey = "SOFTWARE\\TeamViewer";
+                    const string bakKey = "SOFTWARE\\SI13N7-BACKUP: TeamViewer";
+                    if (!Reg.ValueExist($"HKLM\\{defKey}", "Portable App"))
+                        Reg.MoveSubKey($"HKLM\\{defKey}", bakKey);
+                    Reg.WriteValue($"HKLM\\{defKey}", "Portable App", "True");
 
-                    string defLogDir = PATH.Combine("%AppData%\\TeamViewer");
-                    DATA.DirLink(defLogDir, rootDir, true);
+                    var defLogDir = PathEx.Combine("%AppData%\\TeamViewer");
+                    Data.DirLink(defLogDir, rootDir, true);
 
-                    RUN.App(new ProcessStartInfo()
-                    {
-                        FileName = appPath,
-                        Verb = "runas"
-                    }, 0);
+                    using (var p = ProcessEx.Start(appPath, true, false))
+                        if (!p?.HasExited == true)
+                            p?.WaitForExit();
 
-                    bool isRunning = true;
+                    var isRunning = true;
                     while (isRunning)
                     {
                         isRunning = false;
-                        foreach (string n in pList)
+                        foreach (var n in pList)
                         {
-                            foreach (Process p in Process.GetProcessesByName(n))
-                            {
+                            foreach (var p in Process.GetProcessesByName(n))
                                 try
                                 {
                                     isRunning = !p.HasExited;
-                                    if (isRunning)
-                                    {
-                                        p.WaitForExit();
-                                        break;
-                                    }
+                                    if (!isRunning)
+                                        continue;
+                                    p.WaitForExit();
+                                    break;
                                 }
                                 catch (Exception ex)
                                 {
-                                    LOG.Debug(ex);
+                                    Log.Write(ex);
                                 }
-                            }
                             if (isRunning)
                                 break;
                         }
                     }
 
-                    REG.RemoveExistSubKey($"HKLM\\{defKey}");
-                    REG.RenameSubKey($"HKLM\\{bakKey}", defKey);
+                    Reg.RemoveExistSubKey($"HKLM\\{defKey}");
+                    Reg.MoveSubKey($"HKLM\\{bakKey}", defKey);
 
-                    DATA.DirUnLink(defLogDir, true);
+                    Data.DirUnLink(defLogDir, true);
                 }
-            }
         }
     }
 }

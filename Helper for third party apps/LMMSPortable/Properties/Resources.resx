@@ -117,8 +117,18 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="lmms_cfg_dummy" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\lmms_cfg_dummy.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  <data name="DefaultConfig" xml:space="preserve">
+    <value>&lt;?xml version="1.0"?&gt;
+&lt;!DOCTYPE lmms-config-file&gt;
+&lt;lmms version="1.1.3"&gt;
+  &lt;app nomsgaftersetup="0" displaydbv="0" nommpz="0" configured="1"/&gt;
+  &lt;audioportaudio backend="MME" device="Microsoft Soundmapper - Input"/&gt;
+  &lt;audiosdl device=""/&gt;
+  &lt;mixer framesperaudiobuffer="256" hqaudio="0" audiodev="SDL (Simple DirectMedia Layer)" mididev="WinMM MIDI"/&gt;
+  &lt;paths workingdir="{1}\lmms\" fldir="{1}\" stkdir="{0}\data\stk\rawwaves\" vstdir="C:\Program Files\VstPlugins" artwork="{0}\data\themes\default\" defaultsf2="" backgroundartwork="" laddir="{0}\plugins\ladspa\,{0}\plugins\ladspa"/&gt;
+  &lt;tooltips disabled="0"/&gt;
+  &lt;ui smoothscroll="0" compacttrackbuttons="0" enableautosave="0" animateafp="0" displaywaveform="0" oneinstrumenttrackwindow="0" syncvstplugins="0" printnotelabels="0"/&gt;
+  &lt;recentfiles/&gt;
+&lt;/lmms&gt;</value>
   </data>
 </root>

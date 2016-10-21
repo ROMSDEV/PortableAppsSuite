@@ -1,79 +1,79 @@
-using SilDev;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Threading;
-
 namespace GyazoPortable
 {
-    static class Program
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.IO;
+    using System.Threading;
+    using SilDev;
+
+    internal static class Program
     {
         [STAThread]
-        static void Main()
+        private static void Main()
         {
-            bool newInstance = true;
-            using (Mutex mutex = new Mutex(true, Process.GetCurrentProcess().ProcessName, out newInstance))
-            {
+            Log.AllowLogging();
+            bool newInstance;
+            using (new Mutex(true, Process.GetCurrentProcess().ProcessName, out newInstance))
                 if (newInstance)
                 {
-                    bool secondRunMode = false;
-                    INI.File($"%CurDir%\\{Path.GetFileNameWithoutExtension(Application.ExecutablePath)}.ini");
-                    if (File.Exists(INI.File()))
-                    {
-                        if (INI.Read("Settings", "SecondRunMode").ToLower() == "true")
+                    var secondRunMode = false;
+                    Ini.File($"%CurDir%\\{Path.GetFileNameWithoutExtension(PathEx.LocalPath)}.ini");
+                    if (File.Exists(Ini.File()))
+                        if (Ini.Read("Settings", "SecondRunMode").EqualsEx("true"))
                         {
                             secondRunMode = true;
-                            RUN.App(new ProcessStartInfo() { FileName = "%CurDir%\\Gyazo\\Gyazowin.exe" }, 0);
+                            using (var p = ProcessEx.Start("%CurDir%\\Gyazo\\Gyazowin.exe", true, false))
+                                if (!p?.HasExited == true)
+                                    p?.WaitForExit();
                         }
-                    }
                     if (!secondRunMode)
                     {
-                        string iniSettings = PATH.Combine("%CurDir%\\Gyazo\\settings.ini");
+                        var iniSettings = PathEx.Combine("%CurDir%\\Gyazo\\settings.ini");
                         if (File.Exists(iniSettings))
                         {
-                            REG.CreateNewSubKey(REG.RegKey.CurrentUser, "Software\\Gyazo");
-                            REG.CreateNewSubKey(REG.RegKey.CurrentUser, "Software\\Gyazo\\Gyazo");
-                            REG.CreateNewSubKey(REG.RegKey.CurrentUser, "Software\\Gyazo\\Gyazo\\Settings");
-                            string entries = INI.Read("Registry", "Entries", iniSettings);
+                            Reg.CreateNewSubKey(Reg.RegKey.CurrentUser, "Software\\Gyazo");
+                            Reg.CreateNewSubKey(Reg.RegKey.CurrentUser, "Software\\Gyazo\\Gyazo");
+                            Reg.CreateNewSubKey(Reg.RegKey.CurrentUser, "Software\\Gyazo\\Gyazo\\Settings");
+                            var entries = Ini.Read("Registry", "Entries", iniSettings);
                             if (entries.Contains(","))
-                            {
                                 foreach (var ent in entries.Split(','))
                                 {
-                                    string val = INI.Read("Settings", ent, iniSettings);
+                                    var val = Ini.Read("Settings", ent, iniSettings);
                                     if (!string.IsNullOrWhiteSpace(val))
-                                        REG.WriteValue(REG.RegKey.CurrentUser, "Software\\Gyazo\\Gyazo\\Settings", ent, val, REG.RegValueKind.DWord);
+                                        Reg.WriteValue(Reg.RegKey.CurrentUser, "Software\\Gyazo\\Gyazo\\Settings", ent, val, Reg.RegValueKind.DWord);
                                 }
-                            }
                         }
-                        RUN.App(new ProcessStartInfo() { FileName = "%CurDir%\\Gyazo\\GyStation.exe" }, 0);
+                        using (var p = ProcessEx.Start("%CurDir%\\Gyazo\\GyStation.exe", true, false))
+                            if (!p?.HasExited == true)
+                                p?.WaitForExit();
                         if (!File.Exists(iniSettings))
                             File.Create(iniSettings).Close();
-                        Dictionary<string, string> regSettings = new Dictionary<string, string>();
-                        regSettings.Add("CaptureGifHotKey", REG.ReadValue(REG.RegKey.CurrentUser, "Software\\Gyazo\\Gyazo\\Settings", "CaptureGifHotKey", REG.RegValueKind.DWord));
-                        regSettings.Add("CaptureGifHotKeyState", REG.ReadValue(REG.RegKey.CurrentUser, "Software\\Gyazo\\Gyazo\\Settings", "CaptureGifHotKeyState", REG.RegValueKind.DWord));
-                        regSettings.Add("CaptureHotKey", REG.ReadValue(REG.RegKey.CurrentUser, "Software\\Gyazo\\Gyazo\\Settings", "CaptureHotKey", REG.RegValueKind.DWord));
-                        regSettings.Add("CaptureHotKeyState", REG.ReadValue(REG.RegKey.CurrentUser, "Software\\Gyazo\\Gyazo\\Settings", "CaptureHotKeyState", REG.RegValueKind.DWord));
-                        regSettings.Add("PlaySound", REG.ReadValue(REG.RegKey.CurrentUser, "Software\\Gyazo\\Gyazo\\Settings", "PlaySound", REG.RegValueKind.DWord));
-                        regSettings.Add("PrintScreen", REG.ReadValue(REG.RegKey.CurrentUser, "Software\\Gyazo\\Gyazo\\Settings", "PrintScreen", REG.RegValueKind.DWord));
-                        regSettings.Add("ResizeFileMaxSize", REG.ReadValue(REG.RegKey.CurrentUser, "Software\\Gyazo\\Gyazo\\Settings", "ResizeFileMaxSize", REG.RegValueKind.DWord));
-                        regSettings.Add("StayTray", REG.ReadValue(REG.RegKey.CurrentUser, "Software\\Gyazo\\Gyazo\\Settings", "StayTray", REG.RegValueKind.DWord));
+                        var regSettings = new Dictionary<string, string>
+                        {
+                            { "CaptureGifHotKey", Reg.ReadStringValue(Reg.RegKey.CurrentUser, "Software\\Gyazo\\Gyazo\\Settings", "CaptureGifHotKey", Reg.RegValueKind.DWord) },
+                            { "CaptureGifHotKeyState", Reg.ReadStringValue(Reg.RegKey.CurrentUser, "Software\\Gyazo\\Gyazo\\Settings", "CaptureGifHotKeyState", Reg.RegValueKind.DWord) },
+                            { "CaptureHotKey", Reg.ReadStringValue(Reg.RegKey.CurrentUser, "Software\\Gyazo\\Gyazo\\Settings", "CaptureHotKey", Reg.RegValueKind.DWord) },
+                            { "CaptureHotKeyState", Reg.ReadStringValue(Reg.RegKey.CurrentUser, "Software\\Gyazo\\Gyazo\\Settings", "CaptureHotKeyState", Reg.RegValueKind.DWord) },
+                            { "PlaySound", Reg.ReadStringValue(Reg.RegKey.CurrentUser, "Software\\Gyazo\\Gyazo\\Settings", "PlaySound", Reg.RegValueKind.DWord) },
+                            { "PrintScreen", Reg.ReadStringValue(Reg.RegKey.CurrentUser, "Software\\Gyazo\\Gyazo\\Settings", "PrintScreen", Reg.RegValueKind.DWord) },
+                            { "ResizeFileMaxSize", Reg.ReadStringValue(Reg.RegKey.CurrentUser, "Software\\Gyazo\\Gyazo\\Settings", "ResizeFileMaxSize", Reg.RegValueKind.DWord) },
+                            { "StayTray", Reg.ReadStringValue(Reg.RegKey.CurrentUser, "Software\\Gyazo\\Gyazo\\Settings", "StayTray", Reg.RegValueKind.DWord) }
+                        };
                         foreach (var ent in regSettings)
                         {
-                            if (!string.IsNullOrWhiteSpace(ent.Value) && ent.Value.ToLower() != "dword")
-                            {
-                                string entries = INI.Read("Registry", "Entries", iniSettings);
-                                INI.Write("Registry", "Entries", !string.IsNullOrWhiteSpace(entries) ? string.Format("{0},{1}", entries, ent.Key) : ent.Key, iniSettings);
-                                INI.Write("Settings", ent.Key, ent.Value, iniSettings);
-                            }
+                            if (string.IsNullOrWhiteSpace(ent.Value) || ent.Value.ToLower() == "dword")
+                                continue;
+                            var entries = Ini.Read("Registry", "Entries", iniSettings);
+                            Ini.Write("Registry", "Entries", !string.IsNullOrWhiteSpace(entries) ? $"{entries},{ent.Key}" : ent.Key, iniSettings);
+                            Ini.Write("Settings", ent.Key, ent.Value, iniSettings);
                         }
-                        REG.RemoveExistSubKey(REG.RegKey.CurrentUser, "Software\\Gyazo");
+                        Reg.RemoveExistSubKey(Reg.RegKey.CurrentUser, "Software\\Gyazo");
                     }
-                    string tempDir = Path.Combine(Environment.GetEnvironmentVariable("AppData"), "Gyazo");
+                    var tempDir = PathEx.Combine("%AppData%\\Gyazo");
                     if (Directory.Exists(tempDir))
                         Directory.Delete(tempDir, true);
                 }
-            }
         }
     }
 }

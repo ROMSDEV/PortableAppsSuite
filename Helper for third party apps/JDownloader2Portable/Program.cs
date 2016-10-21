@@ -1,132 +1,118 @@
-using SilDev;
-using System;
-using System.Diagnostics;
-using System.IO;
-using System.Threading;
-using System.Windows.Forms;
-
 namespace JDownloader2Portable
 {
-    static class Program
+    using System;
+    using System.Diagnostics;
+    using System.IO;
+    using System.Threading;
+    using System.Windows.Forms;
+    using SilDev;
+
+    internal static class Program
     {
         [STAThread]
-        static void Main()
+        private static void Main()
         {
-            LOG.AllowDebug();
+            Log.AllowLogging();
             try
             {
-                string JavaPath = string.Empty;
-                string ExePath = PATH.Combine("%CurDir%\\JDownloader_v2.0\\JDownloader2.exe");
-                if (!File.Exists(ExePath))
+                var javaPath = string.Empty;
+                var exePath = PathEx.Combine("%CurDir%\\JDownloader_v2.0\\JDownloader2.exe");
+                var envVar = EnvironmentEx.GetVariableValue("CurDir");
+                if (!File.Exists(exePath))
                 {
-                    string drive = new DriveInfo(PATH.GetEnvironmentVariableValue("CurDir")).RootDirectory.Root.Name;
-                    string JavaDir = drive;
-                    foreach (string dirName in PATH.GetEnvironmentVariableValue("CurDir").Split('\\'))
-                    {
+                    var drive = new DriveInfo(envVar).RootDirectory.Root.Name;
+                    var JavaDir = drive;
+                    foreach (var dirName in envVar.Split('\\'))
                         try
                         {
                             if (drive.Contains(dirName))
                                 continue;
                             JavaDir = Path.Combine(JavaDir, dirName);
-                            string tmpDir = string.Empty;
+                            string tmpDir;
                             if (Environment.Is64BitOperatingSystem)
                             {
                                 tmpDir = Path.Combine(JavaDir, "CommonFiles\\Java64");
                                 if (Directory.Exists(tmpDir))
-                                {
-                                    foreach (string file in Directory.GetFiles(tmpDir, "javaw.exe", SearchOption.AllDirectories))
+                                    foreach (var file in Directory.GetFiles(tmpDir, "javaw.exe", SearchOption.AllDirectories))
                                     {
                                         JavaDir = tmpDir;
-                                        JavaPath = file;
+                                        javaPath = file;
                                         break;
                                     }
-                                }
                             }
                             tmpDir = Path.Combine(JavaDir, "CommonFiles\\Java64");
-                            if (File.Exists(tmpDir))
+                            if (!File.Exists(tmpDir))
+                                continue;
+                            if (!Directory.Exists(tmpDir))
+                                continue;
+                            foreach (var file in Directory.GetFiles(tmpDir, "javaw.exe", SearchOption.AllDirectories))
                             {
-                                if (Directory.Exists(tmpDir))
-                                {
-                                    foreach (string file in Directory.GetFiles(tmpDir, "javaw.exe", SearchOption.AllDirectories))
-                                    {
-                                        JavaDir = tmpDir;
-                                        JavaPath = file;
-                                        break;
-                                    }
-                                }
+                                JavaDir = tmpDir;
+                                javaPath = file;
+                                break;
                             }
                         }
                         catch (Exception ex)
                         {
-                            LOG.Debug(ex);
+                            Log.Write(ex);
                         }
-                    }
-                    if (!File.Exists(JavaPath))
+                    if (!File.Exists(javaPath))
                     {
-                        if (File.Exists($"{ExePath}.disabled"))
-                            File.Move($"{ExePath}.disabled", ExePath);
-                        string UpdExePath = PATH.Combine("%CurDir%\\JDownloader_v2.0\\JDownloader2Update.exe");
-                        if (File.Exists($"{UpdExePath}.disabled"))
-                            File.Move($"{UpdExePath}.disabled", UpdExePath);
+                        if (File.Exists($"{exePath}.disabled"))
+                            File.Move($"{exePath}.disabled", exePath);
+                        var updExePath = PathEx.Combine("%CurDir%\\JDownloader_v2.0\\JDownloader2Update.exe");
+                        if (File.Exists($"{updExePath}.disabled"))
+                            File.Move($"{updExePath}.disabled", updExePath);
                     }
                 }
-                if (!File.Exists(JavaPath) && !File.Exists(ExePath))
+                if (!File.Exists(javaPath) && !File.Exists(exePath))
                 {
-                    MessageBox.Show("Java Portable not found!", "JDownloader 2 Portable", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(@"Java Portable not found!", @"JDownloader 2 Portable", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
-                string JDownloader = PATH.Combine("%CurDir%\\JDownloader_v2.0\\JDownloader.jar");
-                if (!File.Exists(JDownloader))
+                var jDownloader = Path.Combine("%CurDir%\\JDownloader_v2.0\\JDownloader.jar");
+                if (!File.Exists(jDownloader))
                 {
-                    MessageBox.Show("JDownloader 2 not found!", "JDownloader 2 Portable", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(@"JDownloader 2 not found!", @"JDownloader 2 Portable", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
-                bool newInstance = true;
-                using (Mutex mutex = new Mutex(true, Process.GetCurrentProcess().ProcessName, out newInstance))
+                bool newInstance;
+                using (new Mutex(true, Process.GetCurrentProcess().ProcessName, out newInstance))
                 {
+                    var jdDir = Path.GetDirectoryName(jDownloader);
                     if (newInstance)
                     {
-                        string jreUsageDir = PATH.Combine("%UserProfile%\\.oracle_jre_usage");
+                        var jreUsageDir = PathEx.Combine("%UserProfile%\\.oracle_jre_usage");
                         if (!Directory.Exists(jreUsageDir))
                             Directory.CreateDirectory(jreUsageDir);
-                        DATA.SetAttributes(jreUsageDir, FileAttributes.Hidden);
-                        if (File.Exists(ExePath))
-                            RUN.App(new ProcessStartInfo()
-                            {
-                                Arguments = RUN.CommandLine(false),
-                                FileName = ExePath,
-                            }, 0);
+                        Data.SetAttributes(jreUsageDir, FileAttributes.Hidden);
+                        if (File.Exists(exePath))
+                        {
+                            using (var p = ProcessEx.Start(exePath, EnvironmentEx.CommandLine(false), false, false))
+                                if (!p?.HasExited == true)
+                                    p?.WaitForExit();
+                        }
                         else
-                            RUN.App(new ProcessStartInfo()
-                            {
-                                Arguments = $"-jar \"{JDownloader}\" {RUN.CommandLine(false)}".Trim(),
-                                FileName = JavaPath,
-                                WorkingDirectory = Path.GetDirectoryName(JDownloader)
-                            }, 0);
+                        {
+                            using (var p = ProcessEx.Start(javaPath, jdDir, $"-jar \"{jDownloader}\" {EnvironmentEx.CommandLine(false)}".Trim(), false, false))
+                                if (!p?.HasExited == true)
+                                    p?.WaitForExit();
+                        }
                         if (Directory.Exists(jreUsageDir))
                             Directory.Delete(jreUsageDir, true);
                     }
                     else
                     {
-                        if (File.Exists(ExePath))
-                            RUN.App(new ProcessStartInfo()
-                            {
-                                Arguments = RUN.CommandLine(false),
-                                FileName = ExePath,
-                            }, 0);
+                        if (File.Exists(exePath))
+                            ProcessEx.Start(exePath, EnvironmentEx.CommandLine(false));
                         else
-                            RUN.App(new ProcessStartInfo()
-                            {
-                                Arguments = $"-jar \"{JDownloader}\" {RUN.CommandLine(false)}".Trim(),
-                                FileName = JavaPath,
-                                WorkingDirectory = Path.GetDirectoryName(JDownloader)
-                            }, 0);
+                            ProcessEx.Start(javaPath, jdDir, $"-jar \"{jDownloader}\" {EnvironmentEx.CommandLine(false)}".Trim());
                     }
                 }
             }
             catch (Exception ex)
             {
-                LOG.Debug(ex);
+                Log.Write(ex);
             }
         }
     }

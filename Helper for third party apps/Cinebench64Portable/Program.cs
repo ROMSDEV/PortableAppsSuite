@@ -1,29 +1,31 @@
-using SilDev;
-using System;
-using System.Diagnostics;
-using System.IO;
-using System.Threading;
-
 namespace Cinebench64Portable // CINEBENCH_R15
 {
-    static class Program
+    using System;
+    using System.Diagnostics;
+    using System.IO;
+    using System.Threading;
+    using SilDev;
+
+    internal static class Program
     {
         [STAThread]
-        static void Main()
+        private static void Main()
         {
-            bool newInstance = true;
-            using (Mutex mutex = new Mutex(true, Process.GetCurrentProcess().ProcessName, out newInstance))
-            {
+            Log.AllowLogging();
+            bool newInstance;
+            using (new Mutex(true, Process.GetCurrentProcess().ProcessName, out newInstance))
                 if (newInstance)
                 {
-                    LOG.AllowDebug();
-                    RUN.App(new ProcessStartInfo() { FileName = "%CurDir%\\App\\cinebench64\\CINEBENCH Windows 64 Bit.exe" }, 0);
+                    var appPath = PathEx.Combine("%CurDir%\\App\\cinebench64\\CINEBENCH Windows 64 Bit.exe");
+                    using (var p = ProcessEx.Start(appPath, true, false))
+                        if (!p?.HasExited == true)
+                            p?.WaitForExit();
                     while (Process.GetProcessesByName("CINEBENCH Windows 64 Bit").Length > 0)
-                        foreach (Process app in Process.GetProcessesByName("CINEBENCH Windows 64 Bit"))
+                        foreach (var app in Process.GetProcessesByName("CINEBENCH Windows 64 Bit"))
                             app.WaitForExit();
                     try
                     {
-                        string cachePath = PATH.Combine("%AppData%\\MAXON");
+                        var cachePath = PathEx.Combine("%AppData%\\MAXON");
                         foreach (var dir in Directory.GetDirectories(cachePath, "cinebench64_*", SearchOption.TopDirectoryOnly))
                             Directory.Delete(dir, true);
                         if (Directory.GetFiles(cachePath, "*", SearchOption.AllDirectories).Length == 0)
@@ -31,10 +33,9 @@ namespace Cinebench64Portable // CINEBENCH_R15
                     }
                     catch (Exception ex)
                     {
-                        LOG.Debug(ex);
+                        Log.Write(ex);
                     }
                 }
-            }
         }
     }
 }

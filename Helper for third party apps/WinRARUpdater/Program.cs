@@ -1,35 +1,41 @@
-using SilDev;
-using System;
-using System.Diagnostics;
-using System.Threading;
-using System.Windows.Forms;
-
 namespace WinRARUpdater
 {
-    static class Program
+    using System;
+    using System.Diagnostics;
+    using System.IO;
+    using System.Threading;
+    using System.Windows.Forms;
+    using Properties;
+    using SilDev;
+
+    internal static class Program
     {
         [STAThread]
-        static void Main()
+        private static void Main()
         {
+            Log.AllowLogging();
             if (Process.GetProcessesByName("WinRAR").Length > 0)
             {
-                MessageBox.Show("WinRAR must be closed.", new MainForm().Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(@"WinRAR must be closed.", new MainForm().Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-            bool newInstance = true;
-            using (Mutex mutex = new Mutex(true, Process.GetCurrentProcess().ProcessName, out newInstance))
+            bool newInstance;
+            using (new Mutex(true, Process.GetCurrentProcess().ProcessName, out newInstance))
             {
-                if (newInstance)
-                {
-                    LOG.AllowDebug();
-                    if (!ELEVATION.WritableLocation())
-                        ELEVATION.RestartAsAdministrator(Environment.CommandLine);
-                    SOURCE.AddTempAssembly("aceed86b06a889a33d71e8f0e65735bf", "UnRAR.exe");
-                    SOURCE.LoadTempAssemblies(Properties.Resources._UnRAR);
-                    Application.EnableVisualStyles();
-                    Application.SetCompatibleTextRenderingDefault(false);
-                    Application.Run(new MainForm());
-                }
+                if (!newInstance)
+                    return;
+
+                if (!Elevation.WritableLocation())
+                    Elevation.RestartAsAdministrator(Environment.CommandLine);
+
+                var tmpDir = PathEx.Combine("%TEMP%", Process.GetCurrentProcess().ProcessName);
+                var tmpZip = Path.Combine(tmpDir, "unrar.zip");
+                ResourcesEx.Extract(Resources._UnRAR, tmpZip, true);
+                Compaction.Unzip(tmpZip, tmpDir);
+
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+                Application.Run(new MainForm());
             }
         }
     }

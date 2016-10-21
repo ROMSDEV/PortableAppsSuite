@@ -1,14 +1,15 @@
-using System;
-using System.Diagnostics;
-
 namespace FurMarkPortable
 {
-    static class Program
+    using System;
+    using SilDev;
+
+    internal static class Program
     {
         [STAThread]
-        static void Main()
+        private static void Main()
         {
-            SilDev.RUN.App(new ProcessStartInfo() { FileName = "%CurDir%\\FurMark\\FurMark.exe" });
+            Log.AllowLogging();
+            ProcessEx.Start("%CurDir%\\FurMark\\FurMark.exe");
         }
     }
 }

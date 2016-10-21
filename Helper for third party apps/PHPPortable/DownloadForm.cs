@@ -1,18 +1,19 @@
-using SilDev;
-using System;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.IO;
-using System.IO.Compression;
-using System.Windows.Forms;
-
 namespace RunPHP
 {
+    using System;
+    using System.ComponentModel;
+    using System.Diagnostics;
+    using System.IO;
+    using System.IO.Compression;
+    using System.Windows.Forms;
+    using SilDev;
+    using SilDev.Forms;
+
     public partial class DownloadForm : Form
     {
-        NET.AsyncTransfer Transfer = new NET.AsyncTransfer();
-        int DownloadFinishedCount = 0;
-        string phpPath = string.Empty;
+        private readonly NetEx.AsyncTransfer _transfer = new NetEx.AsyncTransfer();
+        private int _dlFinishCount;
+        private string _phpPath = string.Empty;
 
         public DownloadForm()
         {
@@ -21,18 +22,18 @@ namespace RunPHP
 
         private void DownloadForm_Load(object sender, EventArgs e)
         {
-            phpPath = PATH.Combine("%CurDir%\\php\\php.exe");
+            _phpPath = PathEx.Combine("%CurDir%\\php\\php.exe");
             Download();
             CheckDownload.Enabled = true;
         }
 
         private void DownloadForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-            if (Transfer.IsBusy)
-                Transfer.CancelAsync();
+            if (_transfer.IsBusy)
+                _transfer.CancelAsync();
             if (ExtractDownload.IsBusy)
                 ExtractDownload.CancelAsync();
-            if (!File.Exists(phpPath))
+            if (!File.Exists(_phpPath))
                 Application.Exit();
         }
 
@@ -40,26 +41,24 @@ namespace RunPHP
         {
             try
             {
-                string source = NET.DownloadString("http://windows.php.net/downloads/releases/sha1sum.txt");
+                var source = NetEx.Transfer.DownloadString("http://windows.php.net/downloads/releases/sha1sum.txt");
                 if (string.IsNullOrWhiteSpace(source))
                 {
-                    MSGBOX.Show("Sorry, no connection available.", "No Connection Available", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MsgBoxEx.Show("Sorry, no connection available.", "No Connection Available", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     Application.Exit();
                     return;
                 }
-                string archive = string.Empty;
-                foreach (string str in source.Split(' '))
-                {
+                var archive = string.Empty;
+                foreach (var str in source.Split(' '))
                     if (!string.IsNullOrWhiteSpace(str))
                     {
-                        string tmp = str.ToLower();
+                        var tmp = str.ToLower();
                         if (!tmp.Contains("test") && !tmp.Contains("debug") && !tmp.Contains("devel") && !tmp.Contains("nts") && tmp.Contains("-x86.zip"))
                             archive = str;
                     }
-                }
                 if (!archive.EndsWith(".zip"))
                     archive = archive.Substring(0, archive.Length - 40).Trim();
-                Transfer.DownloadFile($"http://windows.php.net/downloads/releases/{archive}", PATH.Combine("%CurDir%", archive));
+                _transfer.DownloadFile($"http://windows.php.net/downloads/releases/{archive}", PathEx.Combine("%CurDir%", archive));
             }
             catch
             {
@@ -69,41 +68,33 @@ namespace RunPHP
 
         private void CheckDownload_Tick(object sender, EventArgs e)
         {
-            DLSpeed.Text = $"{(int)Math.Round(Transfer.TransferSpeed)} kb/s";
-            DLPercentage.Value = Transfer.ProgressPercentage;
-            DLLoaded.Text = Transfer.DataReceived;
-            if (!Transfer.IsBusy)
-                DownloadFinishedCount++;
-            if (DownloadFinishedCount == 1)
-            {
-                DLPercentage.Maximum = 1000;
-                DLPercentage.Value = 1000;
-                DLPercentage.Value--;
-                DLPercentage.Maximum = 100;
-                DLPercentage.Value = 100;
-            }
-            if (DownloadFinishedCount >= 10)
-            {
-                CheckDownload.Enabled = false;
-                ExtractDownload.RunWorkerAsync();
-            }
+            DLSpeed.Text = $@"{(int)Math.Round(_transfer.TransferSpeed)} kb/s";
+            DLPercentage.Value = _transfer.ProgressPercentage;
+            DLLoaded.Text = _transfer.DataReceived;
+            if (!_transfer.IsBusy)
+                _dlFinishCount++;
+            if (_dlFinishCount == 1)
+                DLPercentage.JumpToEnd();
+            if (_dlFinishCount < 10)
+                return;
+            CheckDownload.Enabled = false;
+            ExtractDownload.RunWorkerAsync();
         }
 
         private void ExtractDownload_DoWork(object sender, DoWorkEventArgs e)
         {
             try
             {
-                string path = PATH.Combine("%CurDir%\\php");
-                if (File.Exists(Transfer.FilePath))
+                var path = PathEx.Combine("%CurDir%\\php");
+                if (!File.Exists(_transfer.FilePath))
+                    return;
+                using (var zip = ZipFile.Open(_transfer.FilePath, ZipArchiveMode.Read))
                 {
-                    using (ZipArchive zip = ZipFile.Open(Transfer.FilePath, ZipArchiveMode.Read))
-                    {
-                        if (Directory.Exists(path))
-                            Directory.Delete(path, true);
-                        zip.ExtractToDirectory(path);
-                    }
-                    File.Delete(Transfer.FilePath);
+                    if (Directory.Exists(path))
+                        Directory.Delete(path, true);
+                    zip.ExtractToDirectory(path);
                 }
+                File.Delete(_transfer.FilePath);
             }
             catch
             {
@@ -113,11 +104,10 @@ namespace RunPHP
 
         private void ExtractDownload_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            if (!e.Cancelled)
-            {
-                MSGBOX.Show(this, !Transfer.HasCanceled ? "Operation completed!" : "Operation failed!", "Info", MessageBoxButtons.OK, MessageBoxIcon.None);
-                Close();
-            }
+            if (e.Cancelled)
+                return;
+            MsgBoxEx.Show(this, !_transfer.HasCanceled ? "Operation completed!" : "Operation failed!", "Info", MessageBoxButtons.OK, MessageBoxIcon.None);
+            Close();
         }
     }
 }

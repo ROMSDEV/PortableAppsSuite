@@ -1,18 +1,20 @@
-using SilDev;
-using System;
-using System.Diagnostics;
-using System.IO;
-using System.IO.Compression;
-using System.Linq;
-using System.Windows.Forms;
-
 namespace DefragglerUpdater
 {
+    using System;
+    using System.ComponentModel;
+    using System.Diagnostics;
+    using System.IO;
+    using System.IO.Compression;
+    using System.Linq;
+    using System.Windows.Forms;
+    using SilDev;
+    using SilDev.Forms;
+
     public partial class MainForm : Form
     {
-        NET.AsyncTransfer Transfer = new NET.AsyncTransfer();
-        int DownloadFinishedCount = 0;
-        string ZipPath = string.Empty;
+        private readonly NetEx.AsyncTransfer _transfer = new NetEx.AsyncTransfer();
+        private int _dlFinishCount;
+        private string _zipPath = string.Empty;
 
         public MainForm()
         {
@@ -23,49 +25,42 @@ namespace DefragglerUpdater
         {
             try
             {
-                string Defraggler = PATH.Combine("%CurDir%\\Defraggler.exe");
-                string UpdateURL = "https://www.piriform.com/defraggler/download/portable/downloadfile";
+                var defraggler = PathEx.Combine("%CurDir%\\Defraggler.exe");
+                const string updateUrl = "https://www.piriform.com/defraggler/download/portable/downloadfile";
 
-                string LocalVersion = string.Empty;
-                string[] VerFilter = FileVersionInfo.GetVersionInfo(Defraggler).FileVersion.Replace(" ", string.Empty).Split(',');
-                if (VerFilter.Length > 0)
-                    LocalVersion = VerFilter[0];
-                string[] split = LocalVersion.Split('.');
-                LocalVersion = string.Empty;
-                for (int i = 0; i < 2; i++)
-                    LocalVersion += split[i];
-                CheckClose(LocalVersion, "LocalVersion");
+                var localVersion = string.Empty;
+                var verFilter = FileVersionInfo.GetVersionInfo(defraggler).FileVersion.Replace(" ", string.Empty).Split(',');
+                if (verFilter.Length > 0)
+                    localVersion = verFilter[0];
+                var split = localVersion.Split('.');
+                localVersion = string.Empty;
+                for (var i = 0; i < 2; i++)
+                    localVersion += split[i];
+                CheckClose(localVersion, "LocalVersion");
 
-                string FileName = NET.GetFileName(UpdateURL);
-                CheckClose(FileName, "FileName");
+                var fileName = NetEx.GetFileName(updateUrl);
+                CheckClose(fileName, "FileName");
 
-                string OnlineVersion = string.Concat(FileName.Where(c => char.IsDigit(c)).ToArray());
-                CheckClose(OnlineVersion, "OnlineVersion");
+                var onlineVersion = string.Concat(fileName.Where(char.IsDigit).ToArray());
+                CheckClose(onlineVersion, "OnlineVersion");
 
-                if (Convert.ToInt32(LocalVersion) < Convert.ToInt32(OnlineVersion))
-                {
+                if (Convert.ToInt32(localVersion) < Convert.ToInt32(onlineVersion))
                     if (ShowInfoBox("UpdateAvailable", MessageBoxButtons.YesNo) == DialogResult.Yes || Environment.CommandLine.Contains("/silent"))
                     {
-                        foreach (string d in Directory.GetDirectories(PATH.GetEnvironmentVariableValue("CurDir"), "*", SearchOption.TopDirectoryOnly))
+                        foreach (var d in Directory.GetDirectories(EnvironmentEx.GetVariableValue("CurDir"), "*", SearchOption.TopDirectoryOnly))
                             Directory.Delete(d, true);
-                        foreach (string f in Directory.GetFiles(PATH.GetEnvironmentVariableValue("CurDir"), "*", SearchOption.TopDirectoryOnly))
-                        {
-                            if (Path.GetFileName(f).ToLower() != Path.GetFileName(Application.ExecutablePath).ToLower() &&
-                                Path.GetFileName(f).ToLower() != Path.GetFileName(ZipPath).ToLower() &&
-                                Path.GetFileName(f).ToLower() != "defraggler.ini" &&
-                                Path.GetFileName(f).ToLower() != "portable.dat")
+                        foreach (var f in Directory.GetFiles(EnvironmentEx.GetVariableValue("CurDir"), "*", SearchOption.TopDirectoryOnly))
+                            if (!Path.GetFileName(f).EqualsEx(Path.GetFileName(PathEx.LocalPath), Path.GetFileName(_zipPath), "defraggler.ini", "portable.dat"))
                                 File.Delete(f);
-                        }
-                        ZipPath = PATH.Combine("%CurDir%", FileName);
-                        if (!File.Exists(ZipPath))
+                        _zipPath = PathEx.Combine("%CurDir%", fileName);
+                        if (!File.Exists(_zipPath))
                         {
-                            Transfer.DownloadFile(UpdateURL, ZipPath);
+                            _transfer.DownloadFile(updateUrl, _zipPath);
                             CheckDownload.Enabled = true;
-                            if (Environment.CommandLine.Contains("/silent"))
-                            {
-                                Opacity = 0;
-                                ShowInTaskbar = false;
-                            }
+                            if (!Environment.CommandLine.Contains("/silent"))
+                                return;
+                            Opacity = 0;
+                            ShowInTaskbar = false;
                         }
                         else
                         {
@@ -76,7 +71,6 @@ namespace DefragglerUpdater
                     }
                     else
                         Close();
-                }
                 else
                     throw new Exception();
             }
@@ -87,21 +81,20 @@ namespace DefragglerUpdater
             }
         }
 
-        private void CheckClose(string _check, string _arg)
+        private void CheckClose(string check, string arg)
         {
-            if (string.IsNullOrWhiteSpace(_check))
-            {
-                ShowInfoBox(_arg, MessageBoxButtons.OK);
-                Close();
-            }
+            if (!string.IsNullOrWhiteSpace(check))
+                return;
+            ShowInfoBox(arg, MessageBoxButtons.OK);
+            Close();
         }
 
-        private DialogResult ShowInfoBox(string _arg, MessageBoxButtons _btn)
+        private DialogResult ShowInfoBox(string arg, MessageBoxButtons btn)
         {
             if (Environment.CommandLine.Contains("/silent"))
                 return DialogResult.No;
-            string text = string.Empty;
-            switch (_arg)
+            string text;
+            switch (arg)
             {
                 case "UpdateAvailable":
                     text = "A newer version is available. Would you like to update now?";
@@ -116,61 +109,53 @@ namespace DefragglerUpdater
                     text = "No newer version available.";
                     break;
             }
-            return MessageBox.Show(text, Text, _btn, MessageBoxIcon.Information);
+            return MessageBox.Show(text, Text, btn, MessageBoxIcon.Information);
         }
 
         private void CheckDownload_Tick(object sender, EventArgs e)
         {
-            DLSpeed.Text = $"{(int)Math.Round(Transfer.TransferSpeed)} kb/s";
-            DLPercentage.Value = Transfer.ProgressPercentage;
-            DLLoaded.Text = Transfer.DataReceived;
-            if (!Transfer.IsBusy)
-                DownloadFinishedCount++;
-            if (DownloadFinishedCount == 1)
-            {
-                DLPercentage.Maximum = 1000;
-                DLPercentage.Value = 1000;
-                DLPercentage.Value--;
-                DLPercentage.Maximum = 100;
-                DLPercentage.Value = 100;
-            }
-            if (DownloadFinishedCount >= 10)
-            {
-                CheckDownload.Enabled = false;
-                ExtractDownload.RunWorkerAsync();
-            }
+            DLSpeed.Text = $@"{(int)Math.Round(_transfer.TransferSpeed)} kb/s";
+            DLPercentage.Value = _transfer.ProgressPercentage;
+            DLLoaded.Text = _transfer.DataReceived;
+            if (!_transfer.IsBusy)
+                _dlFinishCount++;
+            if (_dlFinishCount == 1)
+                DLPercentage.JumpToEnd();
+            if (_dlFinishCount < 10)
+                return;
+            CheckDownload.Enabled = false;
+            ExtractDownload.RunWorkerAsync();
         }
 
-        private void ExtractDownload_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
+        private void ExtractDownload_DoWork(object sender, DoWorkEventArgs e)
         {
             try
             {
-                if (File.Exists(ZipPath))
-                {
-                    using (ZipArchive zip = ZipFile.OpenRead(ZipPath))
+                if (!File.Exists(_zipPath))
+                    return;
+                using (var zip = ZipFile.OpenRead(_zipPath))
+                    foreach (var ent in zip.Entries)
                     {
-                        foreach (var ent in zip.Entries)
-                        {
-                            string EntPath = PATH.Combine("%CurDir%", ent.FullName);
-                            if (File.Exists(EntPath))
-                                File.Delete(EntPath);
-                            string EntDir = Path.GetDirectoryName(EntPath);
-                            if (!Directory.Exists(EntDir))
-                                Directory.CreateDirectory(EntDir);
-                            ent.ExtractToFile(EntPath, true);
-                        }
+                        var entPath = PathEx.Combine("%CurDir%", ent.FullName);
+                        if (File.Exists(entPath))
+                            File.Delete(entPath);
+                        var entDir = Path.GetDirectoryName(entPath);
+                        if (string.IsNullOrEmpty(entDir))
+                            throw new ArgumentNullException();
+                        if (!Directory.Exists(entDir))
+                            Directory.CreateDirectory(entDir);
+                        ent.ExtractToFile(entPath, true);
                     }
-                    e.Result = "Updated";
-                }
+                e.Result = "Updated";
             }
             catch (Exception ex)
             {
+                Log.Write(ex);
                 e.Result = "UpdateFailed";
-                LOG.Debug(ex);
             }
         }
 
-        private void ExtractDownload_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
+        private void ExtractDownload_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             Opacity = 0;
             ShowInTaskbar = false;
@@ -180,8 +165,8 @@ namespace DefragglerUpdater
 
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-            if (File.Exists(ZipPath))
-                RUN.Cmd($"PING 127.0.0.1 -n 2 & DEL /F /Q \"{ZipPath}\"");
+            if (File.Exists(_zipPath))
+                ProcessEx.Send($"PING 127.0.0.1 -n 2 & DEL /F /Q \"{_zipPath}\"");
         }
     }
 }

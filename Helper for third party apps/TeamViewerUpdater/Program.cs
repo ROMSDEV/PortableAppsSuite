@@ -1,56 +1,53 @@
-using SilDev;
-using System;
-using System.Diagnostics;
-using System.IO;
-using System.Threading;
-using System.Windows.Forms;
-
 namespace TeamViewerUpdater
 {
-    static class Program
+    using System;
+    using System.Diagnostics;
+    using System.IO;
+    using System.Linq;
+    using System.Threading;
+    using System.Windows.Forms;
+    using SilDev;
+
+    internal static class Program
     {
         [STAThread]
-        static void Main()
+        private static void Main()
         {
-            LOG.AllowDebug();
-            string TeamViewer = PATH.Combine("%CurDir%\\TeamViewer.exe");
-            if (!File.Exists(TeamViewer))
+            Log.AllowLogging();
+            var teamViewer = PathEx.Combine("%CurDir%\\TeamViewer.exe");
+            if (!File.Exists(teamViewer))
             {
-                MessageBox.Show("TeamViewer not found.", new MainForm().Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(@"TeamViewer not found.", @"TeamViewer Updater", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-            string[] pList = new string[]
+            string[] pList =
             {
                 "TeamViewer",
                 "TeamViewer_Desktop",
                 "tv_w32",
-                "tv_x64",
+                "tv_x64"
             };
-            foreach (string p in pList)
+            if (pList.Any(p => Process.GetProcessesByName(p).Length > 0))
             {
-                if (Process.GetProcessesByName(p).Length > 0)
-                {
-                    MessageBox.Show("TeamViewer must be closed.", new MainForm().Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
+                MessageBox.Show(@"TeamViewer must be closed.", @"TeamViewer Updater", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
             }
-            bool newInstance = true;
-            using (Mutex mutex = new Mutex(true, Process.GetCurrentProcess().ProcessName, out newInstance))
+            bool newInstance;
+            using (new Mutex(true, Process.GetCurrentProcess().ProcessName, out newInstance))
             {
-                if (newInstance)
+                if (!newInstance)
+                    return;
+                if (!Elevation.WritableLocation())
+                    Elevation.RestartAsAdministrator();
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+                try
                 {
-                    if (!ELEVATION.WritableLocation())
-                        ELEVATION.RestartAsAdministrator();
-                    Application.EnableVisualStyles();
-                    Application.SetCompatibleTextRenderingDefault(false);
-                    try
-                    {
-                        Application.Run(new MainForm());
-                    }
-                    catch (Exception ex)
-                    {
-                        LOG.Debug(ex);
-                    }
+                    Application.Run(new MainForm());
+                }
+                catch (Exception ex)
+                {
+                    Log.Write(ex);
                 }
             }
         }

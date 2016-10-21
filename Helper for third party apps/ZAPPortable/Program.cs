@@ -1,93 +1,87 @@
-using SilDev;
-using System;
-using System.Diagnostics;
-using System.IO;
-using System.Threading;
-using System.Windows.Forms;
-
 namespace ZAPPortable
 {
-    static class Program
+    using System;
+    using System.Diagnostics;
+    using System.IO;
+    using System.Threading;
+    using System.Windows.Forms;
+    using SilDev;
+
+    internal static class Program
     {
         [STAThread]
-        static void Main()
+        private static void Main()
         {
-            bool newInstance = true;
+            Log.AllowLogging();
             try
             {
-                using (Mutex mutex = new Mutex(true, Process.GetCurrentProcess().ProcessName, out newInstance))
+                bool newInstance;
+                using (new Mutex(true, Process.GetCurrentProcess().ProcessName, out newInstance))
                 {
-                    if (newInstance)
+                    if (!newInstance)
+                        return;
+                    var appPath = PathEx.Combine("%CurDir%\\App\\ZedAttackProxy\\zap-2.5.0.jar");
+                    if (!File.Exists(appPath) || Process.GetProcessesByName("zap").Length > 0)
+                        return;
+
+                    var appDrive = new DriveInfo(EnvironmentEx.GetVariableValue("CurDir")).RootDirectory.Root.Name;
+                    var javaPath = appDrive;
+                    foreach (var dirName in EnvironmentEx.GetVariableValue("CurDir").Split('\\'))
                     {
-                        LOG.AllowDebug();
-
-                        string appPath = PATH.Combine("%CurDir%\\App\\ZedAttackProxy\\zap-2.5.0.jar");
-                        if (!File.Exists(appPath) || Process.GetProcessesByName("zap").Length > 0)
-                            return;
-
-                        string appDrive = new DriveInfo(PATH.GetEnvironmentVariableValue("CurDir")).RootDirectory.Root.Name;
-                        string JavaPath = appDrive;
-                        foreach (string dirName in PATH.GetEnvironmentVariableValue("CurDir").Split('\\'))
+                        if (appDrive.Contains(dirName))
+                            continue;
+                        javaPath = Path.Combine(javaPath, dirName);
+                        if (Environment.Is64BitOperatingSystem)
                         {
-                            if (appDrive.Contains(dirName))
-                                continue;
-                            JavaPath = Path.Combine(JavaPath, dirName);
-                            if (Environment.Is64BitOperatingSystem)
+                            if (File.Exists(Path.Combine(javaPath, "Java64Portable\\CommonFiles\\Java64\\bin\\javaw.exe")))
                             {
-                                if (File.Exists(Path.Combine(JavaPath, "Java64Portable\\CommonFiles\\Java64\\bin\\javaw.exe")))
-                                {
-                                    JavaPath = Path.Combine(JavaPath, "Java64Portable\\CommonFiles\\Java64\\bin\\javaw.exe");
-                                    break;
-                                }
-                                if (File.Exists(Path.Combine(JavaPath, "CommonFiles\\Java64\\bin\\javaw.exe")))
-                                {
-                                    JavaPath = Path.Combine(JavaPath, "CommonFiles\\Java64\\bin\\javaw.exe");
-                                    break;
-                                }
-                            }
-                            if (File.Exists(Path.Combine(JavaPath, "Java64Portable\\CommonFiles\\Java\\bin\\javaw.exe")))
-                            {
-                                JavaPath = Path.Combine(JavaPath, "Java64Portable\\CommonFiles\\Java\\bin\\javaw.exe");
+                                javaPath = Path.Combine(javaPath, "Java64Portable\\CommonFiles\\Java64\\bin\\javaw.exe");
                                 break;
                             }
-                            if (File.Exists(Path.Combine(JavaPath, "JavaPortable\\CommonFiles\\Java\\bin\\javaw.exe")))
+                            if (File.Exists(Path.Combine(javaPath, "CommonFiles\\Java64\\bin\\javaw.exe")))
                             {
-                                JavaPath = Path.Combine(JavaPath, "JavaPortable\\CommonFiles\\Java\\bin\\javaw.exe");
-                                break;
-                            }
-                            if (File.Exists(Path.Combine(JavaPath, "CommonFiles\\Java\\bin\\javaw.exe")))
-                            {
-                                JavaPath = Path.Combine(JavaPath, "CommonFiles\\Java\\bin\\javaw.exe");
+                                javaPath = Path.Combine(javaPath, "CommonFiles\\Java64\\bin\\javaw.exe");
                                 break;
                             }
                         }
-                        if (!File.Exists(JavaPath))
+                        if (File.Exists(Path.Combine(javaPath, "Java64Portable\\CommonFiles\\Java\\bin\\javaw.exe")))
                         {
-                            MessageBox.Show("Java Portable not found!", "Zed Attack Proxy Portable", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            return;
+                            javaPath = Path.Combine(javaPath, "Java64Portable\\CommonFiles\\Java\\bin\\javaw.exe");
+                            break;
                         }
-
-                        string PortableProfile = PATH.Combine("%CurDir%\\Data");
-                        if (!Directory.Exists(PortableProfile))
-                            Directory.CreateDirectory(PortableProfile);
-                        string UserProfile = PATH.Combine("%UserProfile%\\OWASP ZAP");
-                        DATA.DirLink(UserProfile, PortableProfile, true);
-
-                        string cmdLine = Environment.CommandLine.Replace($"\"{Application.ExecutablePath}\"", string.Empty).TrimStart();
-                        RUN.App(new ProcessStartInfo()
+                        if (File.Exists(Path.Combine(javaPath, "JavaPortable\\CommonFiles\\Java\\bin\\javaw.exe")))
                         {
-                            Arguments = $"-Xmx512m -XX:PermSize=256M -jar \"{appPath}\" {cmdLine}",
-                            FileName = JavaPath,
-                            WorkingDirectory = Path.GetDirectoryName(appPath)
-                        }, 0);
-
-                        DATA.DirUnLink(UserProfile, true);
+                            javaPath = Path.Combine(javaPath, "JavaPortable\\CommonFiles\\Java\\bin\\javaw.exe");
+                            break;
+                        }
+                        if (File.Exists(Path.Combine(javaPath, "CommonFiles\\Java\\bin\\javaw.exe")))
+                        {
+                            javaPath = Path.Combine(javaPath, "CommonFiles\\Java\\bin\\javaw.exe");
+                            break;
+                        }
                     }
+                    if (!File.Exists(javaPath))
+                    {
+                        MessageBox.Show(@"Java Portable not found!", @"Zed Attack Proxy Portable", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    var portableProfile = PathEx.Combine("%CurDir%\\Data");
+                    if (!Directory.Exists(portableProfile))
+                        Directory.CreateDirectory(portableProfile);
+                    var userProfile = PathEx.Combine("%UserProfile%\\OWASP ZAP");
+                    Data.DirLink(userProfile, portableProfile, true);
+
+                    using (var p = ProcessEx.Start(javaPath, Path.GetDirectoryName(appPath), $"-Xmx512m -XX:PermSize=256M -jar \"{appPath}\" {EnvironmentEx.CommandLine(false)}", false, false))
+                        if (!p?.HasExited == true)
+                            p?.WaitForExit();
+
+                    Data.DirUnLink(userProfile, true);
                 }
             }
             catch (Exception ex)
             {
-                LOG.Debug(ex);
+                Log.Write(ex);
             }
         }
     }

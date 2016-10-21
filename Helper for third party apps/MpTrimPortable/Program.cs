@@ -1,51 +1,50 @@
-using SilDev;
-using System;
-using System.Diagnostics;
-using System.Threading;
-using System.Windows.Forms;
-
 namespace mpTrimPortable
 {
-    static class Program
+    using System;
+    using System.Diagnostics;
+    using System.Threading;
+    using System.Windows.Forms;
+    using SilDev;
+
+    internal static class Program
     {
         [STAThread]
-        static void Main()
+        private static void Main()
         {
-            bool newInstance = true;
-            using (Mutex mutex = new Mutex(true, Process.GetCurrentProcess().ProcessName, out newInstance))
-            {
+            Log.AllowLogging();
+            bool newInstance;
+            using (new Mutex(true, Process.GetCurrentProcess().ProcessName, out newInstance))
                 if (newInstance)
                 {
-                    LOG.AllowDebug();
+                    var iniPath = PathEx.Combine("%CurDir%\\mpTrim\\mpTrim.ini");
 
-                    string iniPath = PATH.Combine("%CurDir%\\mpTrim\\mpTrim.ini");
+                    int left;
+                    if (!int.TryParse(Ini.Read("Settings", "Left", iniPath), out left))
+                        left = (int)Math.Round(Screen.PrimaryScreen.WorkingArea.Width / 2f - 335f / 2f);
+                    int top;
+                    if (!int.TryParse(Ini.Read("Settings", "Top", iniPath), out top))
+                        top = (int)Math.Round(Screen.PrimaryScreen.WorkingArea.Height / 2f - 410f / 2f);
+                    Reg.CreateNewSubKey("HKCU\\Software\\mpTrim");
+                    Reg.WriteValue("HKCU", "Software\\mpTrim", "MainFormLeft", left, Reg.RegValueKind.DWord);
+                    Reg.WriteValue("HKCU", "Software\\mpTrim", "MainFormTop", top, Reg.RegValueKind.DWord);
 
-                    int Left = 0;
-                    if (!int.TryParse(INI.Read("Settings", "Left", iniPath), out Left))
-                        Left = (int)Math.Round((Screen.PrimaryScreen.WorkingArea.Width / 2f) - (335f / 2f));
-                    int Top = 0;
-                    if (!int.TryParse(INI.Read("Settings", "Top", iniPath), out Top))
-                        Top = (int)Math.Round((Screen.PrimaryScreen.WorkingArea.Height / 2f) - (410f / 2f));
-                    REG.CreateNewSubKey("HKCU\\Software\\mpTrim");
-                    REG.WriteValue("HKCU", "Software\\mpTrim", "MainFormLeft", Left, REG.RegValueKind.DWord);
-                    REG.WriteValue("HKCU", "Software\\mpTrim", "MainFormTop", Top, REG.RegValueKind.DWord);
+                    using (var p = ProcessEx.Start("%CurDir%\\mpTrim\\mpTrim.exe", false, false))
+                        if (!p?.HasExited == true)
+                            p?.WaitForExit();
 
-                    RUN.App(new ProcessStartInfo() { FileName = "%CurDir%\\mpTrim\\mpTrim.exe" }, 0);
-
-                    string left = REG.ReadValue("HKCU\\Software\\mpTrim", "MainFormLeft");
-                    string top = REG.ReadValue("HKCU\\Software\\mpTrim", "MainFormTop");
-                    if (!string.IsNullOrWhiteSpace(left) && left != Left.ToString() &&
-                        !string.IsNullOrWhiteSpace(top) && top != Top.ToString())
+                    var fLeft = Reg.ReadStringValue("HKCU\\Software\\mpTrim", "MainFormLeft");
+                    var fTop = Reg.ReadStringValue("HKCU\\Software\\mpTrim", "MainFormTop");
+                    if (!string.IsNullOrWhiteSpace(fLeft) && fLeft != left.ToString() &&
+                        !string.IsNullOrWhiteSpace(fTop) && fTop != top.ToString())
                     {
-                        INI.File(iniPath);
-                        INI.Write("Settings", "Left", left);
-                        INI.Write("Settings", "Top", top);
+                        Ini.File(iniPath);
+                        Ini.Write("Settings", "Left", fLeft);
+                        Ini.Write("Settings", "Top", fTop);
                     }
-                    REG.RemoveExistSubKey("HKCU\\Software\\mpTrim");
+                    Reg.RemoveExistSubKey("HKCU\\Software\\mpTrim");
                 }
                 else
-                    RUN.App(new ProcessStartInfo() { FileName = "%CurDir%\\mpTrim\\mpTrim.exe" });
-            }
+                    ProcessEx.Start("%CurDir%\\mpTrim\\mpTrim.exe");
         }
     }
 }

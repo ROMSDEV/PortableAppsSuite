@@ -1,34 +1,33 @@
-using SilDev;
-using System;
-using System.Diagnostics;
-using System.Threading;
-using System.Windows.Forms;
-
 namespace RunPHP
 {
-    static class Program
+    using System;
+    using System.Diagnostics;
+    using System.Threading;
+    using System.Windows.Forms;
+    using SilDev;
+
+    internal static class Program
     {
         [STAThread]
-        static void Main()
+        private static void Main()
         {
-            LOG.AllowDebug();
-            bool newInstance = true;
-            using (Mutex mutex = new Mutex(true, Process.GetCurrentProcess().ProcessName, out newInstance))
+            Log.AllowLogging();
+            bool newInstance;
+            using (new Mutex(true, Process.GetCurrentProcess().ProcessName, out newInstance))
             {
-                if (newInstance)
+                if (!newInstance)
+                    return;
+                if (!Elevation.WritableLocation())
+                    Elevation.RestartAsAdministrator();
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+                try
                 {
-                    if (!ELEVATION.WritableLocation())
-                        ELEVATION.RestartAsAdministrator();
-                    Application.EnableVisualStyles();
-                    Application.SetCompatibleTextRenderingDefault(false);
-                    try
-                    {
-                        Application.Run(new MainForm());
-                    }
-                    catch (Exception ex)
-                    {
-                        LOG.Debug(ex);
-                    }
+                    Application.Run(new MainForm());
+                }
+                catch (Exception ex)
+                {
+                    Log.Write(ex);
                 }
             }
         }

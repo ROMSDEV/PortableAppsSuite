@@ -1,142 +1,138 @@
-using SilDev;
-using System;
-using System.Diagnostics;
-using System.Drawing;
-using System.IO;
-using System.Windows.Forms;
-
 namespace RunPHP
 {
+    using System;
+    using System.Diagnostics;
+    using System.Drawing;
+    using System.IO;
+    using System.Windows.Forms;
+    using SilDev;
+
     public partial class MainForm : Form
     {
-        Form DLForm = new DownloadForm();
-        string php = string.Empty;
-
-        private void CenterWindow(IntPtr hChildWnd, bool wnd)
-        {
-            Rectangle recChild = new Rectangle(0, 0, 0, 0);
-            WINAPI.SafeNativeMethods.GetWindowRect(hChildWnd, ref recChild);
-
-            int width = recChild.Width - recChild.X;
-            int height = recChild.Height - recChild.Y;
-
-            Point ptCenter = new Point(0, 0);
-            if (wnd)
-            {
-                Rectangle recParent = new Rectangle(0, 0, 0, 0);
-                WINAPI.SafeNativeMethods.GetWindowRect(Handle, ref recParent);
-                ptCenter.X = recParent.X + ((recParent.Width - recParent.X) / 2);
-                ptCenter.Y = recParent.Y + ((recParent.Height - recParent.Y) / 2);
-            }
-            else
-            {
-                ptCenter.X = (Screen.PrimaryScreen.Bounds.Width / 2);
-                ptCenter.Y = (Screen.PrimaryScreen.Bounds.Height / 2);
-            }
-
-            Point ptStart = new Point(0, 0);
-            ptStart.X = (ptCenter.X - (width / 2));
-            ptStart.Y = (ptCenter.Y - (height / 2));
-
-            ptStart.X = (ptStart.X < 0) ? 0 : ptStart.X;
-            ptStart.Y = (ptStart.Y < 0) ? 0 : ptStart.Y;
-
-            WINAPI.SafeNativeMethods.MoveWindow(hChildWnd, ptStart.X, ptStart.Y, width, height, false);
-        }
-
-        private void CenterWindow(IntPtr hChildWnd) =>
-            CenterWindow(hChildWnd, true);
-
-        private void Run(string fileName, string workingDir, string args, bool centerWindow = true)
-        {
-            if (File.Exists(fileName) && Directory.Exists(workingDir))
-            {
-                if (Opacity != 0)
-                    Opacity = 0;
-                try
-                {
-                    using (Process p = new Process())
-                    {
-                        p.StartInfo.Arguments = string.Format("-f \"{0}\"{1}", fileName, args);
-                        p.StartInfo.FileName = php;
-                        p.StartInfo.WorkingDirectory = workingDir;
-                        p.Start();
-                        Process RunningPHP = Process.GetProcessById((int)WINAPI.SafeNativeMethods.GetProcessId(p.Handle));
-                        while (RunningPHP.MainWindowTitle != Text)
-                        {
-                            if (!p.HasExited)
-                            {
-                                CenterWindow(p.MainWindowHandle, centerWindow);
-                                WINAPI.SafeNativeMethods.SetWindowText(p.MainWindowHandle, Text);
-                                RunningPHP = Process.GetProcessById((int)WINAPI.SafeNativeMethods.GetProcessId(p.Handle));
-                                continue;
-                            }
-                            break;
-                        }
-                        if (!p.HasExited)
-                            p.WaitForExit();
-                    }
-                }
-                catch
-                {
-                    try
-                    {
-                        Process[] RunningPHP = Process.GetProcessesByName("php");
-                        if (RunningPHP.Length > 0)
-                            foreach (Process p in RunningPHP)
-                                p.Kill();
-                    }
-                    catch (Exception ex)
-                    {
-                        LOG.Debug(ex);
-                    }
-                }
-                if (Opacity != 1)
-                    Opacity = 1;
-            }
-        }
+        private readonly Form _dlForm = new DownloadForm();
+        private string _php = string.Empty;
 
         public MainForm()
         {
             InitializeComponent();
         }
 
+        private void CenterWindow(IntPtr hChildWnd, bool wnd)
+        {
+            var recChild = new Rectangle(0, 0, 0, 0);
+            WinApi.UnsafeNativeMethods.GetWindowRect(hChildWnd, ref recChild);
+
+            var width = recChild.Width - recChild.X;
+            var height = recChild.Height - recChild.Y;
+
+            var ptCenter = new Point(0, 0);
+            if (wnd)
+            {
+                var recParent = new Rectangle(0, 0, 0, 0);
+                WinApi.UnsafeNativeMethods.GetWindowRect(Handle, ref recParent);
+                ptCenter.X = recParent.X + (recParent.Width - recParent.X) / 2;
+                ptCenter.Y = recParent.Y + (recParent.Height - recParent.Y) / 2;
+            }
+            else
+            {
+                ptCenter.X = Screen.PrimaryScreen.Bounds.Width / 2;
+                ptCenter.Y = Screen.PrimaryScreen.Bounds.Height / 2;
+            }
+
+            var ptStart = new Point
+            {
+                X = ptCenter.X - width / 2,
+                Y = ptCenter.Y - height / 2
+            };
+
+            ptStart.X = ptStart.X < 0 ? 0 : ptStart.X;
+            ptStart.Y = ptStart.Y < 0 ? 0 : ptStart.Y;
+
+            WinApi.UnsafeNativeMethods.MoveWindow(hChildWnd, ptStart.X, ptStart.Y, width, height, false);
+        }
+
+        private void Run(string fileName, string workingDir, string args, bool centerWindow = true)
+        {
+            if (!File.Exists(fileName) || !Directory.Exists(workingDir))
+                return;
+            if (Opacity > 0)
+                Opacity = 0;
+            try
+            {
+                using (var p = new Process())
+                {
+                    p.StartInfo.Arguments = $"-f \"{fileName}\"{args}";
+                    p.StartInfo.FileName = _php;
+                    p.StartInfo.WorkingDirectory = workingDir;
+                    p.Start();
+                    var runningPhp = Process.GetProcessById((int)WinApi.UnsafeNativeMethods.GetProcessId(p.Handle));
+                    while (runningPhp.MainWindowTitle != Text)
+                    {
+                        if (!p.HasExited)
+                        {
+                            CenterWindow(p.MainWindowHandle, centerWindow);
+                            WinApi.UnsafeNativeMethods.SetWindowText(p.MainWindowHandle, Text);
+                            runningPhp = Process.GetProcessById((int)WinApi.UnsafeNativeMethods.GetProcessId(p.Handle));
+                            continue;
+                        }
+                        break;
+                    }
+                    if (!p.HasExited)
+                        p.WaitForExit();
+                }
+            }
+            catch
+            {
+                try
+                {
+                    var runningPhp = Process.GetProcessesByName("php");
+                    if (runningPhp.Length > 0)
+                        foreach (var p in runningPhp)
+                            p.Kill();
+                }
+                catch (Exception ex)
+                {
+                    Log.Write(ex);
+                }
+            }
+            if (Opacity < 1)
+                Opacity = 1;
+        }
+
         private void MainForm_Load(object sender, EventArgs e)
         {
             Opacity = 0;
-            php = PATH.Combine("%CurDir%\\php\\php.exe");
-            if (!File.Exists(php))
-            {
-                foreach (string dir in Directory.GetDirectories(PATH.GetEnvironmentVariableValue("CurDir")))
+            _php = PathEx.Combine("%CurDir%\\php\\php.exe");
+            if (!File.Exists(_php))
+                foreach (var dir in Directory.GetDirectories(EnvironmentEx.GetVariableValue("CurDir")))
                 {
-                    string _file = Path.Combine(dir, "php.exe");
-                    if (File.Exists(_file))
-                        php = _file;
+                    var file = Path.Combine(dir, "php.exe");
+                    if (File.Exists(file))
+                        _php = file;
                 }
-            }
-            if (!File.Exists(php))
+            if (!File.Exists(_php))
             {
-                DialogResult dialog = MSGBOX.Show(this, "PHP not found. Do you want to download the newest verson now?", "PHP Not Found", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                var dialog = MsgBoxEx.Show(this, "PHP not found. Do you want to download the newest verson now?", "PHP Not Found", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
                 if (dialog == DialogResult.Yes)
                 {
                     if (!CheckDownload.Enabled)
                         CheckDownload.Enabled = true;
                     if (Opacity < 1)
                         Opacity = 1;
-                    DLForm.Show(this);
-                    CenterWindow(DLForm.Handle, true);
+                    _dlForm.Show(this);
+                    CenterWindow(_dlForm.Handle, true);
                 }
                 else
                     Environment.Exit(-1);
             }
             if (Environment.GetCommandLineArgs().Length > 1)
             {
-                string path = string.Empty;
-                string dir = string.Empty;
-                string args = string.Empty;
-                for (int i = 1; i < Environment.GetCommandLineArgs().Length; i++)
+                var path = string.Empty;
+                var dir = string.Empty;
+                var args = string.Empty;
+                for (var i = 1; i < Environment.GetCommandLineArgs().Length; i++)
                 {
-                    string arg = Environment.GetCommandLineArgs()[i];
+                    var arg = Environment.GetCommandLineArgs()[i];
                     switch (i)
                     {
                         case 1:
@@ -164,7 +160,7 @@ namespace RunPHP
         private void MainForm_Move(object sender, EventArgs e)
         {
             if (Application.OpenForms.Count > 1)
-                CenterWindow(DLForm.Handle, true);
+                CenterWindow(_dlForm.Handle, true);
         }
 
         private void CheckDownload_Tick(object sender, EventArgs e)
@@ -189,40 +185,38 @@ namespace RunPHP
 
         private void FilePathBtn_Click(object sender, EventArgs e)
         {
-            using (OpenFileDialog dialog = new OpenFileDialog())
+            using (var dialog = new OpenFileDialog())
             {
-                dialog.Filter = "PHP Script (*.php)|*.php|All Files (*.*)|*.*";
+                dialog.Filter = @"PHP Script (*.php)|*.php|All Files (*.*)|*.*";
                 dialog.Multiselect = false;
-                dialog.ShowDialog(new Form() { ShowIcon = false, TopMost = true });
-                if (!string.IsNullOrEmpty(dialog.FileName))
-                {
-                    if (File.Exists(dialog.FileName))
-                    {
-                        FilePathTB.Text = dialog.FileName;
-                        FilePathTB.Select(0, FilePathTB.Text.Length - 1);
-                        FilePathTB.ScrollToCaret();
-                        DirTB.Text = Path.GetDirectoryName(php);
-                        DirTB.Select(0, DirTB.Text.Length - 1);
-                        DirTB.ScrollToCaret();
-                    }
-                }
+                dialog.ShowDialog(new Form { ShowIcon = false, TopMost = true });
+                if (string.IsNullOrEmpty(dialog.FileName))
+                    return;
+                if (!File.Exists(dialog.FileName))
+                    return;
+                FilePathTB.Text = dialog.FileName;
+                FilePathTB.Select(0, FilePathTB.Text.Length - 1);
+                FilePathTB.ScrollToCaret();
+                DirTB.Text = Path.GetDirectoryName(_php);
+                if (DirTB.Text?.Length > 1)
+                    DirTB.Select(0, DirTB.Text.Length - 1);
+                DirTB.ScrollToCaret();
             }
         }
 
         private void DirBtn_Click(object sender, EventArgs e)
         {
-            using (FolderBrowserDialog dialog = new FolderBrowserDialog())
+            using (var dialog = new FolderBrowserDialog())
             {
-                dialog.ShowDialog(new Form() { ShowIcon = false, TopMost = true });
-                if (!string.IsNullOrEmpty(dialog.SelectedPath))
-                {
-                    if (Directory.Exists(dialog.SelectedPath))
-                    {
-                        DirTB.Text = Path.GetDirectoryName(dialog.SelectedPath);
-                        DirTB.Select(0, DirTB.Text.Length - 1);
-                        DirTB.ScrollToCaret();
-                    }
-                }
+                dialog.ShowDialog(new Form { ShowIcon = false, TopMost = true });
+                if (string.IsNullOrEmpty(dialog.SelectedPath))
+                    return;
+                if (!Directory.Exists(dialog.SelectedPath))
+                    return;
+                DirTB.Text = Path.GetDirectoryName(dialog.SelectedPath);
+                if (DirTB.Text?.Length > 1)
+                    DirTB.Select(0, DirTB.Text.Length - 1);
+                DirTB.ScrollToCaret();
             }
         }
 
@@ -231,48 +225,46 @@ namespace RunPHP
 
         private void ScBtn_Click(object sender, EventArgs e)
         {
-            string path = FilePathTB.Text;
-            string dir = DirTB.Text;
-            if (File.Exists(path) && Directory.Exists(dir))
+            var path = FilePathTB.Text;
+            var dir = DirTB.Text;
+            if (!File.Exists(path) || !Directory.Exists(dir))
+                return;
+            var batch = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), new FileInfo(path).Name);
+            string[] content =
             {
-                string _batch = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), new FileInfo(path).Name);
-                string[] _content = new string[]
-                {
-                    "@ECHO OFF",
-                    "TITLE Run PHP",
-                    $"CD /D \"{PATH.GetEnvironmentVariableValue("CurDir")}\"",
-                    $"START {Path.GetFileName(Application.ExecutablePath)} \"{path}\" \"{dir}\"{(!string.IsNullOrWhiteSpace(ArgsTB.Text) ? string.Format(" \"{0}\"", ArgsTB.Text) : string.Empty)}",
-                    "EXIT"
-                };
-                File.WriteAllText(string.Format("{0}.cmd", _batch), string.Join(Environment.NewLine, _content));
-            }
+                "@ECHO OFF",
+                "TITLE Run PHP",
+                $"CD /D \"{EnvironmentEx.GetVariableValue("CurDir")}\"",
+                $"START {Path.GetFileName(Application.ExecutablePath)} \"{path}\" \"{dir}\"{(!string.IsNullOrWhiteSpace(ArgsTB.Text) ? $" \"{ArgsTB.Text}\"" : string.Empty)}",
+                "EXIT"
+            };
+            File.WriteAllText($"{batch}.cmd", string.Join(Environment.NewLine, content));
         }
 
         private void UpdateBtn_Click(object sender, EventArgs e)
         {
-            DialogResult dialog = MSGBOX.Show(this, "Do you want to search updates for PHP?", "Check for Updates", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-            if (dialog == DialogResult.Yes)
+            var dialog = MsgBoxEx.Show(this, "Do you want to search updates for PHP?", "Check for Updates", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            if (dialog != DialogResult.Yes)
+                return;
+            var phpVersion = FileVersionInfo.GetVersionInfo(_php).ProductVersion;
+            var source = NetEx.Transfer.DownloadString("http://windows.php.net/downloads/releases/sha1sum.txt");
+            if (!source.Contains($"php-{phpVersion}-"))
             {
-                string phpVersion = FileVersionInfo.GetVersionInfo(php).ProductVersion;
-                string source = NET.DownloadString("http://windows.php.net/downloads/releases/sha1sum.txt");
-                if (!source.Contains(string.Format("php-{0}-", phpVersion)))
-                {
-                    dialog = MSGBOX.Show(this, "A new version is available. Do you want to download it now?", "Updates Found", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
-                    if (dialog == DialogResult.Yes)
-                    {
-                        if (Directory.Exists(Path.GetDirectoryName(php)))
-                            Directory.Delete(Path.GetDirectoryName(php), true);
-                        if (!CheckDownload.Enabled)
-                            CheckDownload.Enabled = true;
-                        if (Opacity < 1)
-                            Opacity = 1;
-                        DLForm.Show(this);
-                        CenterWindow(DLForm.Handle, true);
-                    }
-                }
-                else
-                    MSGBOX.Show(this, "You have already the newest version.", "No Updates Found", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                dialog = MsgBoxEx.Show(this, "A new version is available. Do you want to download it now?", "Updates Found", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+                if (dialog != DialogResult.Yes)
+                    return;
+                var phpDir = Path.GetDirectoryName(_php);
+                if (Directory.Exists(phpDir))
+                    Directory.Delete(phpDir, true);
+                if (!CheckDownload.Enabled)
+                    CheckDownload.Enabled = true;
+                if (Opacity < 1)
+                    Opacity = 1;
+                _dlForm.Show(this);
+                CenterWindow(_dlForm.Handle, true);
             }
+            else
+                MsgBoxEx.Show(this, "You have already the newest version.", "No Updates Found", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }

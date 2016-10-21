@@ -1,38 +1,41 @@
-using SilDev;
-using System;
-using System.IO;
-using System.IO.Compression;
-using System.Windows.Forms;
-
 namespace TeamViewerUpdater
 {
+    using System;
+    using System.ComponentModel;
+    using System.IO;
+    using System.IO.Compression;
+    using System.Windows.Forms;
+    using Properties;
+    using SilDev;
+    using SilDev.Forms;
+
     public partial class MainForm : Form
     {
-        NET.AsyncTransfer Transfer = new NET.AsyncTransfer();
-        int DownloadFinishedCount = 0;
-        string ZipPath = string.Empty;
-        string TeamViewer = PATH.Combine("%CurDir%\\TeamViewer.exe");
+        private readonly string _teamViewer = PathEx.Combine("%CurDir%\\TeamViewer.exe");
+        private readonly NetEx.AsyncTransfer _transfer = new NetEx.AsyncTransfer();
+        private int _dlFinishCount;
+        private string _zipPath = string.Empty;
 
         public MainForm()
         {
             InitializeComponent();
-            Icon = Properties.Resources.TeamViewerUpdater;
+            Icon = Resources.TeamViewerUpdater;
         }
 
         private void MainForm_Shown(object sender, EventArgs e)
         {
-            string UpdateURL = "http://download.teamviewer.com/download/TeamViewerPortable.zip";
-            string FileName = "TeamViewerPortable.zip";
-            DateTime onlineDate = NET.GetFileDate(UpdateURL);
-            DateTime localDate = File.GetLastWriteTime(TeamViewer);
+            const string updateUrl = "http://download.teamviewer.com/download/TeamViewerPortable.zip";
+            const string fileName = "TeamViewerPortable.zip";
+            var onlineDate = NetEx.GetFileDate(updateUrl);
+            var localDate = File.GetLastWriteTime(_teamViewer);
             if (onlineDate.Date > localDate.Date)
             {
                 if (ShowInfoBox("UpdateAvailable", MessageBoxButtons.YesNo) == DialogResult.Yes || Environment.CommandLine.Contains("/silent"))
                 {
-                    ZipPath = PATH.Combine("%CurDir%", FileName);
-                    if (!File.Exists(ZipPath))
+                    _zipPath = PathEx.Combine("%CurDir%", fileName);
+                    if (!File.Exists(_zipPath))
                     {
-                        Transfer.DownloadFile(UpdateURL, ZipPath);
+                        _transfer.DownloadFile(updateUrl, _zipPath);
                         CheckDownload.Enabled = true;
                         Opacity = 1f;
                     }
@@ -52,21 +55,12 @@ namespace TeamViewerUpdater
             }
         }
 
-        private void CheckClose(string _check, string _arg)
-        {
-            if (string.IsNullOrWhiteSpace(_check))
-            {
-                ShowInfoBox(_arg, MessageBoxButtons.OK);
-                Application.Exit();
-            }
-        }
-
-        private DialogResult ShowInfoBox(string _arg, MessageBoxButtons _btn)
+        private DialogResult ShowInfoBox(string arg, MessageBoxButtons btn)
         {
             if (Environment.CommandLine.Contains("/silent"))
                 return DialogResult.No;
-            string text = string.Empty;
-            switch (_arg)
+            string text;
+            switch (arg)
             {
                 case "UpdateAvailable":
                     text = "A newer version is available. Would you like to update now?";
@@ -81,82 +75,72 @@ namespace TeamViewerUpdater
                     text = "No newer version available.";
                     break;
             }
-            return MessageBox.Show(text, Text, _btn, MessageBoxIcon.Information);
+            return MessageBox.Show(text, Text, btn, MessageBoxIcon.Information);
         }
 
         private void CheckDownload_Tick(object sender, EventArgs e)
         {
-            DLSpeed.Text = $"{(int)Math.Round(Transfer.TransferSpeed)} kb/s";
-            DLPercentage.Value = Transfer.ProgressPercentage;
-            DLLoaded.Text = Transfer.DataReceived;
+            DLSpeed.Text = $@"{(int)Math.Round(_transfer.TransferSpeed)} kb/s";
+            DLPercentage.Value = _transfer.ProgressPercentage;
+            DLLoaded.Text = _transfer.DataReceived;
             if (DLPercentage.Value > 0 && WindowState != FormWindowState.Normal)
                 WindowState = FormWindowState.Normal;
-            if (!Transfer.IsBusy)
-                DownloadFinishedCount++;
-            if (DownloadFinishedCount == 1)
-            {
-                DLPercentage.Maximum = 1000;
-                DLPercentage.Value = 1000;
-                DLPercentage.Value--;
-                DLPercentage.Maximum = 100;
-                DLPercentage.Value = 100;
-            }
-            if (DownloadFinishedCount >= 10)
-            {
-                CheckDownload.Enabled = false;
-                if (!ExtractDownload.IsBusy)
-                    ExtractDownload.RunWorkerAsync();
-            }
+            if (!_transfer.IsBusy)
+                _dlFinishCount++;
+            if (_dlFinishCount == 1)
+                DLPercentage.JumpToEnd();
+            if (_dlFinishCount < 10)
+                return;
+            CheckDownload.Enabled = false;
+            if (!ExtractDownload.IsBusy)
+                ExtractDownload.RunWorkerAsync();
         }
 
-        private void ExtractDownload_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
+        private void ExtractDownload_DoWork(object sender, DoWorkEventArgs e)
         {
             try
             {
-                if (File.Exists(ZipPath))
-                {
-                    using (ZipArchive zip = ZipFile.OpenRead(ZipPath))
+                if (!File.Exists(_zipPath))
+                    return;
+                using (var zip = ZipFile.OpenRead(_zipPath))
+                    foreach (var ent in zip.Entries)
                     {
-                        foreach (var ent in zip.Entries)
-                        {
-                            string EntPath = PATH.Combine("%CurDir%", ent.FullName);
-                            if (File.Exists(EntPath))
-                                File.Delete(EntPath);
-                            ent.ExtractToFile(EntPath, true);
-                        }
+                        var entPath = PathEx.Combine("%CurDir%", ent.FullName);
+                        if (File.Exists(entPath))
+                            File.Delete(entPath);
+                        ent.ExtractToFile(entPath, true);
                     }
-                    File.SetLastWriteTime(TeamViewer, DateTime.Now);
-                    e.Result = "Updated";
-                }
+                File.SetLastWriteTime(_teamViewer, DateTime.Now);
+                e.Result = "Updated";
             }
             catch (Exception ex)
             {
+                Log.Write(ex);
                 try
                 {
-                    if (File.Exists(ZipPath))
-                        File.Delete(ZipPath);
+                    if (File.Exists(_zipPath))
+                        File.Delete(_zipPath);
                 }
                 catch (Exception exx)
                 {
-                    LOG.Debug(exx);
+                    Log.Write(exx);
                 }
                 e.Result = "UpdateFailed";
-                LOG.Debug(ex);
             }
         }
 
-        private void ExtractDownload_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
+        private void ExtractDownload_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             Opacity = 0;
             ShowInTaskbar = false;
-            ShowInfoBox(e.Result == null ? "UpdateFailed" : e.Result.ToString(), MessageBoxButtons.OK);
+            ShowInfoBox(e.Result?.ToString() ?? "UpdateFailed", MessageBoxButtons.OK);
             Close();
         }
 
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-            if (File.Exists(ZipPath))
-                RUN.Cmd($"PING 127.0.0.1 -n 2 & DEL /F /Q \"{ZipPath}\"");
+            if (File.Exists(_zipPath))
+                ProcessEx.Send($"PING 127.0.0.1 -n 2 & DEL /F /Q \"{_zipPath}\"");
         }
     }
 }
