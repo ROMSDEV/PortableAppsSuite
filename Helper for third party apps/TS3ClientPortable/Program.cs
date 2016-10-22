@@ -53,54 +53,33 @@ namespace TS3ClientPortable
 
                 if (!Directory.Exists(configPath))
                     Directory.CreateDirectory(configPath);
-                using (var p = ProcessEx.Start(appPath, false, false))
-                    if (!p?.HasExited == true)
-                        p?.WaitForInputIdle();
+                var runningProcess = ProcessEx.Start(appPath, false, false);
 
                 var winState = Ini.Read("Settings", "WinState");
                 var windowState = winState.StartsWithEx("Min", "Max");
                 var hideInTaskBar = Ini.ReadBoolean("Settings", "HideInTaskBar");
-                var runningProcess = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(appPath));
-                while (runningProcess.Length > 0)
+                while (!runningProcess?.HasExited == true)
                 {
-                    foreach (var p in runningProcess)
-                        try
-                        {
-                            p.WaitForInputIdle();
-                            if (p.HasExited)
-                                continue;
-                            if (windowState || hideInTaskBar)
-                                p.WaitForExit(100);
-                            else
-                                p.WaitForExit();
-                        }
-                        catch (Exception ex)
-                        {
-                            Log.Write(ex);
-                        }
-                    if (windowState || hideInTaskBar)
+                    runningProcess?.WaitForExit(1000);
+                    if (!windowState && !hideInTaskBar)
+                        continue;
+                    var hWnd = WinApi.FindWindowByCaption("TeamSpeak 3");
+                    if (hWnd == IntPtr.Zero)
+                        continue;
+                    if (winState.StartsWithEx("Min"))
                     {
-                        var hWnd = WinApi.FindWindowByCaption("TeamSpeak 3");
-                        if (hWnd != IntPtr.Zero)
-                        {
-                            if (winState.StartsWithEx("Min"))
-                            {
-                                windowState = false;
-                                WinApi.UnsafeNativeMethods.ShowWindowAsync(hWnd, WinApi.ShowWindowFunc.SW_SHOWMINIMIZED);
-                            }
-                            else if (winState.StartsWithEx("Max"))
-                            {
-                                windowState = false;
-                                WinApi.UnsafeNativeMethods.ShowWindowAsync(hWnd, WinApi.ShowWindowFunc.SW_SHOWMAXIMIZED);
-                            }
-                            if (hideInTaskBar)
-                            {
-                                hideInTaskBar = false;
-                                TaskBar.DeleteTab(hWnd);
-                            }
-                        }
+                        windowState = false;
+                        WinApi.UnsafeNativeMethods.ShowWindowAsync(hWnd, WinApi.ShowWindowFunc.SW_SHOWMINIMIZED);
                     }
-                    runningProcess = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(appPath));
+                    else if (winState.StartsWithEx("Max"))
+                    {
+                        windowState = false;
+                        WinApi.UnsafeNativeMethods.ShowWindowAsync(hWnd, WinApi.ShowWindowFunc.SW_SHOWMAXIMIZED);
+                    }
+                    if (!hideInTaskBar)
+                        continue;
+                    hideInTaskBar = false;
+                    TaskBar.DeleteTab(hWnd);
                 }
 
                 Reg.RemoveExistSubKey(Reg.RegKey.CurrentUser, "Software\\TeamSpeak 3 Client");
