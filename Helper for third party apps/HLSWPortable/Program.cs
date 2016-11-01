@@ -88,7 +88,7 @@ namespace HLSWPortable
                 if (File.Exists(oldSettingsPath))
                     File.Delete(oldSettingsPath);
 
-                Reg.ExportFile("HKEY_CURRENT_USER\\Software\\HLSW", settingsPath);
+                Reg.ExportKeys(settingsPath, "HKEY_CURRENT_USER\\Software\\HLSW");
                 Reg.RemoveExistSubKey("HKEY_CURRENT_USER\\Software\\HLSW");
                 Reg.MoveSubKey("HKEY_CURRENT_USER\\Software\\SI13N7-BACKUP: HLSW", "Software\\HLSW");
 

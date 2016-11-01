@@ -167,7 +167,7 @@ namespace SteamPortable
                     {
                         Log.Write(ex);
                     }
-                    Reg.ExportFile("HKCU\\Software\\Valve", tempRegPath);
+                    Reg.ExportKeys(tempRegPath, "HKCU\\Software\\Valve");
                     if (File.Exists(tempRegPath))
                     {
                         regFileContent = File.ReadAllText(tempRegPath);
@@ -181,7 +181,7 @@ namespace SteamPortable
                         }
                     }
 
-                    Reg.ExportFile("HKLM\\SOFTWARE\\Valve", tempRegPath);
+                    Reg.ExportKeys(tempRegPath, "HKLM\\SOFTWARE\\Valve");
                     if (File.Exists(tempRegPath))
                     {
                         if (string.IsNullOrWhiteSpace(regFileContent))
@@ -205,7 +205,7 @@ namespace SteamPortable
                         }
                     }
 #if !x86
-                    Reg.ExportFile("HKLM\\SOFTWARE\\Wow6432Node\\Valve", tempRegPath);
+                    Reg.ExportKeys(tempRegPath, "HKLM\\SOFTWARE\\Wow6432Node\\Valve");
                     if (File.Exists(tempRegPath))
                     {
                         if (string.IsNullOrWhiteSpace(regFileContent))

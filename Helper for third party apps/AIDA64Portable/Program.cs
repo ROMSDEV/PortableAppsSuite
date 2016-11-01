@@ -32,7 +32,7 @@ namespace AIDA64Portable
                     using (var p = ProcessEx.Start(appPath, true, false))
                         if (!p?.HasExited == true)
                             p?.WaitForExit();
-                    Reg.ExportFile(regKey, PathEx.Combine("%CurDir%\\settings.reg"));
+                    Reg.ExportKeys(PathEx.Combine("%CurDir%\\settings.reg"), regKey);
                     Reg.RemoveExistSubKey(Reg.RegKey.CurrentUser, "Software\\FinalWire");
                     if (regBackup)
                         Reg.MoveSubKey("HKEY_CURRENT_USER\\Software\\SI13N7-BACKUP: FinalWire", "Software\\FinalWire");

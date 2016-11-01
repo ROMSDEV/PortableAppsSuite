@@ -65,7 +65,7 @@ namespace FFactoryPortable
                         p?.WaitForExit();
                 if (File.Exists(oldSettingsPath))
                     File.Delete(oldSettingsPath);
-                Reg.ExportFile("HKEY_CURRENT_USER\\Software\\FreeTime", settingsPath);
+                Reg.ExportKeys(settingsPath, "HKEY_CURRENT_USER\\Software\\FreeTime");
                 Reg.RemoveExistSubKey(hkcu, subKey);
                 Reg.MoveSubKey("HKEY_CURRENT_USER\\Software\\SI13N7-BACKUP: FreeTime", "Software\\FreeTime");
             }

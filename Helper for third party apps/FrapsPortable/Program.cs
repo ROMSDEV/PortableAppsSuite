@@ -119,7 +119,7 @@ namespace FrapsPortable
                         appProcess = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(appPath));
                     }
 
-                    Reg.ExportFile(@"HKEY_CURRENT_USER\SOFTWARE\Fraps3", settingsPath);
+                    Reg.ExportKeys(settingsPath, @"HKEY_CURRENT_USER\SOFTWARE\Fraps3");
                     Reg.RemoveExistSubKey(@"HKEY_CURRENT_USER\SOFTWARE\Fraps3");
 #if x86
                     Reg.RemoveExistSubKey(@"HKEY_LOCAL_MACHINE\SOFTWARE\Fraps");

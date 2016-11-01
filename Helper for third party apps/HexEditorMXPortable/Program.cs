@@ -54,7 +54,7 @@ namespace HexEditorMXPortable
                     if (File.Exists(oldSettingsPath))
                         File.Delete(oldSettingsPath);
 
-                    Reg.ExportFile("HKEY_CURRENT_USER\\Software\\NEXT-Soft", settingsPath);
+                    Reg.ExportKeys(settingsPath, "HKEY_CURRENT_USER\\Software\\NEXT-Soft");
                     Reg.RemoveExistSubKey("HKEY_CURRENT_USER\\Software\\NEXT-Soft");
                     Reg.MoveSubKey("HKEY_CURRENT_USER\\Software\\SI13N7-BACKUP: NEXT-Soft", "Software\\NEXT-Soft");
                 }

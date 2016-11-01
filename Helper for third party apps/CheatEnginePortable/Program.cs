@@ -58,7 +58,7 @@ namespace CheatEnginePortable
                     var userTables = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "My Cheat Tables");
                     if (Directory.Exists(userTables))
                         Directory.Delete(userTables, true);
-                    Reg.ExportFile("HKEY_CURRENT_USER\\Software\\Cheat Engine", dataSettings);
+                    Reg.ExportKeys(dataSettings, "HKEY_CURRENT_USER\\Software\\Cheat Engine");
                     Reg.RemoveExistSubKey(Reg.RegKey.CurrentUser, "Software\\Cheat Engine");
                     Reg.MoveSubKey("HKEY_CURRENT_USER\\Software\\SI13N7-BACKUP: Cheat Engine", "Software\\Cheat Engine");
                 }
