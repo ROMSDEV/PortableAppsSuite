@@ -3,20 +3,18 @@ namespace OriginPortable
     using System;
     using System.Diagnostics;
     using System.IO;
+    using System.Linq;
     using System.Threading;
     using SilDev;
 
     internal static class Program
     {
-        private static int _minimizedAtStart = 10;
-
         [STAThread]
         private static void Main()
         {
             Log.AllowLogging();
             var appDir = PathEx.Combine(@"%CurDir%\App\Origin");
             var appPath = Path.Combine(appDir, "Origin.exe");
-            var locName = Path.GetFileNameWithoutExtension(PathEx.LocalPath);
             bool newInstance;
             using (new Mutex(true, Process.GetCurrentProcess().ProcessName, out newInstance))
             {
@@ -25,7 +23,7 @@ namespace OriginPortable
 #if x86
                 if (Environment.Is64BitOperatingSystem)
                 {
-                    ProcessEx.Start($"%CurDir%\\{locName}64.exe", EnvironmentEx.CommandLine(false));
+                    ProcessEx.Start($"%CurDir%\\{Path.GetFileNameWithoutExtension(PathEx.LocalPath)}64.exe", EnvironmentEx.CommandLine(false));
                     return;
                 }
 #endif
@@ -178,12 +176,6 @@ namespace OriginPortable
                 Reg.WriteValue(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "InstallLocation", appDir);
                 Reg.WriteValue(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "DisplayIcon", Path.Combine(appDir, "OriginUninstall.exe"));
 #endif
-                var iniPath = PathEx.Combine($@"%CurDir%\{locName?.RemoveText("64")}.ini");
-
-                var startMinimized = Ini.ReadBoolean("Settings", "StartMinimized", iniPath);
-                if (startMinimized)
-                    _minimizedAtStart = 0;
-
                 ProcessEx.Start(StartInfoHelper(appPath, EnvironmentEx.CommandLine(false)));
                 for (var i = 0; i < 10; i++)
                 {
@@ -191,13 +183,7 @@ namespace OriginPortable
                         Thread.Sleep(200);
                     Thread.Sleep(300);
                 }
-
-#if !x86
-                if (Elevation.IsAdministrator && !Reg.SubKeyExist(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\SI13N7-BACKUP: Origin"))
-#else
-                if (Elevation.IsAdministrator && !Reg.SubKeyExist(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\SI13N7-BACKUP: Origin"))
-#endif
-                    CloseServices();
+                CloseServices();
 
                 Reg.ExportKeys(regPath, defKeys);
                 foreach (var key in defKeys)
@@ -236,25 +222,12 @@ namespace OriginPortable
         {
             try
             {
-                foreach (var f in Directory.GetFiles(path, "*.exe", SearchOption.AllDirectories))
-                {
-                    var name = Path.GetFileNameWithoutExtension(f);
-                    if (!name.ContainsEx("Origin") || name.EqualsEx("OriginClientService", "OriginWebHelperService") || Process.GetProcessesByName(name).Length == 0)
-                        continue;
-                    if (_minimizedAtStart > 10 || name.EqualsEx("Origin"))
-                        return true;
-                    foreach (var p in Process.GetProcessesByName(name))
-                    {
-                        if (!p.MainWindowTitle.EqualsEx(name))
-                            continue;
-                        var hWnd = WinApi.FindWindowByCaption(p.MainWindowTitle);
-                        if (hWnd != IntPtr.Zero)
-                            WinApi.UnsafeNativeMethods.ShowWindowAsync(hWnd, WinApi.ShowWindowFunc.SW_SHOWMINIMIZED);
-                        _minimizedAtStart++;
-                    }
-                    return true;
-                }
-                return false;
+                return Directory.GetFiles(path, "*.exe", SearchOption.AllDirectories)
+                                .Select(Path.GetFileNameWithoutExtension)
+                                .Where(name => name.ContainsEx("Origin") &&
+                                               !name.EqualsEx("OriginClientService", "OriginWebHelperService") &&
+                                               Process.GetProcessesByName(name).Length != 0)
+                                .Any(name => name.EqualsEx("Origin"));
             }
             catch (Exception ex)
             {
@@ -290,17 +263,17 @@ namespace OriginPortable
 
         private static void CloseServices()
         {
-            var srvName = "Origin Client Service";
-            if (Service.Exists(srvName))
+            foreach (var srvName in new []
             {
+                "Origin Client Service",
+                "Origin Web Helper Service"
+            })
+            {
+                if (!Service.Exists(srvName))
+                    continue;
                 Service.Stop(srvName);
                 Service.Uninstall(srvName);
             }
-            srvName = "Origin Web Helper Service";
-            if (!Service.Exists(srvName))
-                return;
-            Service.Stop(srvName);
-            Service.Uninstall(srvName);
         }
     }
 }
