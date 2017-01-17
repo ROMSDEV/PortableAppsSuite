@@ -12,16 +12,27 @@ namespace TS3ClientPortable
         private static void Main()
         {
             Log.AllowLogging();
+
 #if x86
-            var appPath = PathEx.Combine("%CurDir%\\TS3Client\\ts3client_win32.exe");
-            var configPath = PathEx.Combine("%CurDir%\\TS3Client\\config");
-            const string iniName = "TS3ClientPortable.ini";
+            var curPath64 = PathEx.Combine(PathEx.LocalDir, "TS3Client64Portable.exe");
+            if (Environment.Is64BitOperatingSystem && File.Exists(curPath64))
+            {
+                ProcessEx.Start(curPath64, EnvironmentEx.CommandLine());
+                return;
+            }
+
+            var oldAppDir = PathEx.Combine(PathEx.LocalDir, "TS3Client");
+            var appDir = PathEx.Combine(PathEx.LocalDir, "App\\ts3_x86");
+            var appPath = Path.Combine(appDir, "ts3client_win32.exe");
 #else
-            var appPath = PathEx.Combine("%CurDir%\\TS3Client64\\ts3client_win64.exe");
-            var configPath = PathEx.Combine("%CurDir%\\TS3Client64\\config");
-            const string iniName = "TS3Client64Portable.ini";
+            var oldAppDir = PathEx.Combine(PathEx.LocalDir, "TS3Client64");
+            var appDir = PathEx.Combine(PathEx.LocalDir, "App\\ts3_x64");
+            var appPath = Path.Combine(appDir, "ts3client_win64.exe");
 #endif
-            var appDir = Path.GetDirectoryName(appPath);
+
+            var oldCfgDir = Path.Combine(oldAppDir, "config");
+            var cfgDir = Path.Combine(appDir, "config");
+            var datDir = PathEx.Combine(PathEx.LocalDir, "Data");
 
             if (!File.Exists(appPath) || Process.GetProcessesByName(Path.GetFileNameWithoutExtension(appPath)).Length > 0)
                 Environment.Exit(1);
@@ -32,7 +43,7 @@ namespace TS3ClientPortable
                 if (!newInstance)
                     return;
 
-                Ini.File(EnvironmentEx.GetVariableValue("CurDir"), iniName);
+                Ini.File(PathEx.LocalDir, $"{Process.GetCurrentProcess().ProcessName}.ini");
                 var waitForNetwork = Ini.Read("Settings", "WaitForNetwork");
                 int ms;
                 if (int.TryParse(waitForNetwork, out ms))
@@ -51,8 +62,21 @@ namespace TS3ClientPortable
                         Log.Write(ex);
                     }
 
-                if (!Directory.Exists(configPath))
-                    Directory.CreateDirectory(configPath);
+                if (Directory.Exists(oldCfgDir) && !Directory.Exists(datDir))
+                    Directory.Move(oldCfgDir, datDir);
+                if (Directory.Exists(oldAppDir))
+                    Directory.Delete(oldAppDir, true);
+                if (Directory.Exists(cfgDir))
+                {
+                    if (Directory.Exists(datDir))
+                        Directory.Delete(cfgDir, true);
+                    else
+                        Directory.Move(cfgDir, datDir);
+                }
+                if (!Directory.Exists(datDir))
+                    Directory.CreateDirectory(datDir);
+                Data.DirLink(cfgDir, datDir, true);
+
                 var runningProcess = ProcessEx.Start(appPath, false, false);
 
                 var winState = Ini.Read("Settings", "WinState");
@@ -82,6 +106,7 @@ namespace TS3ClientPortable
                     TaskBar.DeleteTab(hWnd);
                 }
 
+                Data.DirUnLink(cfgDir, true);
                 Reg.RemoveExistSubKey(Reg.RegKey.CurrentUser, "Software\\TeamSpeak 3 Client");
                 Reg.RemoveExistSubKey(Reg.RegKey.LocalMachine, "SOFTWARE\\TeamSpeak 3 Client");
                 if (File.Exists(PathEx.Combine(appDir, "OverwolfTeamSpeakInstaller.exe")))
