@@ -15,73 +15,78 @@ namespace NTLitePortable
         private static void Main()
         {
             Log.AllowLogging();
-            try
+            bool newInstance;
+            using (new Mutex(true, Process.GetCurrentProcess().ProcessName, out newInstance))
             {
-                bool newInstance;
-                using (new Mutex(true, Process.GetCurrentProcess().ProcessName, out newInstance))
-                {
-                    if (!newInstance)
-                        return;
+                if (!newInstance)
+                    return;
 #if x86
-                    var ntlite = PathEx.Combine("%CurDir%\\App\\NTLite");
-#else
-                    var ntlite = PathEx.Combine("%CurDir%\\App\\NTLite64");
-#endif
-                    if (!Directory.Exists(ntlite) || Process.GetProcessesByName("NTLite").Length > 0)
-                        return;
-                    var temp = PathEx.Combine("%CurDir%\\Data\\TEMP");
-                    if (!Directory.Exists(temp))
-                        Directory.CreateDirectory(temp);
-                    var settings = Path.Combine(ntlite, "settings.xml");
-                    try
-                    {
-                        if (File.Exists(settings))
-                        {
-                            var match = Regex.Match(File.ReadAllText(settings), "<TempFolder>(.+?)</TempFolder>", RegexOptions.IgnoreCase).Groups[1].Value;
-                            if (!string.IsNullOrWhiteSpace(match))
-                            {
-                                Encoding encoding;
-                                var output = new StringBuilder();
-                                using (var sr = new StreamReader(settings))
-                                {
-                                    string line;
-                                    encoding = sr.CurrentEncoding;
-                                    while ((line = sr.ReadLine()) != null)
-                                    {
-                                        var m = Regex.Match(line, "<TempFolder>(.+?)</TempFolder>", RegexOptions.IgnoreCase).Groups[1].Value;
-                                        if (!string.IsNullOrWhiteSpace(m))
-                                        {
-                                            var dirDirName = Path.GetFileName(EnvironmentEx.GetVariableValue("CurDir"));
-                                            if (dirDirName != null)
-                                                line = line.Replace(m, line.ToLower().Contains($"{dirDirName.ToLower()}\\data\\temp") ? temp : "%TEMP%");
-                                        }
-                                        output.AppendLine(line);
-                                    }
-                                }
-                                using (var writer = new StreamWriter(settings, false, encoding))
-                                    writer.Write(output.ToString());
-                            }
-                        }
-                        else
-                        {
-                            var content = Resources.DefaultSetting;
-                            content = content.Replace("%TEMP%", temp);
-                            using (var sw = File.CreateText(settings))
-                                sw.Write(content);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.Write(ex);
-                    }
-                    using (var p = ProcessEx.Start(Path.Combine(ntlite, "NTLite.exe"), true, false))
-                        if (!p?.HasExited == true)
-                            p?.WaitForExit();
+                var curPath64 = PathEx.Combine(PathEx.LocalDir, "NTLite64Portable.exe");
+                if (Environment.Is64BitOperatingSystem && File.Exists(curPath64))
+                {
+                    ProcessEx.Start(curPath64, EnvironmentEx.CommandLine());
+                    return;
                 }
-            }
-            catch (Exception ex)
-            {
-                Log.Write(ex);
+
+                var appDir = PathEx.Combine("%CurDir%\\App\\NTLite");
+#else
+                var appDir = PathEx.Combine("%CurDir%\\App\\NTLite64");
+#endif
+                var appPath = Path.Combine(appDir, "NTLite.exe");
+
+                if (!Directory.Exists(appDir) || Process.GetProcessesByName("NTLite").Length > 0)
+                    return;
+
+                var temp = PathEx.Combine("%CurDir%\\Data\\TEMP");
+                if (!Directory.Exists(temp))
+                    Directory.CreateDirectory(temp);
+                var cfgPath = Path.Combine(appDir, "settings.xml");
+
+                try
+                {
+                    if (File.Exists(cfgPath))
+                    {
+                        var match = Regex.Match(File.ReadAllText(cfgPath), "<TempFolder>(.+?)</TempFolder>", RegexOptions.IgnoreCase).Groups[1].Value;
+                        if (!string.IsNullOrWhiteSpace(match))
+                        {
+                            Encoding encoding;
+                            var sb = new StringBuilder();
+                            using (var sr = new StreamReader(cfgPath))
+                            {
+                                string line;
+                                encoding = sr.CurrentEncoding;
+                                while ((line = sr.ReadLine()) != null)
+                                {
+                                    var m = Regex.Match(line, "<TempFolder>(.+?)</TempFolder>", RegexOptions.IgnoreCase).Groups[1].Value;
+                                    if (!string.IsNullOrWhiteSpace(m))
+                                    {
+                                        var dirName = Path.GetFileName(EnvironmentEx.GetVariableValue("CurDir"));
+                                        if (dirName != null)
+                                            line = line.Replace(m, line.ToLower().Contains($"{dirName.ToLower()}\\data\\temp") ? temp : "%TEMP%");
+                                    }
+                                    sb.AppendLine(line);
+                                }
+                            }
+                            using (var sw = new StreamWriter(cfgPath, false, encoding))
+                                sw.Write(sb.ToString());
+                        }
+                    }
+                    else
+                    {
+                        var content = Resources.DefaultSetting;
+                        content = content.Replace("%TEMP%", temp);
+                        using (var sw = File.CreateText(cfgPath))
+                            sw.Write(content);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Write(ex);
+                }
+
+                using (var p = ProcessEx.Start(appPath, true, false))
+                    if (!p?.HasExited == true)
+                        p?.WaitForExit();
             }
         }
     }
