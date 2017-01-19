@@ -106,6 +106,9 @@ namespace TS3ClientPortable
                     TaskBar.DeleteTab(hWnd);
                 }
 
+                var usrTmpDir = PathEx.Combine("%UserProfile%\\.TeamSpeak 3");
+                if (Directory.Exists(usrTmpDir))
+                    Directory.Delete(usrTmpDir, true);
                 Data.DirUnLink(cfgDir, true);
                 Reg.RemoveExistSubKey(Reg.RegKey.CurrentUser, "Software\\TeamSpeak 3 Client");
                 Reg.RemoveExistSubKey(Reg.RegKey.LocalMachine, "SOFTWARE\\TeamSpeak 3 Client");
