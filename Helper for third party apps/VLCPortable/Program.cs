@@ -2,6 +2,7 @@ namespace VLCPortable
 {
     using System;
     using System.Diagnostics;
+    using System.IO;
     using System.Threading;
     using SilDev;
 
@@ -12,6 +13,12 @@ namespace VLCPortable
         {
             Log.AllowLogging();
 #if x86
+            var curPath64 = PathEx.Combine(PathEx.LocalDir, "VLC64Portable.exe");
+            if (Environment.Is64BitOperatingSystem && File.Exists(curPath64))
+            {
+                ProcessEx.Start(curPath64, EnvironmentEx.CommandLine());
+                return;
+            }
             var appPath = PathEx.Combine("%CurDir%\\App\\vlc\\vlc.exe");
 #else
             var appPath = PathEx.Combine("%CurDir%\\App\\vlc64\\vlc.exe");
