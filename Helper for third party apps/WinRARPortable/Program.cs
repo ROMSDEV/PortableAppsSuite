@@ -12,11 +12,31 @@ namespace WinRARPortable
         private static void Main()
         {
             Log.AllowLogging();
-            var appPath = Environment.Is64BitProcess ? "%CurDir%\\winrar-x64\\WinRAR.exe" : "%CurDir%\\winrar\\WinRAR.exe";
-            Ini.File(EnvironmentEx.GetVariableValue("CurDir"), Environment.Is64BitProcess ? "WinRAR64Portable.ini" : "WinRARPortable.ini");
-            bool contextMenuEntriesAllowed;
-            bool.TryParse(Ini.Read("ContextMenu", "EntriesAllowed"), out contextMenuEntriesAllowed);
-            if (!contextMenuEntriesAllowed && Elevation.IsAdministrator && Environment.CommandLine.EndsWith(".exe\" /ClearRegistryAsAdmin", StringComparison.OrdinalIgnoreCase))
+
+#if x86
+            var curIniPath = PathEx.Combine(PathEx.LocalDir, "WinRARPortable.ini");
+
+            var appPath = PathEx.Combine(PathEx.LocalDir, "winrar\\WinRAR.exe");
+            var appIniPath = PathEx.Combine(PathEx.LocalDir, "winrar\\WinRAR.ini");
+            var appUpdPath = PathEx.Combine(PathEx.LocalDir, "winrar\\WinRARUpdater.exe");
+#else
+            var curIniPath = PathEx.Combine(PathEx.LocalDir, "WinRAR64Portable.ini");
+
+            var appPath = PathEx.Combine(PathEx.LocalDir, "winrar-x64\\WinRAR.exe");
+            var appIniPath = PathEx.Combine(PathEx.LocalDir, "winrar-x64\\WinRAR.ini");
+            var appUpdPath = PathEx.Combine(PathEx.LocalDir, "winrar-x64\\WinRARUpdater64.exe");
+#endif
+
+            if (!File.Exists(curIniPath))
+            {
+                File.Create(curIniPath).Close();
+                Ini.Write("ContextMenu", "EntriesAllowed", false);
+                Ini.Write("Associations", "FileTypes", "001,7z,ace,arj,bz2,bzip2,cab,gz,gzip,iso,lha,lzh,lzma,rar,tar,taz,tbz,tbz2,tgz,tpz,txz,xy,z,zip");
+            }
+            Ini.File(curIniPath);
+
+            var contextMenuEntriesAllowed = Ini.ReadBoolean("ContextMenu", "EntriesAllowed");
+            if (!contextMenuEntriesAllowed && Elevation.IsAdministrator && Environment.CommandLine.EndsWithEx(".exe\" /ClearRegistryAsAdmin"))
             {
                 Reg.RemoveExistSubKey(Reg.RegKey.ClassesRoot, "WinRAR");
                 Reg.RemoveExistSubKey(Reg.RegKey.ClassesRoot, "WinRAR.REV");
@@ -27,21 +47,23 @@ namespace WinRARPortable
                 Reg.RemoveExistSubKey(Reg.RegKey.CurrentUser, "Software\\WinRAR");
                 return;
             }
+
             bool newInstance;
             using (new Mutex(true, Process.GetCurrentProcess().ProcessName, out newInstance))
                 if (newInstance)
                 {
                     var lastUpdateCheck = Ini.ReadDateTime("History", "LastUpdateCheck");
-                    if ((DateTime.Now - lastUpdateCheck).TotalDays >= 1d || !File.Exists(PathEx.Combine(appPath)))
+                    if ((DateTime.Now - lastUpdateCheck).TotalDays >= 1d || !File.Exists(appPath))
                     {
-                        using (var p = ProcessEx.Start(Environment.Is64BitProcess ? "%CurDir%\\winrar-x64\\WinRARUpdater64.exe" : "%CurDir%\\winrar\\WinRARUpdater.exe", "/silent", false, false))
+                        using (var p = ProcessEx.Start(appUpdPath, "/silent", false, false))
                             if (!p?.HasExited == true)
                                 p?.WaitForExit();
                         Ini.Write("History", "LastUpdateCheck", DateTime.Now);
                     }
-                    var ini = PathEx.Combine("%CurDir%", Environment.Is64BitProcess ? "winrar-x64\\WinRAR.ini" : "winrar\\WinRAR.ini");
-                    if (!File.Exists(ini))
-                        File.Create(ini).Close();
+
+                    if (!File.Exists(appIniPath))
+                        File.Create(appIniPath).Close();
+
                     using (var p = ProcessEx.Start(appPath, EnvironmentEx.CommandLine(false), false, false))
                         if (!p?.HasExited == true)
                             p?.WaitForExit();
@@ -53,6 +75,7 @@ namespace WinRARPortable
                         foreach (var app in runningApp)
                             app.WaitForExit();
                     }
+
                     var appDataPath = Path.Combine("%AppData%\\WinRAR");
                     if (Directory.Exists(appDataPath) && Directory.GetFiles(appDataPath, "*", SearchOption.AllDirectories).Length == 0)
                         Directory.Delete(appDataPath, true);
