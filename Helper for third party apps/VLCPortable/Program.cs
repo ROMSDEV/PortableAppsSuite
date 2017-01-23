@@ -3,6 +3,9 @@ namespace VLCPortable
     using System;
     using System.Diagnostics;
     using System.IO;
+#if x86
+    using System.IO;
+#endif
     using System.Threading;
     using SilDev;
 
@@ -27,14 +30,22 @@ namespace VLCPortable
             using (new Mutex(true, Process.GetCurrentProcess().ProcessName, out newInstance))
                 if (newInstance)
                 {
-                    Data.DirLink("%AppData%\\vlc", "%CurDir%\\Data", true);
+                    const string linkPath = "%AppData%\\vlc";
+                    const string targetDir = "%CurDir%\\Data";
+                    if (!Process.GetCurrentProcess().IsSandboxed())
+                        Data.DirLink(linkPath, targetDir, true);
+                    else
+                        Data.DirCopy(targetDir, linkPath);
+
                     using (var p = ProcessEx.Start(appPath, EnvironmentEx.CommandLine() + " --no-plugins-cache", false, false))
                         if (!p?.HasExited == true)
                             p?.WaitForExit();
                     while (Process.GetProcessesByName("vlc").Length > 0)
                         foreach (var app in Process.GetProcessesByName("vlc"))
                             app.WaitForExit();
-                    Data.DirUnLink("%AppData%\\vlc", true);
+
+                    if (!Process.GetCurrentProcess().IsSandboxed())
+                        Data.DirUnLink(linkPath, true);
                 }
                 else
                     ProcessEx.Start(appPath, EnvironmentEx.CommandLine());
