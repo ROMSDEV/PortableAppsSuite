@@ -15,26 +15,28 @@ namespace NTLitePortable
         private static void Main()
         {
             Log.AllowLogging();
+
+#if x86
+            var curPath64 = PathEx.Combine(PathEx.LocalDir, "NTLite64Portable.exe");
+            if (Environment.Is64BitOperatingSystem && File.Exists(curPath64))
+            {
+                ProcessEx.Start(curPath64, EnvironmentEx.CommandLine());
+                return;
+            }
+
+            var appDir = PathEx.Combine("%CurDir%\\App\\NTLite");
+#else
+            var appDir = PathEx.Combine("%CurDir%\\App\\NTLite64");
+#endif
+            var appPath = Path.Combine(appDir, "NTLite.exe");
+
+            if (!Directory.Exists(appDir) || Process.GetProcessesByName(Path.GetFileNameWithoutExtension(appPath)).Length > 0)
+                return;
+
             bool newInstance;
             using (new Mutex(true, Process.GetCurrentProcess().ProcessName, out newInstance))
             {
                 if (!newInstance)
-                    return;
-#if x86
-                var curPath64 = PathEx.Combine(PathEx.LocalDir, "NTLite64Portable.exe");
-                if (Environment.Is64BitOperatingSystem && File.Exists(curPath64))
-                {
-                    ProcessEx.Start(curPath64, EnvironmentEx.CommandLine());
-                    return;
-                }
-
-                var appDir = PathEx.Combine("%CurDir%\\App\\NTLite");
-#else
-                var appDir = PathEx.Combine("%CurDir%\\App\\NTLite64");
-#endif
-                var appPath = Path.Combine(appDir, "NTLite.exe");
-
-                if (!Directory.Exists(appDir) || Process.GetProcessesByName("NTLite").Length > 0)
                     return;
 
                 var temp = PathEx.Combine("%CurDir%\\Data\\TEMP");
