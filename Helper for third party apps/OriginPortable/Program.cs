@@ -29,6 +29,9 @@ namespace OriginPortable
 #endif
                 if (IsRunning(appDir))
                     KillAll(appDir);
+                var dataDir = PathEx.Combine(@"%CurDir%\Data");
+                if (IsRunning(dataDir))
+                    KillAll(dataDir);
 
                 Data.DirLink(@"%SystemDrive%\temp", @"%CurDir%\Data\Temp", true);
                 Data.DirLink(@"%CommonProgramFiles(x86)%\EAInstaller", @"%CurDir%\App\Common\EAInstaller", true);
@@ -86,7 +89,6 @@ namespace OriginPortable
                     if (!Reg.ValueExist(defKeys[i], "Portable App"))
                         Reg.MoveSubKey(defKeys[i], bakKeys[i].Substring(5));
 
-                var dataDir = PathEx.Combine(@"%CurDir%\Data");
                 var regPath = Path.Combine(dataDir, "settings.reg");
                 if (!File.Exists(regPath))
                 {
@@ -179,7 +181,7 @@ namespace OriginPortable
                 ProcessEx.Start(StartInfoHelper(appPath, EnvironmentEx.CommandLine(false)));
                 for (var i = 0; i < 10; i++)
                 {
-                    while (IsRunning(appDir))
+                    while (IsRunning(appDir) || IsRunning(dataDir))
                         Thread.Sleep(200);
                     Thread.Sleep(300);
                 }
@@ -222,12 +224,8 @@ namespace OriginPortable
         {
             try
             {
-                return Directory.GetFiles(path, "*.exe", SearchOption.AllDirectories)
-                                .Select(Path.GetFileNameWithoutExtension)
-                                .Where(name => name.ContainsEx("Origin") &&
-                                               !name.EqualsEx("OriginClientService", "OriginWebHelperService") &&
-                                               Process.GetProcessesByName(name).Length != 0)
-                                .Any(name => name.EqualsEx("Origin"));
+                var files = Directory.GetFiles(path, "*.exe", SearchOption.AllDirectories).Select(Path.GetFileNameWithoutExtension).Where(n => n.ContainsEx("Origin") && !n.EqualsEx("OriginClientService", "OriginWebHelperService"));
+                return Process.GetProcesses().Any(p => files.ContainsEx(p.ProcessName));
             }
             catch (Exception ex)
             {
@@ -244,10 +242,10 @@ namespace OriginPortable
                 foreach (var f in Directory.GetFiles(path, "*.exe", SearchOption.AllDirectories))
                 {
                     var name = Path.GetFileNameWithoutExtension(f);
-                    if (!name.ContainsEx("Origin"))
-                        continue;
-                    foreach (var p in Process.GetProcessesByName(Path.GetFileNameWithoutExtension(f)))
+                    foreach (var p in Process.GetProcessesByName(name))
                     {
+                        if (!p.StartInfo.WorkingDirectory.ContainsEx(path) && !p.StartInfo.FileName.ContainsEx(path))
+                            continue;
                         p.CloseMainWindow();
                         p.WaitForExit(100);
                         if (!p.HasExited)
