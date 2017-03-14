@@ -4,7 +4,6 @@ namespace OBSPortable
     using System.Diagnostics;
     using System.IO;
     using System.Threading;
-    using System.Windows.Forms;
     using SilDev;
 
     internal static class Program
