@@ -34,6 +34,9 @@ namespace TS3ClientPortable
             var cfgDir = Path.Combine(appDir, "config");
             var datDir = PathEx.Combine(PathEx.LocalDir, "Data");
 
+            var usrTmpDir = PathEx.Combine("%UserProfile%\\.TeamSpeak 3");
+            var datTmpDir = Path.Combine(datDir, ".TeamSpeak 3");
+
             if (!File.Exists(appPath) || Process.GetProcessesByName(Path.GetFileNameWithoutExtension(appPath)).Length > 0)
                 Environment.Exit(1);
 
@@ -76,6 +79,9 @@ namespace TS3ClientPortable
                 if (!Directory.Exists(datDir))
                     Directory.CreateDirectory(datDir);
                 Data.DirLink(cfgDir, datDir, true);
+                if (!Directory.Exists(datTmpDir))
+                    Directory.CreateDirectory(datTmpDir);
+                Data.DirLink(usrTmpDir, datTmpDir, true);
 
                 var runningProcess = ProcessEx.Start(appPath, false, false);
 
@@ -106,14 +112,13 @@ namespace TS3ClientPortable
                     TaskBar.DeleteTab(hWnd);
                 }
 
-                var usrTmpDir = PathEx.Combine("%UserProfile%\\.TeamSpeak 3");
-                if (Directory.Exists(usrTmpDir))
-                    Directory.Delete(usrTmpDir, true);
                 Data.DirUnLink(cfgDir, true);
+                Data.DirUnLink(usrTmpDir, true);
                 Reg.RemoveExistSubKey(Reg.RegKey.CurrentUser, "Software\\TeamSpeak 3 Client");
                 Reg.RemoveExistSubKey(Reg.RegKey.LocalMachine, "SOFTWARE\\TeamSpeak 3 Client");
-                if (File.Exists(PathEx.Combine(appDir, "OverwolfTeamSpeakInstaller.exe")))
-                    File.Delete(PathEx.Combine(appDir, "OverwolfTeamSpeakInstaller.exe"));
+                var owInstallerPath = PathEx.Combine(appDir, "OverwolfTeamSpeakInstaller.exe");
+                if (File.Exists(owInstallerPath))
+                    File.Delete(owInstallerPath);
             }
         }
     }
