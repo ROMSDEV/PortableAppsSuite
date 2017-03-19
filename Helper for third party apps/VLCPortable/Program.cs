@@ -2,7 +2,6 @@ namespace VLCPortable
 {
     using System;
     using System.Diagnostics;
-    using System.IO;
 #if x86
     using System.IO;
 #endif
