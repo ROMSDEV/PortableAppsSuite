@@ -88,28 +88,58 @@ namespace TS3ClientPortable
                 var winState = Ini.Read("Settings", "WinState");
                 var windowState = winState.StartsWithEx("Min", "Max");
                 var hideInTaskBar = Ini.ReadBoolean("Settings", "HideInTaskBar");
-                while (!runningProcess?.HasExited == true)
+                for (var i = 0; i < 10; i++)
                 {
-                    runningProcess?.WaitForExit(1000);
-                    if (!windowState && !hideInTaskBar)
-                        continue;
-                    var hWnd = WinApi.FindWindowByCaption("TeamSpeak 3");
-                    if (hWnd == IntPtr.Zero)
-                        continue;
-                    if (winState.StartsWithEx("Min"))
+                    while (!runningProcess?.HasExited == true)
                     {
-                        windowState = false;
-                        WinApi.UnsafeNativeMethods.ShowWindowAsync(hWnd, WinApi.ShowWindowFunc.SW_SHOWMINIMIZED);
+                        runningProcess?.WaitForExit(1000);
+                        if (!windowState && !hideInTaskBar)
+                            continue;
+                        var hWnd = WinApi.FindWindowByCaption("TeamSpeak 3");
+                        if (hWnd == IntPtr.Zero)
+                            continue;
+                        if (winState.StartsWithEx("Min"))
+                        {
+                            windowState = false;
+                            WinApi.UnsafeNativeMethods.ShowWindowAsync(hWnd, WinApi.ShowWindowFunc.SW_SHOWMINIMIZED);
+                        }
+                        else if (winState.StartsWithEx("Max"))
+                        {
+                            windowState = false;
+                            WinApi.UnsafeNativeMethods.ShowWindowAsync(hWnd, WinApi.ShowWindowFunc.SW_SHOWMAXIMIZED);
+                        }
+                        if (!hideInTaskBar)
+                            continue;
+                        hideInTaskBar = false;
+                        TaskBar.DeleteTab(hWnd);
                     }
-                    else if (winState.StartsWithEx("Max"))
+
+                    while (ProcessEx.IsRunning(appDir))
+                        Thread.Sleep(200);
+
+                    var updWindPtr = new IntPtr(1);
+                    while (updWindPtr != IntPtr.Zero)
                     {
-                        windowState = false;
-                        WinApi.UnsafeNativeMethods.ShowWindowAsync(hWnd, WinApi.ShowWindowFunc.SW_SHOWMAXIMIZED);
+                        updWindPtr = WinApi.FindWindowByCaption("TeamSpeak 3 Client Update");
+                        Thread.Sleep(200);
                     }
-                    if (!hideInTaskBar)
+
+                    if (ProcessEx.IsRunning(appPath))
+                    {
+                        var processes = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(appPath));
+                        if (processes.Length == 0)
+                            break;
+
+                        runningProcess = processes[0];
+
+                        windowState = winState.StartsWithEx("Min", "Max");
+                        hideInTaskBar = Ini.ReadBoolean("Settings", "HideInTaskBar");
+
+                        i = 0;
                         continue;
-                    hideInTaskBar = false;
-                    TaskBar.DeleteTab(hWnd);
+                    }
+
+                    Thread.Sleep(300);
                 }
 
                 Data.DirUnLink(cfgDir, true);
