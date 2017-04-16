@@ -34,12 +34,11 @@ namespace JavaPortableLauncher
                             if (drive.Contains(dirName))
                                 continue;
                             javaDir = Path.Combine(javaDir, dirName);
-                            if (File.Exists(Path.Combine(javaDir, $"CommonFiles\\{JavaVar}\\{Java["exe"]}")))
-                            {
-                                javaDir = Path.Combine(javaDir, $"CommonFiles\\{JavaVar}");
-                                javaPath = Path.Combine(javaDir, Java["exe"]);
-                                break;
-                            }
+                            if (!File.Exists(Path.Combine(javaDir, $"CommonFiles\\{JavaVar}\\{Java["exe"]}")))
+                                continue;
+                            javaDir = Path.Combine(javaDir, $"CommonFiles\\{JavaVar}");
+                            javaPath = Path.Combine(javaDir, Java["exe"]);
+                            break;
                         }
                         catch (Exception ex)
                         {
@@ -79,69 +78,71 @@ namespace JavaPortableLauncher
             if (!JavaExists())
             {
                 MessageBox.Show(@"Java Portable not found!", $@"Java Portable{(Environment.Is64BitProcess ? " (x64)" : string.Empty)}", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                Environment.Exit(-1);
+                Environment.Exit(1);
             }
-            if (File.Exists(Ini.File()))
+            if (!File.Exists(Ini.File()))
+                return;
+            string appPath = null;
+            if (EnvironmentEx.CommandLineArgs(false).Count < 1)
             {
-                string appPath = null;
-                if (EnvironmentEx.CommandLineArgs(false).Count < 1)
+                using (var dialog = new OpenFileDialog())
                 {
-                    using (var dialog = new OpenFileDialog())
+                    dialog.Filter = @"Java Files (*.exe, *.jar)|*.exe;*.jar|All Files (*.*)|*.*";
+                    dialog.Multiselect = false;
+                    dialog.Title = @"Select a Java Application";
+                    dialog.ShowDialog(new Form
                     {
-                        dialog.Filter = @"Java Files (*.exe, *.jar)|*.exe;*.jar|All Files (*.*)|*.*";
-                        dialog.Multiselect = false;
-                        dialog.Title = @"Select a Java Application";
-                        dialog.ShowDialog(new Form { ShowIcon = false, TopMost = true });
-                        appPath = dialog.FileName;
-                    }
+                        ShowIcon = false,
+                        TopMost = true
+                    });
+                    appPath = dialog.FileName;
                 }
-                else
+            }
+            else
+            {
+                if (File.Exists(EnvironmentEx.CommandLineArgs(false)[0]))
+                    appPath = EnvironmentEx.CommandLineArgs(false)[0];
+            }
+            try
+            {
+                if (string.IsNullOrWhiteSpace(appPath))
+                    return;
+                var appPathMd5 = appPath.EncryptToMd5();
+                if (string.IsNullOrWhiteSpace(Ini.Read("Shortcuts", appPathMd5)))
                 {
-                    if (File.Exists(EnvironmentEx.CommandLineArgs(false)[0]))
-                        appPath = EnvironmentEx.CommandLineArgs(false)[0];
-                }
-                try
-                {
-                    if (!string.IsNullOrWhiteSpace(appPath))
-                    {
-                        var appPathMd5 = appPath.EncryptToMd5();
-                        if (string.IsNullOrWhiteSpace(Ini.Read("Shortcuts", appPathMd5)))
+                    if (MessageBox.Show(@"Java Portable not found!", @"Question", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                        try
                         {
-                            if (MessageBox.Show(@"Java Portable not found!", @"Question", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-                                try
-                                {
-                                    var name = Path.GetFileNameWithoutExtension(appPath);
-                                    if (!Data.CreateShortcut(Application.ExecutablePath, $"%DesktopDir%\\{name}.lnk", EnvironmentEx.CommandLineArgs(false).Count > 0 ? EnvironmentEx.CommandLine(false) : $"\"{appPath}\""))
-                                        throw new Exception();
-                                    MessageBox.Show($@"Desktop shortcut for {name} created.", @"Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                }
-                                catch
-                                {
-                                    MessageBox.Show(@"Java Portable not found!", @"Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                }
-                            if (MessageBox.Show(@"Java Portable not found!", @"Question", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
-                                Ini.Write("Shortcuts", appPathMd5, "True");
+                            var name = Path.GetFileNameWithoutExtension(appPath);
+                            if (!Data.CreateShortcut(Application.ExecutablePath, $"%DesktopDir%\\{name}.lnk", EnvironmentEx.CommandLineArgs(false).Count > 0 ? EnvironmentEx.CommandLine(false) : $"\"{appPath}\""))
+                                throw new Exception();
+                            MessageBox.Show($@"Desktop shortcut for {name} created.", @"Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         }
-                        var jreUsageDir = PathEx.Combine("%UserProfile%\\.oracle_jre_usage");
-                        if (!Directory.Exists(jreUsageDir))
-                            Directory.CreateDirectory(jreUsageDir);
-                        Data.SetAttributes(jreUsageDir, FileAttributes.Hidden);
-                        var filePath = Path.Combine(PathEx.Combine(Ini.Read("Location", JavaVar)), Java["exe"]);
-                        var workDir = Path.Combine(PathEx.Combine(Ini.Read("Location", JavaVar)), Java["exe"]);
-                        var args = $"-jar {(EnvironmentEx.CommandLineArgs(false).Count > 0 ? EnvironmentEx.CommandLine(false) : $"\"{appPath}\"")}";
-                        using (var p = ProcessEx.Start(filePath, workDir, args, false, false))
+                        catch
                         {
-                            if (p.Id <= 0)
-                                throw new NotSupportedException();
-                            if (!p.HasExited)
-                                p.WaitForExit();
+                            MessageBox.Show(@"Java Portable not found!", @"Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         }
-                    }
+                    if (MessageBox.Show(@"Java Portable not found!", @"Question", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+                        Ini.Write("Shortcuts", appPathMd5, "True");
                 }
-                catch
+                var jreUsageDir = PathEx.Combine("%UserProfile%\\.oracle_jre_usage");
+                if (!Directory.Exists(jreUsageDir))
+                    Directory.CreateDirectory(jreUsageDir);
+                Data.SetAttributes(jreUsageDir, FileAttributes.Hidden);
+                var filePath = Path.Combine(PathEx.Combine(Ini.Read("Location", JavaVar)), Java["exe"]);
+                var workDir = Path.Combine(PathEx.Combine(Ini.Read("Location", JavaVar)), Java["exe"]);
+                var args = $"-jar {(EnvironmentEx.CommandLineArgs(false).Count > 0 ? EnvironmentEx.CommandLine(false).Trim() : $"\"{appPath}\"")}";
+                using (var p = ProcessEx.Start(filePath, workDir, args, false, false))
                 {
-                    MessageBox.Show(@"Java Portable not found!", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    if (p.Id <= 0)
+                        throw new NotSupportedException();
+                    if (!p.HasExited)
+                        p.WaitForExit();
                 }
+            }
+            catch
+            {
+                MessageBox.Show(@"Java Portable not found!", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -153,7 +154,7 @@ namespace JavaPortableLauncher
             {
                 var javaPath = PathEx.Combine(Ini.Read("Location", JavaVar));
                 if (!Directory.Exists(javaPath))
-                    throw new OperationCanceledException("Path not found.");
+                    throw new PathNotFoundException(javaPath);
                 javaPath = Path.Combine(javaPath, Java["exe"]);
                 return File.Exists(javaPath);
             }
