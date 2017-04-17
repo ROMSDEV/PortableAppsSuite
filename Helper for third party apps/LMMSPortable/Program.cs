@@ -17,25 +17,27 @@ namespace LMMSPortable
             using (new Mutex(true, Process.GetCurrentProcess().ProcessName, out newInstance))
             {
 #if x86
-                var appDir = PathEx.Combine("%CurDir%\\App\\lmms");
+                var appDir = PathEx.Combine(PathEx.LocalDir, "App\\lmms");
 #else
-                var appDir = PathEx.Combine("%CurDir%\\App\\lmms64");
+                var appDir = PathEx.Combine(PathEx.LocalDir, "App\\lmms64");
 #endif
                 var appPath = Path.Combine(appDir, "lmms.exe");
                 if (!File.Exists(appPath))
                     return;
                 if (newInstance)
                 {
-                    var dataDir = PathEx.Combine("%CurDir%\\Data\\lmms");
-                    if (!Directory.Exists(dataDir))
+                    var dataDir = PathEx.Combine(PathEx.LocalDir, "Data");
+                    var profDir = PathEx.Combine(dataDir, "lmms");
+                    if (!Directory.Exists(profDir))
                     {
-                        Directory.CreateDirectory(Path.Combine(dataDir, "presets"));
-                        Directory.CreateDirectory(Path.Combine(dataDir, "projects"));
-                        Directory.CreateDirectory(Path.Combine(dataDir, "samples"));
+                        Directory.CreateDirectory(Path.Combine(profDir, "presets"));
+                        Directory.CreateDirectory(Path.Combine(profDir, "projects"));
+                        Directory.CreateDirectory(Path.Combine(profDir, "samples\\gig"));
+                        Directory.CreateDirectory(Path.Combine(profDir, "samples\\sf2"));
                     }
                     var defCfgPath = PathEx.Combine("%UserProfile%\\.lmmsrc.xml");
                     string bakCfgPath = $"{defCfgPath}.SI13N7-BACKUP";
-                    var cfgPath = PathEx.Combine("%CurDir%\\Data\\.lmmsrc.xml");
+                    var cfgPath = PathEx.Combine(dataDir, ".lmmsrc.xml");
                     if (File.Exists(defCfgPath))
                     {
                         File.Move(defCfgPath, bakCfgPath);
@@ -44,7 +46,7 @@ namespace LMMSPortable
                     if (!File.Exists(defCfgPath))
                     {
                         var cfgCon = File.Exists(cfgPath) ? File.ReadAllText(cfgPath) : Resources.DefaultConfig;
-                        cfgCon = string.Format(cfgCon, appDir, Path.GetFullPath($"{dataDir}\\.."));
+                        cfgCon = string.Format(cfgCon, appDir, dataDir, dataDir.Replace("\\", "/"));
                         File.WriteAllText(defCfgPath, cfgCon);
                     }
                     if (File.Exists(defCfgPath))
@@ -62,18 +64,33 @@ namespace LMMSPortable
                     }
                     if (File.Exists(defCfgPath))
                     {
-                        if (File.Exists(cfgPath))
-                            File.Delete(cfgPath);
-                        var cfgCon = File.ReadAllText(defCfgPath);
-                        cfgCon = cfgCon.Replace(appDir, "{0}").Replace(Path.GetFullPath($"{dataDir}\\.."), "{1}");
-                        File.WriteAllText(cfgPath, cfgCon);
+                        try
+                        {
+                            var cfgCon = File.ReadAllText(defCfgPath);
+                            cfgCon = cfgCon.Replace(appDir, "{0}")
+                                           .Replace(dataDir, "{1}")
+                                           .Replace(dataDir.Replace("\\", "/"), "{2}");
+                            File.WriteAllText(cfgPath, cfgCon);
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Write(ex);
+                        }
                     }
-                    if (File.Exists(defCfgPath))
-                        File.Delete(defCfgPath);
-                    if (File.Exists(bakCfgPath))
-                        File.Move(bakCfgPath, defCfgPath);
-                    if (File.Exists(defCfgPath))
-                        Data.SetAttributes(defCfgPath, FileAttributes.Normal);
+                    try
+                    {
+                        if (File.Exists(defCfgPath))
+                            File.Delete(defCfgPath);
+                        if (File.Exists(bakCfgPath))
+                            File.Move(bakCfgPath, defCfgPath);
+                        if (File.Exists(defCfgPath))
+                            Data.SetAttributes(defCfgPath, FileAttributes.Normal);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Write(ex);
+                        ProcessEx.Send(string.Format(Resources.DelayedRestoration, defCfgPath, bakCfgPath));
+                    }
                 }
                 else
                     ProcessEx.Start(appPath, EnvironmentEx.CommandLine(false));

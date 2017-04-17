@@ -63,16 +63,26 @@ namespace LMMSPortable.Properties {
         /// <summary>
         ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot;?&gt;
         ///&lt;!DOCTYPE lmms-config-file&gt;
-        ///&lt;lmms version=&quot;1.1.3&quot;&gt;
-        ///  &lt;app nomsgaftersetup=&quot;0&quot; displaydbv=&quot;0&quot; nommpz=&quot;0&quot; configured=&quot;1&quot;/&gt;
-        ///  &lt;audioportaudio backend=&quot;MME&quot; device=&quot;Microsoft Soundmapper - Input&quot;/&gt;
+        ///&lt;lmms version=&quot;1.2.0-rc2&quot;&gt;
+        ///  &lt;MidiAlsaRaw device=&quot;&quot;/&gt;
+        ///  &lt;app displaydbfs=&quot;0&quot; nommpz=&quot;0&quot; configured=&quot;1&quot; nomsgaftersetup=&quot;0&quot;/&gt;
+        ///  &lt;audioportaudio device=&quot;Microsoft Soundmapper - Input&quot; backend=&quot;MME&quot;/&gt;
         ///  &lt;audiosdl device=&quot;&quot;/&gt;
-        ///  &lt;mixer framesperaudiobuffer=&quot;256&quot; hqaudio=&quot;0&quot; audiodev=&quot;SDL (Simple DirectMedia Layer)&quot; mididev=&quot;WinMM MIDI&quot;/&gt;
-        ///  &lt;paths workingdir=&quot;{1}\lmms\&quot; fldir=&quot;{1}\&quot; stkdir=&quot;{0}\data\stk\rawwaves\&quot; vstdir=&quot;C:\Program Files\VstPlugins&quot; artwork=&quot;{0}\data\themes\default\&quot; defaultsf2 [rest of string was truncated]&quot;;.
+        ///  &lt;mixer hqaudio=&quot;0&quot; framesperaudiobuffer=&quot;256&quot; audiodev=&quot;SDL (Simple DirectMedia Layer)&quot; mididev=&quot;WinMM MIDI&quot;/&gt;
+        ///  &lt;paths sf2dir=&quot;{2}/lmms/samples/sf2/&quot; gigdir=&quot;{2}/lmms/samples/gig/&quot; defaultsf2=&quot;&quot; backgroundartwork=&quot;&quot; laddir=&quot;{0}\plugins\l [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string DefaultConfig {
             get {
                 return ResourceManager.GetString("DefaultConfig", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PING LOCALHOST -n 5 &gt;NUL &amp;&amp; DEL /F /Q &quot;{0}&quot; &amp;&amp; MOVE /Y &quot;{1}&quot; &quot;{0}&quot; &amp;&amp; ATTR -H &quot;{0}&quot;.
+        /// </summary>
+        internal static string DelayedRestoration {
+            get {
+                return ResourceManager.GetString("DelayedRestoration", resourceCulture);
             }
         }
     }
