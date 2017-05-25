@@ -1,11 +1,13 @@
 namespace VLCPortable
 {
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics;
 #if x86
     using System.IO;
 #endif
     using System.Threading;
+    using Portable;
     using SilDev;
 
     internal static class Program
@@ -27,27 +29,23 @@ namespace VLCPortable
 #endif
             bool newInstance;
             using (new Mutex(true, Process.GetCurrentProcess().ProcessName, out newInstance))
-                if (newInstance)
+            {
+                if (!newInstance)
                 {
-                    const string linkPath = "%AppData%\\vlc";
-                    const string targetDir = "%CurDir%\\Data";
-                    if (!Process.GetCurrentProcess().IsSandboxed())
-                        Data.DirLink(linkPath, targetDir, true);
-                    else
-                        Data.DirCopy(targetDir, linkPath);
-
-                    using (var p = ProcessEx.Start(appPath, EnvironmentEx.CommandLine() + " --no-plugins-cache", false, false))
-                        if (!p?.HasExited == true)
-                            p?.WaitForExit();
-                    while (Process.GetProcessesByName("vlc").Length > 0)
-                        foreach (var app in Process.GetProcessesByName("vlc"))
-                            app.WaitForExit();
-
-                    if (!Process.GetCurrentProcess().IsSandboxed())
-                        Data.DirUnLink(linkPath, true);
-                }
-                else
                     ProcessEx.Start(appPath, EnvironmentEx.CommandLine());
+                    return;
+                }
+                var dirMap = new Dictionary<string, string>
+                {
+                    {
+                        "%AppData%\\vlc",
+                        "%CurDir%\\Data"
+                    }
+                };
+                Helper.DirectoryForwarding(Helper.Options.Start, dirMap);
+                Helper.ApplicationStart(appPath, $"{EnvironmentEx.CommandLine()} --no-plugins-cache");
+                Helper.DirectoryForwarding(Helper.Options.Exit, dirMap);
+            }
         }
     }
 }
