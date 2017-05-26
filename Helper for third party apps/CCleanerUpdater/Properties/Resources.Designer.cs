@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace CCleanerUpdater.Properties {
+namespace AppUpdater.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace CCleanerUpdater.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("CCleanerUpdater.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("AppUpdater.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,6 +61,42 @@ namespace CCleanerUpdater.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to CCleaner.
+        /// </summary>
+        internal static string AppName {
+            get {
+                return ResourceManager.GetString("AppName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CCleaner64.
+        /// </summary>
+        internal static string AppName64 {
+            get {
+                return ResourceManager.GetString("AppName64", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to %CurDir%\CCleaner.exe.
+        /// </summary>
+        internal static string AppPath {
+            get {
+                return ResourceManager.GetString("AppPath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to %CurDir%\CCleaner64.exe.
+        /// </summary>
+        internal static string AppPath64 {
+            get {
+                return ResourceManager.GetString("AppPath64", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
         internal static System.Drawing.Icon CCUpdater {
@@ -77,6 +113,87 @@ namespace CCleanerUpdater.Properties {
             get {
                 object obj = ResourceManager.GetObject("diagonal_pattern", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A newer version is available. Would you like to update now?.
+        /// </summary>
+        internal static string Msg_Hint_00 {
+            get {
+                return ResourceManager.GetString("Msg_Hint_00", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No newer version available..
+        /// </summary>
+        internal static string Msg_Hint_01 {
+            get {
+                return ResourceManager.GetString("Msg_Hint_01", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CCleaner successfully updated..
+        /// </summary>
+        internal static string Msg_Hint_02 {
+            get {
+                return ResourceManager.GetString("Msg_Hint_02", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CCleaner not found..
+        /// </summary>
+        internal static string Msg_Warn_00 {
+            get {
+                return ResourceManager.GetString("Msg_Warn_00", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CCleaner must be closed..
+        /// </summary>
+        internal static string Msg_Warn_01 {
+            get {
+                return ResourceManager.GetString("Msg_Warn_01", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CCleaner update failed..
+        /// </summary>
+        internal static string Msg_Warn_02 {
+            get {
+                return ResourceManager.GetString("Msg_Warn_02", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to https://www.piriform.com/ccleaner/download/portable/downloadfile.
+        /// </summary>
+        internal static string UpdateUrl {
+            get {
+                return ResourceManager.GetString("UpdateUrl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mozilla/5.0.
+        /// </summary>
+        internal static string UserAgent {
+            get {
+                return ResourceManager.GetString("UserAgent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CCleaner Updater.
+        /// </summary>
+        internal static string WindowTitle {
+            get {
+                return ResourceManager.GetString("WindowTitle", resourceCulture);
             }
         }
     }

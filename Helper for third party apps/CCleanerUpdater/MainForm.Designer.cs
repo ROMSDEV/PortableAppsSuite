@@ -1,4 +1,4 @@
-namespace CCleanerUpdater
+namespace AppUpdater
 {
     partial class MainForm
     {
@@ -81,7 +81,7 @@ namespace CCleanerUpdater
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.BackgroundImage = global::CCleanerUpdater.Properties.Resources.diagonal_pattern;
+            this.BackgroundImage = global::AppUpdater.Properties.Resources.diagonal_pattern;
             this.ClientSize = new System.Drawing.Size(264, 100);
             this.Controls.Add(this.DLPercentage);
             this.Controls.Add(this.DLLoaded);
@@ -92,7 +92,6 @@ namespace CCleanerUpdater
             this.Name = "MainForm";
             this.Opacity = 0D;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "CCleaner Updater";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.ResumeLayout(false);
