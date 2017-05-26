@@ -24,7 +24,7 @@
 #endif
 
 #if ApplicationStart
-        public static void ApplicationStart(string filePath, string commandLine = null)
+        public static void ApplicationStart(string filePath, string commandLine = null, bool full = true)
         {
             var path = PathEx.Combine(filePath);
             if (!File.Exists(path))
@@ -36,13 +36,13 @@
             if (string.IsNullOrEmpty(dir) || !Directory.Exists(dir))
                 return;
             Recheck:
-            foreach (var file in Directory.GetFiles(dir, "*.exe", SearchOption.AllDirectories))
+            foreach (var file in Directory.EnumerateFiles(dir, "*.exe", SearchOption.AllDirectories))
             {
                 var wasRunning = false;
                 bool isRunning;
                 do
                 {
-                    isRunning = ProcessEx.IsRunning(file);
+                    isRunning = ProcessEx.IsRunning(full ? file : Path.GetFileName(file));
                     if (!wasRunning && isRunning)
                         wasRunning = true;
                     Thread.Sleep(200);
@@ -172,6 +172,23 @@
                     continue;
                 var srcPath = PathEx.Combine(data.Key);
                 var destPath = PathEx.Combine(data.Value);
+                try
+                {
+                    if (!File.Exists(destPath))
+                    {
+                        var destDir = Path.GetDirectoryName(destPath);
+                        if (string.IsNullOrEmpty(destDir))
+                            throw new ArgumentNullException(nameof(destDir));
+                        if (!Directory.Exists(destDir))
+                            Directory.CreateDirectory(destDir);
+                        File.Create(destPath).Close();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Write(ex);
+                    return;
+                }
                 var backupPath = srcPath + ".SI13N7-BACKUP";
                 switch (option)
                 {
