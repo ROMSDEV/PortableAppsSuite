@@ -11,6 +11,7 @@
     using System.Threading;
 #endif
     using SilDev;
+
 #endif
 
     public static class Helper
@@ -24,7 +25,7 @@
 #endif
 
 #if ApplicationStart
-        public static void ApplicationStart(string filePath, string commandLine = null, bool full = true)
+        public static void ApplicationStart(string filePath, string commandLine = null, bool? full = true)
         {
             var path = PathEx.Combine(filePath);
             if (!File.Exists(path))
@@ -32,6 +33,8 @@
             using (var p = ProcessEx.Start(path, commandLine, Elevation.IsAdministrator, false))
                 if (p?.HasExited == false)
                     p.WaitForExit();
+            if (full == null)
+                return;
             var dir = Path.GetDirectoryName(path);
             if (string.IsNullOrEmpty(dir) || !Directory.Exists(dir))
                 return;
@@ -42,7 +45,7 @@
                 bool isRunning;
                 do
                 {
-                    isRunning = ProcessEx.IsRunning(full ? file : Path.GetFileName(file));
+                    isRunning = ProcessEx.IsRunning(full == true ? file : Path.GetFileName(file));
                     if (!wasRunning && isRunning)
                         wasRunning = true;
                     Thread.Sleep(200);
@@ -162,7 +165,7 @@
 #endif
 
 #if FileForwarding
-        public static void FileForwarding(Options option, Dictionary<string, string> fileMap)
+        public static void FileForwarding(Options option, Dictionary<string, string> fileMap, bool simple = false)
         {
             if (fileMap?.Any() != true)
                 return;
@@ -193,6 +196,19 @@
                 switch (option)
                 {
                     case Options.Exit:
+                        if (simple)
+                        {
+                            try
+                            {
+                                if (File.Exists(srcPath))
+                                    File.Copy(srcPath, destPath, true);
+                            }
+                            catch (Exception ex)
+                            {
+                                Log.Write(ex);
+                            }
+                            return;
+                        }
                         Data.SetAttributes(backupPath, FileAttributes.Normal);
                         if (Elevation.IsAdministrator && Data.FileUnLink(srcPath, true))
                             continue;
@@ -216,6 +232,19 @@
                         }
                         break;
                     default:
+                        if (simple)
+                        {
+                            try
+                            {
+                                if (File.Exists(destPath) && (!File.Exists(srcPath) || File.GetLastWriteTime(destPath) > File.GetLastWriteTime(srcPath)))
+                                    File.Copy(destPath, srcPath, true);
+                            }
+                            catch (Exception ex)
+                            {
+                                Log.Write(ex);
+                            }
+                            return;
+                        }
                         if (Elevation.IsAdministrator && Data.FileLink(srcPath, destPath, true))
                         {
                             Data.SetAttributes(backupPath, FileAttributes.Hidden);
