@@ -1,4 +1,4 @@
-namespace WinRARUpdater
+namespace AppUpdater
 {
     partial class MainForm
     {
@@ -29,6 +29,7 @@ namespace WinRARUpdater
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.DLPercentage = new System.Windows.Forms.ProgressBar();
             this.DLLoaded = new System.Windows.Forms.Label();
             this.DLSpeed = new System.Windows.Forms.Label();
@@ -80,20 +81,17 @@ namespace WinRARUpdater
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.BackgroundImage = global::WinRARUpdater.Properties.Resources.diagonal_pattern;
+            this.BackgroundImage = global::AppUpdater.Properties.Resources.diagonal_pattern;
             this.ClientSize = new System.Drawing.Size(264, 100);
             this.Controls.Add(this.DLPercentage);
             this.Controls.Add(this.DLLoaded);
             this.Controls.Add(this.DLSpeed);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
-            this.MinimizeBox = false;
             this.Name = "MainForm";
             this.Opacity = 0D;
-            this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "WinRAR Updater (64-bit)";
-            this.WindowState = System.Windows.Forms.FormWindowState.Minimized;
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.ResumeLayout(false);

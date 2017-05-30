@@ -10,7 +10,7 @@
     <ProjectGuid>{1EC00628-BBE3-4F8C-ADA7-20A5D69C480C}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>WinRARUpdater</RootNamespace>
+    <RootNamespace>AppUpdater</RootNamespace>
     <AssemblyName>WinRARUpdater</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -28,16 +28,16 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <OutputPath>..\.bin\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;x86</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>WinRARUpdater.Program</StartupObject>
+    <StartupObject>AppUpdater.Program</StartupObject>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Resources\RAR.ico</ApplicationIcon>
@@ -57,7 +57,7 @@
     <Compile Include="LangSelectionForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="LangSelectionForm.Designer.cs">
+    <Compile Include="LangSelectionForm.designer.cs">
       <DependentUpon>LangSelectionForm.cs</DependentUpon>
     </Compile>
     <Compile Include="MainForm.cs">
@@ -70,6 +70,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="LangSelectionForm.resx">
       <DependentUpon>LangSelectionForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
@@ -84,19 +85,10 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
-    <None Include="Resources\_UnRAR" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="Resources\7z" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\diagonal_pattern.png" />

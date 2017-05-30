@@ -124,7 +124,78 @@
   <data name="RAR" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\RAR.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="_UnRAR" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\_UnRAR;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="_7z" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\7z;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="AppName" xml:space="preserve">
+    <value>WinRAR</value>
+  </data>
+  <data name="AppPath" xml:space="preserve">
+    <value>%CurDir%\WinRAR.exe</value>
+  </data>
+  <data name="Extract" xml:space="preserve">
+    <value>x -u "{0}" "{1}"</value>
+  </data>
+  <data name="Msg_Hint_00" xml:space="preserve">
+    <value>A newer version is available. Would you like to update now?</value>
+  </data>
+  <data name="Msg_Hint_01" xml:space="preserve">
+    <value>No newer version available.</value>
+  </data>
+  <data name="Msg_Hint_02" xml:space="preserve">
+    <value>WinRAR successfully updated.</value>
+  </data>
+  <data name="Msg_Hint_03" xml:space="preserve">
+    <value>WinRAR update canceled.</value>
+  </data>
+  <data name="Msg_Warn_00" xml:space="preserve">
+    <value>WinRAR not found.</value>
+  </data>
+  <data name="Msg_Warn_01" xml:space="preserve">
+    <value>WinRAR must be closed.</value>
+  </data>
+  <data name="Msg_Warn_02" xml:space="preserve">
+    <value>WinRAR update failed.</value>
+  </data>
+  <data name="RegexFileNamePattern" xml:space="preserve">
+    <value>&lt;td&gt;&lt;a href="/rar/(.+?)"&gt;</value>
+  </data>
+  <data name="RegexLanguagePattern" xml:space="preserve">
+    <value>&lt;b&gt;(.+?)&lt;/b&gt;&lt;/a&gt;&lt;/td&gt;</value>
+  </data>
+  <data name="RegexLinePattern" xml:space="preserve">
+    <value>&lt;tr&gt;(.+?)&lt;/tr&gt;</value>
+  </data>
+  <data name="RegexUrl" xml:space="preserve">
+    <value>http://www.rarsoft.com/download.htm</value>
+  </data>
+  <data name="RegexVersionPattern" xml:space="preserve">
+    <value>&lt;td align="center"&gt;(.+?)&lt;/td&gt;</value>
+  </data>
+  <data name="TmpDir" xml:space="preserve">
+    <value>%TEMP%\WinRARUpdater-{{{0}}}</value>
+  </data>
+  <data name="UpdateDir" xml:space="preserve">
+    <value>%CurDir%\Update-{{{0}}}</value>
+  </data>
+  <data name="UpdateUrl" xml:space="preserve">
+    <value>http://www.rarsoft.com/rar/{0}</value>
+  </data>
+  <data name="UserAgent" xml:space="preserve">
+    <value>Mozilla/5.0</value>
+  </data>
+  <data name="WhiteList" xml:space="preserve">
+    <value>archivecomment.txt
+sildev.csharplib.dll
+sildev.csharplib64.dll
+rarreg.key
+winrar.ini
+winrarupdater64.exe
+winrarupdater64.ini
+winrarupdater.exe
+winrarupdater.ini</value>
+  </data>
+  <data name="WindowTitle" xml:space="preserve">
+    <value>WinRAR Updater</value>
   </data>
 </root>

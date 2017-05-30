@@ -1,4 +1,4 @@
-namespace WinRARUpdater
+namespace AppUpdater
 {
     using System;
     using System.Windows.Forms;
@@ -15,24 +15,27 @@ namespace WinRARUpdater
 
         private void LangSelectionForm_Load(object sender, EventArgs e)
         {
+            var lang = Ini.Read<string>("Settings", "Language", "English");
+            var arch = Ini.Read<string>("Settings", "Architecture", Environment.Is64BitProcess ? "64 bit" : "32 bit");
             try
             {
-                var lang = Ini.Read("Settings", "Language");
                 LangSelectBox.SelectedItem = lang;
-                var bit = Ini.Read("Settings", "Architecture");
-                BitSelectBox.SelectedItem = bit;
+                ArchSelectBox.SelectedItem = arch;
             }
             catch
             {
                 DialogResult = DialogResult.Cancel;
             }
+            if (Environment.CommandLine.ContainsEx("/archlock"))
+                ArchSelectBox.Enabled = false;
         }
 
         private void OkBtn_Click(object sender, EventArgs e)
         {
             Ini.Write("Settings", "Language", LangSelectBox.GetItemText(LangSelectBox.SelectedItem));
-            Ini.Write("Settings", "Architecture", BitSelectBox.GetItemText(BitSelectBox.SelectedItem));
+            Ini.Write("Settings", "Architecture", ArchSelectBox.GetItemText(ArchSelectBox.SelectedItem));
             Ini.Write("Settings", "DoNotAskAgain", DoNotAskAgainCheck.Checked);
+            Ini.WriteAll();
             DialogResult = DialogResult.OK;
         }
 

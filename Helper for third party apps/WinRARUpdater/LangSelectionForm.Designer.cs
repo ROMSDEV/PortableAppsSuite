@@ -1,4 +1,4 @@
-namespace WinRARUpdater
+namespace AppUpdater
 {
     partial class LangSelectionForm
     {
@@ -29,7 +29,7 @@ namespace WinRARUpdater
         private void InitializeComponent()
         {
             this.LangSelectBox = new System.Windows.Forms.ComboBox();
-            this.BitSelectBox = new System.Windows.Forms.ComboBox();
+            this.ArchSelectBox = new System.Windows.Forms.ComboBox();
             this.DoNotAskAgainCheck = new System.Windows.Forms.CheckBox();
             this.OkBtn = new System.Windows.Forms.Button();
             this.CancelBtn = new System.Windows.Forms.Button();
@@ -91,18 +91,18 @@ namespace WinRARUpdater
             this.LangSelectBox.Size = new System.Drawing.Size(197, 21);
             this.LangSelectBox.TabIndex = 0;
             // 
-            // BitSelectBox
+            // ArchSelectBox
             // 
-            this.BitSelectBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.BitSelectBox.Font = new System.Drawing.Font("Tahoma", 8.25F);
-            this.BitSelectBox.FormattingEnabled = true;
-            this.BitSelectBox.Items.AddRange(new object[] {
+            this.ArchSelectBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.ArchSelectBox.Font = new System.Drawing.Font("Tahoma", 8.25F);
+            this.ArchSelectBox.FormattingEnabled = true;
+            this.ArchSelectBox.Items.AddRange(new object[] {
             "32 bit",
             "64 bit"});
-            this.BitSelectBox.Location = new System.Drawing.Point(216, 16);
-            this.BitSelectBox.Name = "BitSelectBox";
-            this.BitSelectBox.Size = new System.Drawing.Size(77, 21);
-            this.BitSelectBox.TabIndex = 1;
+            this.ArchSelectBox.Location = new System.Drawing.Point(216, 16);
+            this.ArchSelectBox.Name = "ArchSelectBox";
+            this.ArchSelectBox.Size = new System.Drawing.Size(77, 21);
+            this.ArchSelectBox.TabIndex = 1;
             // 
             // DoNotAskAgainCheck
             // 
@@ -143,12 +143,12 @@ namespace WinRARUpdater
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackgroundImage = global::WinRARUpdater.Properties.Resources.diagonal_pattern;
+            this.BackgroundImage = global::AppUpdater.Properties.Resources.diagonal_pattern;
             this.ClientSize = new System.Drawing.Size(305, 84);
             this.Controls.Add(this.CancelBtn);
             this.Controls.Add(this.OkBtn);
             this.Controls.Add(this.DoNotAskAgainCheck);
-            this.Controls.Add(this.BitSelectBox);
+            this.Controls.Add(this.ArchSelectBox);
             this.Controls.Add(this.LangSelectBox);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
@@ -165,7 +165,7 @@ namespace WinRARUpdater
         #endregion
 
         private System.Windows.Forms.ComboBox LangSelectBox;
-        private System.Windows.Forms.ComboBox BitSelectBox;
+        private System.Windows.Forms.ComboBox ArchSelectBox;
         private System.Windows.Forms.CheckBox DoNotAskAgainCheck;
         private System.Windows.Forms.Button OkBtn;
         private System.Windows.Forms.Button CancelBtn;

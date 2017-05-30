@@ -1,7 +1,6 @@
-namespace WinRARUpdater
+namespace AppUpdater
 {
     using System;
-    using System.Collections.Generic;
     using System.ComponentModel;
     using System.Diagnostics;
     using System.IO;
@@ -14,22 +13,10 @@ namespace WinRARUpdater
 
     public partial class MainForm : Form
     {
-        private static readonly string UnRarExe = PathEx.Combine("%TEMP%", Process.GetCurrentProcess().ProcessName, "UnRAR.exe");
         private readonly NetEx.AsyncTransfer _transfer = new NetEx.AsyncTransfer();
-
-        private readonly List<string> _whiteList = new List<string>
-        {
-            "archivecomment.txt",
-            "rarreg.key",
-            "winrar.ini",
-            "winrarupdater64.exe",
-            "winrarupdater64.ini",
-            "winrarupdater.exe",
-            "winrarupdater.ini"
-        };
-
-        private int _dlFinishCount;
-        private string _setupPath = string.Empty;
+        private string _guid, _tmpDir;
+        private int _countdown = 10;
+        private bool _silent;
 
         public MainForm()
         {
@@ -39,173 +26,110 @@ namespace WinRARUpdater
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            var iniFile = PathEx.Combine($"%CurDir%\\{Path.GetFileNameWithoutExtension(PathEx.LocalPath)}.ini");
+            _silent = Environment.CommandLine.ContainsEx("/silent");
+            Text = Resources.WindowTitle;
+            TaskBar.Progress.SetState(Handle, TaskBar.Progress.Flags.Indeterminate);
+
+            var iniFile = Path.ChangeExtension(PathEx.LocalPath, ".ini");
             if (!File.Exists(iniFile))
             {
-                Ini.File(iniFile);
+                Ini.SetFile(iniFile);
                 Ini.Write("Settings", "Language", "English");
                 Ini.Write("Settings", "Architecture", Environment.Is64BitProcess ? "64 bit" : "32 bit");
                 Ini.Write("Settings", "DoNotAskAgain", false);
             }
             else
-                Ini.File(iniFile);
+                Ini.SetFile(iniFile);
 
-            bool doNotAskAgain;
-            if (!bool.TryParse(Ini.Read("Settings", "DoNotAskAgain"), out doNotAskAgain) || !doNotAskAgain)
+            if (!Ini.Read("Settings", "DoNotAskAgain", false))
             {
                 Form langSelection = new LangSelectionForm();
                 if (langSelection.ShowDialog() != DialogResult.OK)
                 {
-                    ShowInfoBox("Canceled", MessageBoxButtons.OK);
+                    MessageBoxEx.Show(Resources.Msg_Hint_03, Resources.WindowTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
                     Application.Exit();
                     return;
                 }
             }
 
+            var lang = $"{Ini.Read<string>("Settings", "Language", "English")} ({Ini.Read<string>("Settings", "Architecture", Environment.Is64BitProcess ? "64 bit" : "32 bit")})";
+            var source = NetEx.Transfer.DownloadString(Resources.RegexUrl);
+            string updUrl = null;
             try
             {
-                var winRar = PathEx.Combine("%CurDir%\\WinRAR.exe");
-                const string updateUrl = "http://www.rarsoft.com/download.htm";
-
-                var localVersion = "0";
-                if (File.Exists(winRar))
+                foreach (Match match in Regex.Matches(source, Resources.RegexLinePattern, RegexOptions.Singleline))
                 {
-                    var verFilter = FileVersionInfo.GetVersionInfo(winRar).FileVersion.Replace(" ", string.Empty).Split(',');
-                    if (verFilter.Length >= 1)
-                        localVersion = verFilter.Aggregate(localVersion, (c, t) => c + t);
-                }
-                CheckClose(localVersion, "LocalVersion");
-
-                var htmContent = NetEx.Transfer.DownloadString(updateUrl);
-                CheckClose(htmContent, "OnlineVersion");
-
-                var onlineInfo = new Dictionary<string, string[]>();
-                foreach (Match match in Regex.Matches(htmContent, "<tr>(.+?)</tr>", RegexOptions.Singleline))
-                {
-                    var version = Regex.Match(match.Groups[1].ToString(), "<td align=\"center\">(.+?)</td>", RegexOptions.Singleline).Groups[1].ToString();
-                    var language = Regex.Match(match.Groups[1].ToString(), "<b>(.+?)</b></a></td>", RegexOptions.Singleline).Groups[1].ToString();
-                    var location = Regex.Match(match.Groups[1].ToString(), "<td><a href=\"/rar/(.+?)\">", RegexOptions.Singleline).Groups[1].ToString();
-                    if (string.IsNullOrWhiteSpace(version) || string.IsNullOrWhiteSpace(language) || string.IsNullOrWhiteSpace(location) || !string.IsNullOrWhiteSpace(version) && (version.ToLower().Contains("trial") || version.ToLower().Contains("free") || version.ToLower().Contains("beta")))
+                    var mLine = match.Groups[1].ToString();
+                    var mLang = Regex.Match(mLine, Resources.RegexLanguagePattern, RegexOptions.Singleline).Groups[1].ToString();
+                    if (string.IsNullOrWhiteSpace(mLang) || !mLang.EqualsEx(lang))
                         continue;
-                    if (onlineInfo.ContainsKey(language))
+                    var mVer = Regex.Match(mLine, Resources.RegexVersionPattern, RegexOptions.Singleline).Groups[1].ToString();
+                    if (string.IsNullOrWhiteSpace(mVer) || mVer.ContainsEx("trial", "free", "beta"))
+                        continue;
+                    var mName = Regex.Match(mLine, Resources.RegexFileNamePattern, RegexOptions.Singleline).Groups[1].ToString();
+                    if (string.IsNullOrWhiteSpace(mName))
+                        continue;
+                    updUrl = string.Format(Resources.UpdateUrl, mName);
+                    if (!NetEx.FileIsAvailable(updUrl, 60000, Resources.UserAgent))
                     {
-                        foreach (var item in onlineInfo)
-                        {
-                            if (item.Key != language)
-                                continue;
-                            Log.Write($"Key: {item.Key} - Value[0]: {item.Value[0]} - Value[1]: {item.Value[1]}");
-                            break;
-                        }
+                        updUrl = null;
                         continue;
                     }
-                    onlineInfo.Add(language, new[] { version, location });
-                }
-                if (onlineInfo.Count <= 0)
-                    CheckClose(string.Empty, "OnlineVersion");
-
-                var onlineVersion = string.Empty;
-                var fileName = string.Empty;
-                foreach (var item in onlineInfo)
-                {
-                    var lang = Ini.Read("Settings", "Language");
-                    if (string.IsNullOrWhiteSpace(lang))
-                        lang = "English";
-                    var bits = Ini.Read("Settings", "Architecture");
-                    if (string.IsNullOrWhiteSpace(lang))
-                        bits = Environment.Is64BitProcess ? "64 bit" : "32 bit";
-                    if (item.Key.ToLower() != $"{lang.ToLower()} ({bits.ToLower()})")
-                        continue;
-                    onlineVersion = $"{item.Value[0]}.0";
-                    fileName = item.Value[1];
                     break;
                 }
-                CheckClose(fileName, "FileName");
-
-                int localVer;
-                int.TryParse(localVersion.Replace(".", string.Empty), out localVer);
-
-                int onlineVer;
-                int.TryParse(onlineVersion.Replace(".", string.Empty), out onlineVer);
-
-                if (localVer < onlineVer)
-                {
-                    if (!File.Exists(winRar) || Environment.CommandLine.ContainsEx("/silent") || ShowInfoBox("UpdateAvailable", MessageBoxButtons.YesNo) == DialogResult.Yes)
-                    {
-                        _setupPath = PathEx.Combine("%CurDir%", fileName);
-                        if (File.Exists(_setupPath))
-                            try
-                            {
-                                File.Delete(_setupPath);
-                            }
-                            catch
-                            {
-                                ProcessEx.Send($"DEL /F /Q \"{_setupPath}\"", true);
-                            }
-                        if (!File.Exists(_setupPath))
-                        {
-                            Opacity = 1d;
-                            ShowInTaskbar = true;
-                            WindowState = FormWindowState.Normal;
-                            _transfer.DownloadFile($"http://www.rarsoft.com/rar/{fileName}", _setupPath);
-                            CheckDownload.Enabled = true;
-                            return;
-                        }
-                    }
-                }
-                else
-                    ShowInfoBox("NoUpdates", MessageBoxButtons.OK);
+                if (string.IsNullOrEmpty(updUrl))
+                    throw new ArgumentNullException(nameof(updUrl));
             }
-            catch
+            catch (Exception ex)
             {
-                ShowInfoBox("UpdateFailed", MessageBoxButtons.OK);
+                Log.Write(ex);
+                MessageBoxEx.Show(Resources.Msg_Warn_02, Resources.WindowTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                Application.Exit();
             }
-            Application.Exit();
-        }
 
-        private void CheckClose(string item, string arg)
-        {
-            if (!string.IsNullOrWhiteSpace(item))
+            var appPath = PathEx.Combine(Resources.AppPath);
+            var localDate = File.GetLastWriteTime(appPath);
+            var onlineDate = NetEx.GetFileDate(updUrl, Resources.UserAgent);
+            if ((onlineDate - localDate).Days > 0)
+            {
+                if (_silent || MessageBoxEx.Show(Resources.Msg_Hint_00, Resources.WindowTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
+                {
+                    var archivePath = PathEx.Combine(PathEx.LocalDir, "update.zip");
+                    if (!File.Exists(archivePath))
+                    {
+                        _guid = Guid.NewGuid().ToString();
+                        if (_guid.Length >= 8)
+                            _guid = _guid.Substring(0, 8);
+                        _tmpDir = PathEx.Combine(string.Format(Resources.TmpDir, _guid));
+                        var hlpPath = Path.Combine(_tmpDir, "7z.zip");
+                        ResourcesEx.Extract(Resources._7z, hlpPath, true);
+                        Compaction.Unzip(hlpPath, _tmpDir);
+                        _transfer.DownloadFile(updUrl, archivePath);
+                        Opacity = 1f;
+                        CheckDownload.Enabled = true;
+                        return;
+                    }
+                    ExtractDownload.RunWorkerAsync();
+                }
+                Application.Exit();
                 return;
-            ShowInfoBox(arg, MessageBoxButtons.OK);
-            Application.Exit();
-        }
-
-        private DialogResult ShowInfoBox(string arg, MessageBoxButtons btn)
-        {
-            if (Environment.CommandLine.Contains("/silent"))
-                return DialogResult.OK;
-            string text;
-            switch (arg)
-            {
-                case "UpdateAvailable":
-                    text = "A newer version is available. Would you like to update now?";
-                    break;
-                case "Updated":
-                    text = "WinRAR successfully updated.";
-                    break;
-                case "UpdateFailed":
-                    text = "WinRAR update failed.";
-                    break;
-                case "Canceled":
-                    text = "Canceled.";
-                    break;
-                default:
-                    text = "No newer version available.";
-                    break;
             }
-            return MessageBox.Show(text, Text, btn, MessageBoxIcon.Information);
+            if (!_silent)
+                MessageBoxEx.Show(Resources.Msg_Hint_01, Resources.WindowTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            Application.Exit();
         }
 
         private void CheckDownload_Tick(object sender, EventArgs e)
         {
-            DLSpeed.Text = $@"{(int)Math.Round(_transfer.TransferSpeed)} kb/s";
+            DLSpeed.Text = _transfer.TransferSpeedAd;
             DLPercentage.Value = _transfer.ProgressPercentage;
             DLLoaded.Text = _transfer.DataReceived;
             if (!_transfer.IsBusy)
-                _dlFinishCount++;
-            if (_dlFinishCount == 1)
+                _countdown--;
+            if (_countdown == 9)
                 DLPercentage.JumpToEnd();
-            if (_dlFinishCount < 10)
+            TaskBar.Progress.SetValue(Handle, DLPercentage.Value, DLPercentage.Maximum);
+            if (_countdown > 0)
                 return;
             CheckDownload.Enabled = false;
             ExtractDownload.RunWorkerAsync();
@@ -215,22 +139,27 @@ namespace WinRARUpdater
         {
             try
             {
-                if (!File.Exists(_setupPath))
+                if (_transfer?.FilePath == null || !File.Exists(_transfer.FilePath))
                     return;
-                if (!File.Exists(UnRarExe))
-                    throw new Exception("UnRAR.exe not exists");
-                var updDir = PathEx.Combine("%CurDir%\\Update");
+
+                Compaction.Zip7Helper.ExePath = PathEx.Combine(_tmpDir, "7z.exe");
+
+                if (!File.Exists(Compaction.Zip7Helper.ExePath))
+                    throw new FileNotFoundException();
+
+                var updDir = PathEx.Combine(string.Format(Resources.UpdateDir, _guid));
                 if (!Directory.Exists(updDir))
                     Directory.CreateDirectory(updDir);
-                using (var p = ProcessEx.Start(UnRarExe, $"x -u \"{_setupPath}\" \"{updDir}\"", false, ProcessWindowStyle.Minimized, false))
+
+                using (var p = Compaction.Zip7Helper.Unzip(_transfer.FilePath, updDir, ProcessWindowStyle.Minimized))
                     if (!p?.HasExited == true)
                         p?.WaitForExit();
+
                 var updFiles = Directory.GetFiles(updDir, "*", SearchOption.TopDirectoryOnly);
-                if (updFiles.Length <= 0)
-                    throw new Exception("No files found to update");
-                var curFiles = new List<string>();
-                curFiles.AddRange(Directory.GetFiles(EnvironmentEx.GetVariableValue("CurDir"), "*", SearchOption.TopDirectoryOnly)
-                                           .Where(s => !_whiteList.ContainsEx(Path.GetFileName(s))));
+                if (updFiles.Length == 0)
+                    throw new ArgumentNullException(nameof(updFiles));
+
+                var curFiles = Directory.EnumerateFiles(PathEx.LocalDir, "*", SearchOption.TopDirectoryOnly).Where(s => !Resources.WhiteList.SplitNewLine().ContainsEx(Path.GetFileName(s)));
                 foreach (var file in curFiles)
                     try
                     {
@@ -240,45 +169,63 @@ namespace WinRARUpdater
                     {
                         try
                         {
-                            File.Move(file, $"{file}.{PathEx.GetTempDirName()}");
+                            File.Move(file, $"{file}.{{{_guid}}}");
                         }
                         catch (Exception ex)
                         {
                             Log.Write(ex);
                         }
                     }
+
                 foreach (var file in updFiles)
                     try
                     {
-                        File.Move(file, file.Replace(updDir, EnvironmentEx.GetVariableValue("CurDir")));
+                        File.Move(file, file.Replace(updDir, PathEx.LocalDir));
                     }
                     catch (Exception ex)
                     {
                         Log.Write(ex);
                     }
+
                 if (Directory.Exists(updDir))
                     Directory.Delete(updDir, true);
-                e.Result = "Updated";
+
+                var exePath = PathEx.Combine(Resources.AppPath);
+                if (File.Exists(exePath))
+                    File.SetLastWriteTime(exePath, DateTime.Now);
+
+                e.Result = true;
             }
             catch (Exception ex)
             {
-                e.Result = "UpdateFailed";
                 Log.Write(ex);
+                e.Result = false;
             }
         }
 
         private void ExtractDownload_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            Opacity = 0;
-            ShowInTaskbar = false;
-            ShowInfoBox(e.Result.ToString(), MessageBoxButtons.OK);
+            WindowState = FormWindowState.Minimized;
+            TaskBar.Progress.SetState(Handle, TaskBar.Progress.Flags.Indeterminate);
+            if (!_silent)
+                switch (e.Result as bool?)
+                {
+                    case true:
+                        MessageBoxEx.Show(Resources.Msg_Hint_02, Resources.WindowTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        break;
+                    default:
+                        MessageBoxEx.Show(Resources.Msg_Warn_02, Resources.WindowTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        break;
+                }
             Application.Exit();
         }
 
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-            if (File.Exists(_setupPath))
-                ProcessEx.Send($"PING 127.0.0.1 -n 5 && DEL /F /Q \"{_setupPath}\" &&  && RD /S /Q \"{Path.GetDirectoryName(UnRarExe)}\"");
+            Ini.Write("History", "LastCheck", DateTime.Now);
+            Ini.WriteAll();
+            ProcessEx.SendHelper.WaitThenDelete(_tmpDir, 5, Elevation.IsAdministrator);
+            ProcessEx.SendHelper.WaitThenDelete(_transfer.FilePath, 5, Elevation.IsAdministrator);
         }
     }
 }
