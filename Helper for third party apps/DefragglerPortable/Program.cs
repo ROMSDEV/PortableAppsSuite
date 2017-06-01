@@ -25,7 +25,7 @@ namespace DefragglerPortable
 
                 var appPath = Path.Combine(appDir, "Defraggler.exe");
                 var updaterPath = Path.Combine(appDir, "DefragglerUpdater.exe");
-                if (!File.Exists(appPath) || ProcessEx.InstancesCount("Defraggler") > 0 || !File.Exists(updaterPath) || ProcessEx.InstancesCount("DefragglerUpdater") > 0)
+                if (ProcessEx.InstancesCount(Path.GetFileNameWithoutExtension(appPath)) > 0 || !File.Exists(updaterPath) || ProcessEx.InstancesCount(Path.GetFileNameWithoutExtension(updaterPath)) > 0)
                     return;
 
                 CleanUpOld();
@@ -41,13 +41,15 @@ namespace DefragglerPortable
                         PathEx.Combine(dataDir, "statistics.bin")
                     }
                 };
+
+                Helper.ApplicationStart(updaterPath, "/silent", null);
+
                 Helper.FileForwarding(Helper.Options.Start, fileMap);
 
                 var portableDat = Path.Combine(appDir, "portable.dat");
                 if (!File.Exists(portableDat))
                     File.WriteAllText(portableDat, @"#PORTABLE#");
 
-                Helper.ApplicationStart(updaterPath, "/silent", false);
                 Helper.ApplicationStart(appPath, EnvironmentEx.CommandLine(false), false);
 
                 Helper.FileForwarding(Helper.Options.Exit, fileMap);
