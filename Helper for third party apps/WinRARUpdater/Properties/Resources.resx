@@ -191,9 +191,13 @@ sildev.csharplib64.dll
 rarreg.key
 winrar.ini
 winrarupdater64.exe
+winrarupdater64.exe.config
 winrarupdater64.ini
+winrarupdater64.pdb
 winrarupdater.exe
-winrarupdater.ini</value>
+winrarupdater.exe.config
+winrarupdater.ini
+winrarupdater.pdb</value>
   </data>
   <data name="WindowTitle" xml:space="preserve">
     <value>WinRAR Updater</value>

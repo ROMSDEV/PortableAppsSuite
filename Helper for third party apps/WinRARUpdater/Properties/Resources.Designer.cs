@@ -268,9 +268,13 @@ namespace AppUpdater.Properties {
         ///rarreg.key
         ///winrar.ini
         ///winrarupdater64.exe
+        ///winrarupdater64.exe.config
         ///winrarupdater64.ini
+        ///winrarupdater64.pdb
         ///winrarupdater.exe
-        ///winrarupdater.ini.
+        ///winrarupdater.exe.config
+        ///winrarupdater.ini
+        ///winrarupdater.pdb.
         /// </summary>
         internal static string WhiteList {
             get {
