@@ -19,6 +19,12 @@ namespace WinRARPortable
             Log.AllowLogging();
 
 #if x86
+            var curPath64 = PathEx.Combine(PathEx.LocalDir, "WinRAR64Portable.exe");
+            if (Environment.Is64BitOperatingSystem && File.Exists(curPath64))
+            {
+                ProcessEx.Start(curPath64, EnvironmentEx.CommandLine(false));
+                return;
+            }
             var appDir = PathEx.Combine(PathEx.LocalDir, "App\\winrar");
             var updPath = PathEx.Combine(appDir, "WinRARUpdater.exe");
 #else
@@ -70,10 +76,11 @@ namespace WinRARPortable
                     }
                 };
 
+                Helper.ApplicationStart(updPath, "/archlock /silent", null);
+
                 Helper.DirectoryForwarding(Helper.Options.Start, dirMap);
                 Helper.FileForwarding(Helper.Options.Start, fileMap, entries);
 
-                Helper.ApplicationStart(updPath, "/archlock /silent", false);
                 Helper.ApplicationStart(appPath, EnvironmentEx.CommandLine(false), false);
 
                 Helper.DirectoryForwarding(Helper.Options.Exit, dirMap);
