@@ -3,9 +3,7 @@ namespace VLCPortable
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
-#if x86
     using System.IO;
-#endif
     using System.Threading;
     using Portable;
     using SilDev;
@@ -23,18 +21,30 @@ namespace VLCPortable
                 ProcessEx.Start(curPath64, EnvironmentEx.CommandLine());
                 return;
             }
-            var appPath = PathEx.Combine("%CurDir%\\App\\vlc\\vlc.exe");
+            var appDir = PathEx.Combine(PathEx.LocalDir, "App\\vlc");
+            var updaterPath = PathEx.Combine(appDir, "VLCUpdater.exe");
 #else
-            var appPath = PathEx.Combine("%CurDir%\\App\\vlc64\\vlc.exe");
+            var appDir = PathEx.Combine(PathEx.LocalDir, "App\\vlc64");
+            var updaterPath = PathEx.Combine(appDir, "VLCUpdater64.exe");
 #endif
+
+            if (!File.Exists(updaterPath) || ProcessEx.InstancesCount(Path.GetFileNameWithoutExtension(updaterPath)) > 0)
+                return;
+
             bool newInstance;
             using (new Mutex(true, Process.GetCurrentProcess().ProcessName, out newInstance))
             {
+                var appPath = PathEx.Combine(appDir, "vlc.exe");
+
                 if (!newInstance)
                 {
                     ProcessEx.Start(appPath, EnvironmentEx.CommandLine());
                     return;
                 }
+
+                if (ProcessEx.InstancesCount(Path.GetFileNameWithoutExtension(appPath)) > 0)
+                    return;
+
                 var dirMap = new Dictionary<string, string>
                 {
                     {
@@ -42,8 +52,13 @@ namespace VLCPortable
                         "%CurDir%\\Data"
                     }
                 };
+
+                Helper.ApplicationStart(updaterPath, "/silent", null);
+
                 Helper.DirectoryForwarding(Helper.Options.Start, dirMap);
+
                 Helper.ApplicationStart(appPath, $"{EnvironmentEx.CommandLine()} --no-plugins-cache");
+
                 Helper.DirectoryForwarding(Helper.Options.Exit, dirMap);
             }
         }
