@@ -77,6 +77,8 @@ namespace AppUpdater
                     foreach (var ent in archive.Entries)
                     {
                         var entPath = PathEx.Combine(PathEx.LocalDir, ent.FullName);
+                        if (!Path.HasExtension(entPath))
+                            continue;
                         if (File.Exists(entPath))
                             File.Delete(entPath);
                         var entDir = Path.GetDirectoryName(entPath);
