@@ -21,21 +21,21 @@ namespace AIDA64Portable
                         return;
                     var regBackup = false;
                     const string regKey = "HKEY_CURRENT_USER\\Software\\FinalWire";
-                    if (Reg.SubKeyExist(regKey))
-                        if (string.IsNullOrWhiteSpace(Reg.ReadStringValue(regKey, "Portable App")))
+                    if (Reg.SubKeyExists(regKey))
+                        if (string.IsNullOrWhiteSpace(Reg.ReadString(regKey, "Portable App")))
                         {
-                            Reg.MoveSubKey(regKey, "Software\\SI13N7-BACKUP: FinalWire");
+                            Reg.MoveSubKey(regKey, "HKEY_CURRENT_USER\\Software\\SI13N7-BACKUP: FinalWire");
                             regBackup = true;
                         }
                     Reg.ImportFile(PathEx.Combine("%CurDir%\\settings.reg"));
-                    Reg.WriteValue(regKey, "Portable App", "True");
+                    Reg.Write(regKey, "Portable App", "True");
                     using (var p = ProcessEx.Start(appPath, true, false))
                         if (!p?.HasExited == true)
                             p?.WaitForExit();
                     Reg.ExportKeys(PathEx.Combine("%CurDir%\\settings.reg"), regKey);
-                    Reg.RemoveExistSubKey(Reg.RegKey.CurrentUser, "Software\\FinalWire");
+                    Reg.RemoveSubKey("HKEY_CURRENT_USER\\Software\\FinalWire");
                     if (regBackup)
-                        Reg.MoveSubKey("HKEY_CURRENT_USER\\Software\\SI13N7-BACKUP: FinalWire", "Software\\FinalWire");
+                        Reg.MoveSubKey("HKEY_CURRENT_USER\\Software\\SI13N7-BACKUP: FinalWire", "HKEY_CURRENT_USER\\Software\\FinalWire");
                 }
         }
     }

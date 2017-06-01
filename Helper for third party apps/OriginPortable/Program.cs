@@ -86,97 +86,97 @@ namespace OriginPortable
                 };
 
                 for (var i = 0; i < defKeys.Length; i++)
-                    if (!Reg.ValueExist(defKeys[i], "Portable App"))
-                        Reg.MoveSubKey(defKeys[i], bakKeys[i].Substring(5));
+                    if (!Reg.EntryExists(defKeys[i], "Portable App"))
+                        Reg.MoveSubKey(defKeys[i], bakKeys[i]);
 
                 var regPath = Path.Combine(dataDir, "settings.reg");
                 if (!File.Exists(regPath))
                 {
-                    Reg.WriteValue(@"HKCU\Software\EA Games", "Portable App", "True");
-                    Reg.WriteValue(@"HKCU\Software\Electronic Arts", "Portable App", "True");
+                    Reg.Write(@"HKCU\Software\EA Games", "Portable App", "True");
+                    Reg.Write(@"HKCU\Software\Electronic Arts", "Portable App", "True");
 
-                    Reg.WriteValue(@"HKLM\SOFTWARE\EA Games", "Portable App", "True");
-                    Reg.WriteValue(@"HKLM\SOFTWARE\Electronic Arts", "Portable App", "True");
-                    Reg.WriteValue(@"HKLM\SOFTWARE\Origin", "Portable App", "True");
-                    Reg.WriteValue(@"HKLM\SOFTWARE\Origin Games", "Portable App", "True");
+                    Reg.Write(@"HKLM\SOFTWARE\EA Games", "Portable App", "True");
+                    Reg.Write(@"HKLM\SOFTWARE\Electronic Arts", "Portable App", "True");
+                    Reg.Write(@"HKLM\SOFTWARE\Origin", "Portable App", "True");
+                    Reg.Write(@"HKLM\SOFTWARE\Origin Games", "Portable App", "True");
 #if x86
-                    Reg.WriteValue(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "Portable App", "True");
+                    Reg.Write(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "Portable App", "True");
 
-                    Reg.WriteValue(@"HKLM\SOFTWARE\Electronic Arts\EA Core", "ClientVersion", "7.0.0.1");
-                    Reg.WriteValue(@"HKLM\SOFTWARE\Electronic Arts\EA Core", "EADM6Version", "7.0.0.1");
-                    Reg.WriteValue(@"HKLM\SOFTWARE\Electronic Arts\EADM", "ClientVersion", "9.5.20.5318");
-                    Reg.WriteValue(@"HKLM\SOFTWARE\Origin", "AutopatchGlobal", "false");
-                    Reg.WriteValue(@"HKLM\SOFTWARE\Origin", "Autoupdate", "false");
-                    Reg.WriteValue(@"HKLM\SOFTWARE\Origin", "InstallSuccesfull", "true");
-                    Reg.WriteValue(@"HKLM\SOFTWARE\Origin", "IsBeta", "false");
-                    Reg.WriteValue(@"HKLM\SOFTWARE\Origin", "Launch", "21375453");
-                    Reg.WriteValue(@"HKLM\SOFTWARE\Origin", "ShowDirPage", "true");
-                    Reg.WriteValue(@"HKLM\SOFTWARE\Origin", "TelemOO", "false");
+                    Reg.Write(@"HKLM\SOFTWARE\Electronic Arts\EA Core", "ClientVersion", "7.0.0.1");
+                    Reg.Write(@"HKLM\SOFTWARE\Electronic Arts\EA Core", "EADM6Version", "7.0.0.1");
+                    Reg.Write(@"HKLM\SOFTWARE\Electronic Arts\EADM", "ClientVersion", "9.5.20.5318");
+                    Reg.Write(@"HKLM\SOFTWARE\Origin", "AutopatchGlobal", "false");
+                    Reg.Write(@"HKLM\SOFTWARE\Origin", "Autoupdate", "false");
+                    Reg.Write(@"HKLM\SOFTWARE\Origin", "InstallSuccesfull", "true");
+                    Reg.Write(@"HKLM\SOFTWARE\Origin", "IsBeta", "false");
+                    Reg.Write(@"HKLM\SOFTWARE\Origin", "Launch", "21375453");
+                    Reg.Write(@"HKLM\SOFTWARE\Origin", "ShowDirPage", "true");
+                    Reg.Write(@"HKLM\SOFTWARE\Origin", "TelemOO", "false");
 
-                    Reg.WriteValue(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "DisplayName", "Origin");
-                    Reg.WriteValue(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "Publisher", "Electronic Arts, Inc.");
-                    Reg.WriteValue(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "DisplayName", "9.5.20.5318");
-                    Reg.WriteValue(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "URLInfoAbout", "http://www.ea.com");
-                    Reg.WriteValue(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "NoModify", 1);
-                    Reg.WriteValue(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "NoRepair", 1);
+                    Reg.Write(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "DisplayName", "Origin");
+                    Reg.Write(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "Publisher", "Electronic Arts, Inc.");
+                    Reg.Write(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "DisplayName", "9.5.20.5318");
+                    Reg.Write(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "URLInfoAbout", "http://www.ea.com");
+                    Reg.Write(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "NoModify", 1);
+                    Reg.Write(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "NoRepair", 1);
 #else
-                    Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "Portable App", "True");
+                    Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "Portable App", "True");
 
-                    Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\EA Games", "Portable App", "True");
-                    Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Electronic Arts", "Portable App", "True");
-                    Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Origin", "Portable App", "True");
-                    Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Origin Games", "Portable App", "True");
+                    Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\EA Games", "Portable App", "True");
+                    Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Electronic Arts", "Portable App", "True");
+                    Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Origin", "Portable App", "True");
+                    Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Origin Games", "Portable App", "True");
 
-                    Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Electronic Arts\EA Core", "ClientVersion", "7.0.0.1");
-                    Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Electronic Arts\EA Core", "EADM6Version", "7.0.0.1");
-                    Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Electronic Arts\EADM", "ClientVersion", "9.5.20.5318");
-                    Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Origin", "AutopatchGlobal", "false");
-                    Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Origin", "Autoupdate", "false");
-                    Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Origin", "InstallSuccesfull", "true");
-                    Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Origin", "IsBeta", "false");
-                    Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Origin", "Launch", "21375453");
-                    Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Origin", "ShowDirPage", "true");
-                    Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Origin", "TelemOO", "false");
+                    Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Electronic Arts\EA Core", "ClientVersion", "7.0.0.1");
+                    Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Electronic Arts\EA Core", "EADM6Version", "7.0.0.1");
+                    Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Electronic Arts\EADM", "ClientVersion", "9.5.20.5318");
+                    Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Origin", "AutopatchGlobal", "false");
+                    Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Origin", "Autoupdate", "false");
+                    Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Origin", "InstallSuccesfull", "true");
+                    Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Origin", "IsBeta", "false");
+                    Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Origin", "Launch", "21375453");
+                    Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Origin", "ShowDirPage", "true");
+                    Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Origin", "TelemOO", "false");
 
-                    Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "DisplayName", "Origin");
-                    Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "Publisher", "Electronic Arts, Inc.");
-                    Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "DisplayName", "9.5.20.5318");
-                    Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "URLInfoAbout", "http://www.ea.com");
-                    Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "NoModify", 1);
-                    Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "NoRepair", 1);
+                    Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "DisplayName", "Origin");
+                    Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "Publisher", "Electronic Arts, Inc.");
+                    Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "DisplayName", "9.5.20.5318");
+                    Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "URLInfoAbout", "http://www.ea.com");
+                    Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "NoModify", 1);
+                    Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "NoRepair", 1);
 #endif
                     using (var p = ProcessEx.Start(StartInfoHelper(appPath, "/Register"), false))
                         if (!p?.HasExited == true)
                             p?.WaitForExit();
 
-                    Reg.WriteValue(@"HKCR\origin", "Portable App", "True");
-                    Reg.WriteValue(@"HKCR\origin2", "Portable App", "True");
+                    Reg.Write(@"HKCR\origin", "Portable App", "True");
+                    Reg.Write(@"HKCR\origin2", "Portable App", "True");
                 }
                 else
                     Reg.ImportFile(regPath, true);
 
-                Reg.WriteValue(@"HKEY_CLASSES_ROOT\origin\shell\open\command", null, $"\"{appPath}\" \"%1\"");
-                Reg.WriteValue(@"HKEY_CLASSES_ROOT\origin2\shell\open\command", null, $"\"{appPath}\" \"%1\"");
+                Reg.Write(@"HKEY_CLASSES_ROOT\origin\shell\open\command", null, $"\"{appPath}\" \"%1\"");
+                Reg.Write(@"HKEY_CLASSES_ROOT\origin2\shell\open\command", null, $"\"{appPath}\" \"%1\"");
 #if !x86
-                Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Electronic Arts\EA Core", "ClientAccessDLLPath", Path.Combine(appDir, @"LegacyPM\CmdPortalClient.dll"));
-                Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Electronic Arts\EA Core", "ClientPath", Path.Combine(appDir, @"LegacyPM\OriginLegacyCLI.dll"));
-                Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Electronic Arts\EA Core", "EADM6InstallDir", appDir);
-                Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Electronic Arts\EADM", "ClientPath", Path.Combine(appDir, @"Origin.exe"));
-                Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Origin", "ClientPath", Path.Combine(appDir, @"Origin.exe"));
+                Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Electronic Arts\EA Core", "ClientAccessDLLPath", Path.Combine(appDir, @"LegacyPM\CmdPortalClient.dll"));
+                Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Electronic Arts\EA Core", "ClientPath", Path.Combine(appDir, @"LegacyPM\OriginLegacyCLI.dll"));
+                Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Electronic Arts\EA Core", "EADM6InstallDir", appDir);
+                Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Electronic Arts\EADM", "ClientPath", Path.Combine(appDir, @"Origin.exe"));
+                Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Origin", "ClientPath", Path.Combine(appDir, @"Origin.exe"));
 
-                Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "UninstallString", Path.Combine(appDir, "OriginUninstall.exe"));
-                Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "InstallLocation", appDir);
-                Reg.WriteValue(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "DisplayIcon", Path.Combine(appDir, "OriginUninstall.exe"));
+                Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "UninstallString", Path.Combine(appDir, "OriginUninstall.exe"));
+                Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "InstallLocation", appDir);
+                Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "DisplayIcon", Path.Combine(appDir, "OriginUninstall.exe"));
 #else
-                Reg.WriteValue(@"HKLM\SOFTWARE\Electronic Arts\EA Core", "ClientAccessDLLPath", Path.Combine(appDir, @"LegacyPM\CmdPortalClient.dll"));
-                Reg.WriteValue(@"HKLM\SOFTWARE\Electronic Arts\EA Core", "ClientPath", Path.Combine(appDir, @"LegacyPM\OriginLegacyCLI.dll"));
-                Reg.WriteValue(@"HKLM\SOFTWARE\Electronic Arts\EA Core", "EADM6InstallDir", appDir);
-                Reg.WriteValue(@"HKLM\SOFTWARE\Electronic Arts\EADM", "ClientPath", Path.Combine(appDir, @"Origin.exe"));
-                Reg.WriteValue(@"HKLM\SOFTWARE\Origin", "ClientPath", Path.Combine(appDir, @"Origin.exe"));
+                Reg.Write(@"HKLM\SOFTWARE\Electronic Arts\EA Core", "ClientAccessDLLPath", Path.Combine(appDir, @"LegacyPM\CmdPortalClient.dll"));
+                Reg.Write(@"HKLM\SOFTWARE\Electronic Arts\EA Core", "ClientPath", Path.Combine(appDir, @"LegacyPM\OriginLegacyCLI.dll"));
+                Reg.Write(@"HKLM\SOFTWARE\Electronic Arts\EA Core", "EADM6InstallDir", appDir);
+                Reg.Write(@"HKLM\SOFTWARE\Electronic Arts\EADM", "ClientPath", Path.Combine(appDir, @"Origin.exe"));
+                Reg.Write(@"HKLM\SOFTWARE\Origin", "ClientPath", Path.Combine(appDir, @"Origin.exe"));
 
-                Reg.WriteValue(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "UninstallString", Path.Combine(appDir, "OriginUninstall.exe"));
-                Reg.WriteValue(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "InstallLocation", appDir);
-                Reg.WriteValue(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "DisplayIcon", Path.Combine(appDir, "OriginUninstall.exe"));
+                Reg.Write(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "UninstallString", Path.Combine(appDir, "OriginUninstall.exe"));
+                Reg.Write(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "InstallLocation", appDir);
+                Reg.Write(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "DisplayIcon", Path.Combine(appDir, "OriginUninstall.exe"));
 #endif
                 ProcessEx.Start(StartInfoHelper(appPath, EnvironmentEx.CommandLine(false)));
                 for (var i = 0; i < 10; i++)
@@ -189,9 +189,9 @@ namespace OriginPortable
 
                 Reg.ExportKeys(regPath, defKeys);
                 foreach (var key in defKeys)
-                    Reg.RemoveExistSubKey(key);
+                    Reg.RemoveSubKey(key);
                 for (var i = 0; i < bakKeys.Length; i++)
-                    Reg.MoveSubKey(bakKeys[i], defKeys[i].Substring(5));
+                    Reg.MoveSubKey(bakKeys[i], defKeys[i]);
 
                 Data.DirUnLink(@"%SystemDrive%\temp", true);
                 Data.DirUnLink(@"%CommonProgramFiles(x86)%\EAInstaller", true);

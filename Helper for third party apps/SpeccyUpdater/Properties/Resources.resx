@@ -143,12 +143,9 @@
     <value>Speccy successfully updated.</value>
   </data>
   <data name="Msg_Warn_00" xml:space="preserve">
-    <value>Speccy not found.</value>
-  </data>
-  <data name="Msg_Warn_01" xml:space="preserve">
     <value>Speccy must be closed.</value>
   </data>
-  <data name="Msg_Warn_02" xml:space="preserve">
+  <data name="Msg_Warn_01" xml:space="preserve">
     <value>Speccy update failed.</value>
   </data>
   <data name="UpdateUrl" xml:space="preserve">

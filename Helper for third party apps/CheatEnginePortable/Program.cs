@@ -41,8 +41,8 @@ namespace CheatEnginePortable
                     }
                     if (File.Exists(dataSettings))
                         Ini.Write("HKEY_CURRENT_USER\\Software\\Cheat Engine", "\"Initial tables dir\"", $"\"{dataTables.Replace("\\", "\\\\")}\"", dataSettings);
-                    if (!Reg.ValueExist("HKEY_CURRENT_USER\\Software\\Cheat Engine", "Portable App"))
-                        Reg.MoveSubKey("HKEY_CURRENT_USER\\Software\\Cheat Engine", "Software\\SI13N7-BACKUP: Cheat Engine");
+                    if (!Reg.EntryExists("HKEY_CURRENT_USER\\Software\\Cheat Engine", "Portable App"))
+                        Reg.MoveSubKey("HKEY_CURRENT_USER\\Software\\Cheat Engine", "HKEY_CURRENT_USER\\Software\\SI13N7-BACKUP: Cheat Engine");
                     Reg.ImportFile(dataSettings);
                     using (var p = ProcessEx.Start(appPath, true, false))
                         if (!p?.HasExited == true)
@@ -59,8 +59,8 @@ namespace CheatEnginePortable
                     if (Directory.Exists(userTables))
                         Directory.Delete(userTables, true);
                     Reg.ExportKeys(dataSettings, "HKEY_CURRENT_USER\\Software\\Cheat Engine");
-                    Reg.RemoveExistSubKey(Reg.RegKey.CurrentUser, "Software\\Cheat Engine");
-                    Reg.MoveSubKey("HKEY_CURRENT_USER\\Software\\SI13N7-BACKUP: Cheat Engine", "Software\\Cheat Engine");
+                    Reg.RemoveSubKey("HKEY_CURRENT_USER\\Software\\Cheat Engine");
+                    Reg.MoveSubKey("HKEY_CURRENT_USER\\Software\\SI13N7-BACKUP: Cheat Engine", "HKEY_CURRENT_USER\\Software\\Cheat Engine");
                 }
                 else
                     ProcessEx.Start(appPath, true);

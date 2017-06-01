@@ -14,28 +14,45 @@ namespace Cinebench64Portable // CINEBENCH_R15
             Log.AllowLogging();
             bool newInstance;
             using (new Mutex(true, Process.GetCurrentProcess().ProcessName, out newInstance))
-                if (newInstance)
+            {
+                if (!newInstance)
+                    return;
+
+                var appDir = PathEx.Combine("%CurDir%\\App\\cinebench64");
+                var appPath = PathEx.Combine(appDir, "CINEBENCH Windows 64 Bit.exe");
+
+                if (!File.Exists(appPath) || Process.GetProcessesByName(Path.GetFileNameWithoutExtension(appPath)).Length > 0)
+                    return;
+
+                var dataDirMap = new[,]
                 {
-                    var appPath = PathEx.Combine("%CurDir%\\App\\cinebench64\\CINEBENCH Windows 64 Bit.exe");
-                    using (var p = ProcessEx.Start(appPath, true, false))
-                        if (!p?.HasExited == true)
-                            p?.WaitForExit();
-                    while (Process.GetProcessesByName("CINEBENCH Windows 64 Bit").Length > 0)
-                        foreach (var app in Process.GetProcessesByName("CINEBENCH Windows 64 Bit"))
-                            app.WaitForExit();
-                    try
                     {
-                        var cachePath = PathEx.Combine("%AppData%\\MAXON");
-                        foreach (var dir in Directory.GetDirectories(cachePath, "cinebench64_*", SearchOption.TopDirectoryOnly))
-                            Directory.Delete(dir, true);
-                        if (Directory.GetFiles(cachePath, "*", SearchOption.AllDirectories).Length == 0)
-                            Directory.Delete(cachePath, true);
+                        PathEx.Combine("%AppData%\\MAXON"),
+                        PathEx.Combine("%CurDir%\\Data")
                     }
-                    catch (Exception ex)
-                    {
-                        Log.Write(ex);
-                    }
+                };
+                for (var i = 0; i < dataDirMap.GetLength(0); i++)
+                {
+                    if (!Directory.Exists(dataDirMap[i, 1]))
+                        Directory.CreateDirectory(dataDirMap[i, 1]);
+                    Data.DirLink(dataDirMap[i, 0], dataDirMap[i, 1], true);
                 }
+
+                using (var p = ProcessEx.Start(appPath, true, false))
+                    if (!p?.HasExited == true)
+                        p?.WaitForExit();
+
+                bool isRunning;
+                do
+                {
+                    isRunning = ProcessEx.IsRunning(appPath);
+                    Thread.Sleep(200);
+                }
+                while (isRunning);
+
+                for (var i = 0; i < dataDirMap.GetLength(0); i++)
+                    Data.DirUnLink(dataDirMap[i, 0], true);
+            }
         }
     }
 }

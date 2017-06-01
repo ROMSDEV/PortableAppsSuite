@@ -137,12 +137,9 @@
     <value>Resource Hacker successfully updated.</value>
   </data>
   <data name="Msg_Warn_00" xml:space="preserve">
-    <value>Resource Hacker not found.</value>
-  </data>
-  <data name="Msg_Warn_01" xml:space="preserve">
     <value>Resource Hacker must be closed.</value>
   </data>
-  <data name="Msg_Warn_02" xml:space="preserve">
+  <data name="Msg_Warn_01" xml:space="preserve">
     <value>Resource Hacker update failed.</value>
   </data>
   <data name="UpdateUrl" xml:space="preserve">

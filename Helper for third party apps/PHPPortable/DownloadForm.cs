@@ -44,7 +44,7 @@ namespace RunPHP
                 var source = NetEx.Transfer.DownloadString("http://windows.php.net/downloads/releases/sha1sum.txt");
                 if (string.IsNullOrWhiteSpace(source))
                 {
-                    MsgBoxEx.Show("Sorry, no connection available.", "No Connection Available", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBoxEx.Show("Sorry, no connection available.", "No Connection Available", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     Application.Exit();
                     return;
                 }
@@ -106,7 +106,7 @@ namespace RunPHP
         {
             if (e.Cancelled)
                 return;
-            MsgBoxEx.Show(this, !_transfer.HasCanceled ? "Operation completed!" : "Operation failed!", "Info", MessageBoxButtons.OK, MessageBoxIcon.None);
+            MessageBoxEx.Show(this, !_transfer.HasCanceled ? "Operation completed!" : "Operation failed!", "Info", MessageBoxButtons.OK, MessageBoxIcon.None);
             Close();
         }
     }

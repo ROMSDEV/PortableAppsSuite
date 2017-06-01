@@ -144,7 +144,7 @@ namespace AppUpdater.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Defraggler not found..
+        ///   Looks up a localized string similar to Defraggler must be closed..
         /// </summary>
         internal static string Msg_Warn_00 {
             get {
@@ -153,20 +153,11 @@ namespace AppUpdater.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Defraggler must be closed..
+        ///   Looks up a localized string similar to Defraggler update failed..
         /// </summary>
         internal static string Msg_Warn_01 {
             get {
                 return ResourceManager.GetString("Msg_Warn_01", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Defraggler update failed..
-        /// </summary>
-        internal static string Msg_Warn_02 {
-            get {
-                return ResourceManager.GetString("Msg_Warn_02", resourceCulture);
             }
         }
         

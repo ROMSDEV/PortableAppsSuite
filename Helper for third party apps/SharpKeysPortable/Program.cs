@@ -3,7 +3,9 @@ namespace SharpKeysPortable
     using System;
     using System.Diagnostics;
     using System.IO;
+    using System.Linq;
     using System.Threading;
+    using Microsoft.Win32;
     using SilDev;
 
     internal static class Program
@@ -16,19 +18,16 @@ namespace SharpKeysPortable
             {
                 if (!newInstance)
                     return;
-                Ini.File($"%CurDir%\\{Path.GetFileNameWithoutExtension(PathEx.LocalPath)}.ini");
-                if (Ini.ReadBoolean("Settings", "ShowWarning"))
-                {
-                    Reg.CreateNewSubKey(Reg.RegKey.CurrentUser, "Software\\RandyRants\\SharpKeys");
-                    Reg.WriteValue(Reg.RegKey.CurrentUser, "Software\\RandyRants\\SharpKeys", "ShowWarning", "1", Reg.RegValueKind.DWord);
-                }
+                Ini.SetFile(Path.ChangeExtension(PathEx.LocalPath, ".ini"));
+                if (Ini.Read("Settings", "ShowWarning", false))
+                    Reg.Write("HKCU\\Software\\RandyRants\\SharpKeys", "ShowWarning", 1, RegistryValueKind.DWord);
                 using (var p = ProcessEx.Start("%CurDir%\\SharpKeys\\SharpKeys.exe", true, false))
                     if (!p?.HasExited == true)
                         p?.WaitForExit();
                 Ini.Write("Settings", "ShowWarning", true);
-                Reg.RemoveExistSubKey(Reg.RegKey.CurrentUser, "Software\\RandyRants\\SharpKeys");
-                if (Reg.GetSubKeys(Reg.RegKey.CurrentUser, "Software\\RandyRants").Count <= 0)
-                    Reg.RemoveExistSubKey(Reg.RegKey.CurrentUser, "Software\\RandyRants");
+                Reg.RemoveSubKey("HKCU\\Software\\RandyRants\\SharpKeys");
+                if (Reg.GetSubKeys("HKCU\\Software\\RandyRants").Any())
+                    Reg.RemoveSubKey("HKCU\\Software\\RandyRants");
             }
         }
     }

@@ -54,9 +54,9 @@ namespace TeamViewerPortable
                     Ini.Write("Settings", "importsettings", 1, iniPath);
 
                     var tvIniPath = Path.Combine(rootDir, "tv.ini");
-                    Ini.File($"%CurDir%\\{Path.GetFileNameWithoutExtension(PathEx.LocalPath)}.ini");
+                    Ini.SetFile(Path.ChangeExtension(PathEx.LocalPath, ".ini"));
                     var curVer = Assembly.GetExecutingAssembly().GetName().Version;
-                    var lastVer = Ini.ReadVersion("History", "LastVersion");
+                    var lastVer = Ini.Read("History", "LastVersion", Version.Parse("0.0.0.0"));
                     if (!File.Exists(tvIniPath) || curVer != lastVer)
                         try
                         {
@@ -72,9 +72,9 @@ namespace TeamViewerPortable
 
                     const string defKey = "SOFTWARE\\TeamViewer";
                     const string bakKey = "SOFTWARE\\SI13N7-BACKUP: TeamViewer";
-                    if (!Reg.ValueExist($"HKLM\\{defKey}", "Portable App"))
+                    if (!Reg.EntryExists($"HKLM\\{defKey}", "Portable App"))
                         Reg.MoveSubKey($"HKLM\\{defKey}", bakKey);
-                    Reg.WriteValue($"HKLM\\{defKey}", "Portable App", "True");
+                    Reg.EntryExists($"HKLM\\{defKey}", "Portable App", "True");
 
                     var defLogDir = PathEx.Combine("%AppData%\\TeamViewer");
                     Data.DirLink(defLogDir, rootDir, true);
@@ -107,7 +107,7 @@ namespace TeamViewerPortable
                         }
                     }
 
-                    Reg.RemoveExistSubKey($"HKLM\\{defKey}");
+                    Reg.RemoveSubKey($"HKLM\\{defKey}");
                     Reg.MoveSubKey($"HKLM\\{bakKey}", defKey);
 
                     Data.DirUnLink(defLogDir, true);

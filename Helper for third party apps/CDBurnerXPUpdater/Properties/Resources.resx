@@ -146,12 +146,9 @@
     <value>CDBurnerXP update canceled.</value>
   </data>
   <data name="Msg_Warn_00" xml:space="preserve">
-    <value>CDBurnerXP not found.</value>
-  </data>
-  <data name="Msg_Warn_01" xml:space="preserve">
     <value>CDBurnerXP must be closed.</value>
   </data>
-  <data name="Msg_Warn_02" xml:space="preserve">
+  <data name="Msg_Warn_01" xml:space="preserve">
     <value>CDBurnerXP update failed.</value>
   </data>
   <data name="RegexFileNamePattern" xml:space="preserve">

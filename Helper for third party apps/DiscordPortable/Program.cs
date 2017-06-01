@@ -34,10 +34,10 @@
                     goto ClearRegistry;
 
                 for (var i = 0; i < defaultKeys.Length; i++)
-                    if (!Reg.ValueExist(defaultKeys[i], "Portable App"))
-                        Reg.MoveSubKey(defaultKeys[i], backupKeys[i].Substring(5));
+                    if (!Reg.EntryExists(defaultKeys[i], "Portable App"))
+                        Reg.MoveSubKey(defaultKeys[i], backupKeys[i]);
 
-                if (!Elevation.IsAdministrator && defaultKeys.Any(Reg.SubKeyExist))
+                if (!Elevation.IsAdministrator && defaultKeys.Any(Reg.SubKeyExists))
                 {
                     Elevation.RestartAsAdministrator();
                     return;
@@ -81,25 +81,25 @@
                         }
                         Thread.Sleep(200);
                     }
-                    Thread.Sleep(300);
+                    Thread.Sleep(250);
                 }
 
                 Data.DirUnLink(defAppDir, true);
                 Data.DirUnLink(defTmpDir, true);
                 Data.DirUnLink(defDataDir, true);
 
-                if (defaultKeys.Any(Reg.SubKeyExist))
+                if (defaultKeys.Any(Reg.SubKeyExists))
                     Reg.ExportKeys(regPath, defaultKeys);
 
                 ClearRegistry:
 
                 foreach (var key in defaultKeys)
-                    Reg.RemoveExistSubKey(key);
+                    Reg.RemoveSubKey(key);
 
                 for (var i = 0; i < backupKeys.Length; i++)
-                    Reg.MoveSubKey(backupKeys[i], defaultKeys[i].Substring(5));
+                    Reg.MoveSubKey(backupKeys[i], defaultKeys[i]);
 
-                if (!Elevation.IsAdministrator && defaultKeys.Any(Reg.SubKeyExist))
+                if (!Elevation.IsAdministrator && defaultKeys.Any(Reg.SubKeyExists))
                     Elevation.RestartAsAdministrator("{E429830E-A5A1-4FA0-9D5F-B21964F4698E}");
             }
         }

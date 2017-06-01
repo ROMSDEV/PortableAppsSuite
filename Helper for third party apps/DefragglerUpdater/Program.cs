@@ -1,12 +1,12 @@
 namespace AppUpdater
 {
     using System;
-    using System.Diagnostics;
     using System.IO;
     using System.Threading;
     using System.Windows.Forms;
     using Properties;
     using SilDev;
+    using SilDev.Forms;
 
     internal static class Program
     {
@@ -14,16 +14,12 @@ namespace AppUpdater
         private static void Main()
         {
             Log.AllowLogging();
-            var appPath = PathEx.Combine(Resources.AppPath);
-            if (!File.Exists(appPath))
+            MessageBoxEx.TopMost = true;
+            if (ProcessEx.InstancesCount(Resources.AppName) > 0 || ProcessEx.InstancesCount(Resources.AppName64) > 0)
             {
-                MessageBox.Show(Resources.Msg_Warn_00, Resources.WindowTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                Environment.Exit(1);
-            }
-            if (Process.GetProcessesByName(Resources.AppName).Length > 0 || Process.GetProcessesByName(Resources.AppName64).Length > 0)
-            {
-                MessageBox.Show(Resources.Msg_Warn_01, Resources.WindowTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                Environment.Exit(1);
+                MessageBoxEx.Show(Resources.Msg_Warn_00, Resources.WindowTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                Environment.ExitCode = 1;
+                Environment.Exit(Environment.ExitCode);
             }
             bool newInstance;
             using (new Mutex(true, ProcessEx.CurrentName, out newInstance))
@@ -33,7 +29,7 @@ namespace AppUpdater
                 if (!Elevation.WritableLocation())
                     Elevation.RestartAsAdministrator();
                 Ini.SetFile(Path.ChangeExtension(PathEx.LocalPath, ".ini"));
-                if ((DateTime.Now - Ini.Read("History", "LastCheck", DateTime.MinValue)).Days <= 0)
+                if ((DateTime.Now - Ini.Read("History", "LastCheck", DateTime.MinValue)).Days < 1)
                     return;
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);

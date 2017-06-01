@@ -143,12 +143,9 @@
     <value>Recuva successfully updated.</value>
   </data>
   <data name="Msg_Warn_00" xml:space="preserve">
-    <value>Recuva not found.</value>
-  </data>
-  <data name="Msg_Warn_01" xml:space="preserve">
     <value>Recuva must be closed.</value>
   </data>
-  <data name="Msg_Warn_02" xml:space="preserve">
+  <data name="Msg_Warn_01" xml:space="preserve">
     <value>Recuva update failed.</value>
   </data>
   <data name="UpdateUrl" xml:space="preserve">

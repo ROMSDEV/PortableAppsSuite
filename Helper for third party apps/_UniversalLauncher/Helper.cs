@@ -7,6 +7,7 @@
 #endif
     using System.IO;
     using System.Linq;
+    using System.Windows.Forms;
 #if ApplicationStart
     using System.Threading;
 #endif
@@ -190,7 +191,7 @@
                 catch (Exception ex)
                 {
                     Log.Write(ex);
-                    return;
+                    continue;
                 }
                 var backupPath = srcPath + ".SI13N7-BACKUP";
                 switch (option)
@@ -207,7 +208,7 @@
                             {
                                 Log.Write(ex);
                             }
-                            return;
+                            continue;
                         }
                         Data.SetAttributes(backupPath, FileAttributes.Normal);
                         if (Elevation.IsAdministrator && Data.FileUnLink(srcPath, true))
@@ -243,7 +244,7 @@
                             {
                                 Log.Write(ex);
                             }
-                            return;
+                            continue;
                         }
                         if (Elevation.IsAdministrator && Data.FileLink(srcPath, destPath, true))
                         {

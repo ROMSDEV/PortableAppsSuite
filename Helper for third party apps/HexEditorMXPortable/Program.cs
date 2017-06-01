@@ -21,8 +21,8 @@ namespace HexEditorMXPortable
                     if (!File.Exists(appPath) || Process.GetProcessesByName(Path.GetFileNameWithoutExtension(appPath)).Length > 0)
                         return;
 
-                    if (!Reg.ValueExist("HKEY_CURRENT_USER\\Software\\NEXT-Soft", "Portable App"))
-                        Reg.MoveSubKey("HKEY_CURRENT_USER\\Software\\NEXT-Soft", "Software\\SI13N7-BACKUP: NEXT-Soft");
+                    if (!Reg.EntryExists("HKEY_CURRENT_USER\\Software\\NEXT-Soft", "Portable App"))
+                        Reg.MoveSubKey("HKEY_CURRENT_USER\\Software\\NEXT-Soft", "HKEY_CURRENT_USER\\Software\\SI13N7-BACKUP: NEXT-Soft");
 
                     var settingsPath = PathEx.Combine("%CurDir%\\Data\\settings.reg");
                     var settingsDir = Path.GetDirectoryName(settingsPath);
@@ -36,7 +36,7 @@ namespace HexEditorMXPortable
                     if (File.Exists(settingsPath))
                         Reg.ImportFile(settingsPath);
 
-                    Reg.WriteValue("HKEY_CURRENT_USER\\Software\\NEXT-Soft", "Portable App", "True");
+                    Reg.Write("HKEY_CURRENT_USER\\Software\\NEXT-Soft", "Portable App", "True");
 
                     using (var p = ProcessEx.Start(appPath, EnvironmentEx.CommandLine(false), false, false))
                         if (!p?.HasExited == true)
@@ -55,8 +55,8 @@ namespace HexEditorMXPortable
                         File.Delete(oldSettingsPath);
 
                     Reg.ExportKeys(settingsPath, "HKEY_CURRENT_USER\\Software\\NEXT-Soft");
-                    Reg.RemoveExistSubKey("HKEY_CURRENT_USER\\Software\\NEXT-Soft");
-                    Reg.MoveSubKey("HKEY_CURRENT_USER\\Software\\SI13N7-BACKUP: NEXT-Soft", "Software\\NEXT-Soft");
+                    Reg.RemoveSubKey("HKEY_CURRENT_USER\\Software\\NEXT-Soft");
+                    Reg.MoveSubKey("HKEY_CURRENT_USER\\Software\\SI13N7-BACKUP: NEXT-Soft", "HKEY_CURRENT_USER\\Software\\NEXT-Soft");
                 }
                 else
                     ProcessEx.Start(appPath, EnvironmentEx.CommandLine(false));

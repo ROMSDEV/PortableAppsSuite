@@ -18,8 +18,9 @@ namespace AppUpdater
             MessageBoxEx.TopMost = true;
             if (Process.GetProcessesByName(Resources.AppName).Length > 0)
             {
-                MessageBoxEx.Show(Resources.Msg_Warn_01, Resources.WindowTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                Environment.Exit(1);
+                MessageBoxEx.Show(Resources.Msg_Warn_00, Resources.WindowTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                Environment.ExitCode = 1;
+                Environment.Exit(Environment.ExitCode);
             }
             bool newInstance;
             using (new Mutex(true, ProcessEx.CurrentName, out newInstance))
@@ -29,7 +30,7 @@ namespace AppUpdater
                 if (!Elevation.WritableLocation())
                     Elevation.RestartAsAdministrator();
                 Ini.SetFile(Path.ChangeExtension(PathEx.LocalPath, ".ini"));
-                if ((DateTime.Now - Ini.Read("History", "LastCheck", DateTime.MinValue)).Days < 7)
+                if ((DateTime.Now - Ini.Read("History", "LastCheck", DateTime.MinValue)).Days < 1)
                     return;
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);

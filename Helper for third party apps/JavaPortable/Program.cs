@@ -19,7 +19,8 @@ namespace JavaPortableLauncher
         private static void Main()
         {
             Log.AllowLogging();
-            Ini.File("%CurDir%\\JavaPortable.ini");
+            Ini.SetFile("%CurDir%\\JavaPortable.ini");
+            AppDomain.CurrentDomain.ProcessExit += (s, e) => Ini.WriteAll();
             Java.Add("exe", "bin\\javaw.exe");
             if (!JavaExists())
                 try
@@ -80,7 +81,7 @@ namespace JavaPortableLauncher
                 MessageBox.Show(@"Java Portable not found!", $@"Java Portable{(Environment.Is64BitProcess ? " (x64)" : string.Empty)}", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 Environment.Exit(1);
             }
-            if (!File.Exists(Ini.File()))
+            if (!File.Exists(Ini.FilePath))
                 return;
             string appPath = null;
             if (EnvironmentEx.CommandLineArgs(false).Count < 1)
@@ -148,7 +149,7 @@ namespace JavaPortableLauncher
 
         private static bool JavaExists()
         {
-            if (!File.Exists(Ini.File()))
+            if (!File.Exists(Ini.FilePath))
                 return false;
             try
             {

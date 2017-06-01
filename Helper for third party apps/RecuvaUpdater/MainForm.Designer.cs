@@ -29,7 +29,6 @@ namespace AppUpdater
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.DLPercentage = new System.Windows.Forms.ProgressBar();
             this.DLLoaded = new System.Windows.Forms.Label();
             this.DLSpeed = new System.Windows.Forms.Label();
@@ -87,7 +86,6 @@ namespace AppUpdater
             this.Controls.Add(this.DLLoaded);
             this.Controls.Add(this.DLSpeed);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "MainForm";
             this.Opacity = 0D;

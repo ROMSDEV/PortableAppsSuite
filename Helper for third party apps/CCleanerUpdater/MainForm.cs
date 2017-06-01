@@ -18,6 +18,7 @@ namespace AppUpdater
         public MainForm()
         {
             InitializeComponent();
+            Icon = Resources.CCUpdater;
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -30,7 +31,7 @@ namespace AppUpdater
             var onlineDate = NetEx.GetFileDate(Resources.UpdateUrl, Resources.UserAgent);
             if ((onlineDate - localDate).Days > 0)
             {
-                if (_silent || MessageBox.Show(Resources.Msg_Hint_00, Resources.WindowTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
+                if (_silent || MessageBoxEx.Show(Resources.Msg_Hint_00, Resources.WindowTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
                 {
                     var archivePath = PathEx.Combine(PathEx.LocalDir, "update.zip");
                     if (!File.Exists(archivePath))
@@ -46,7 +47,7 @@ namespace AppUpdater
                 return;
             }
             if (!_silent)
-                MessageBox.Show(Resources.Msg_Hint_01, Resources.WindowTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBoxEx.Show(Resources.Msg_Hint_01, Resources.WindowTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
             Application.Exit();
         }
 
@@ -102,10 +103,10 @@ namespace AppUpdater
                 switch (e.Result as bool?)
                 {
                     case true:
-                        MessageBox.Show(Resources.Msg_Hint_02, Resources.WindowTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBoxEx.Show(Resources.Msg_Hint_02, Resources.WindowTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
                         break;
                     default:
-                        MessageBox.Show(Resources.Msg_Warn_02, Resources.WindowTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBoxEx.Show(Resources.Msg_Warn_01, Resources.WindowTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         break;
                 }
             Application.Exit();

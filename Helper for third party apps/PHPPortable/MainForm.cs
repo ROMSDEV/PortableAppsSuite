@@ -6,6 +6,7 @@ namespace RunPHP
     using System.IO;
     using System.Windows.Forms;
     using SilDev;
+    using SilDev.Forms;
 
     public partial class MainForm : Form
     {
@@ -112,7 +113,7 @@ namespace RunPHP
                 }
             if (!File.Exists(_php))
             {
-                var dialog = MsgBoxEx.Show(this, "PHP not found. Do you want to download the newest verson now?", "PHP Not Found", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                var dialog = MessageBoxEx.Show(this, "PHP not found. Do you want to download the newest verson now?", "PHP Not Found", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
                 if (dialog == DialogResult.Yes)
                 {
                     if (!CheckDownload.Enabled)
@@ -243,14 +244,14 @@ namespace RunPHP
 
         private void UpdateBtn_Click(object sender, EventArgs e)
         {
-            var dialog = MsgBoxEx.Show(this, "Do you want to search updates for PHP?", "Check for Updates", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            var dialog = MessageBoxEx.Show(this, "Do you want to search updates for PHP?", "Check for Updates", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
             if (dialog != DialogResult.Yes)
                 return;
             var phpVersion = FileVersionInfo.GetVersionInfo(_php).ProductVersion;
             var source = NetEx.Transfer.DownloadString("http://windows.php.net/downloads/releases/sha1sum.txt");
             if (!source.Contains($"php-{phpVersion}-"))
             {
-                dialog = MsgBoxEx.Show(this, "A new version is available. Do you want to download it now?", "Updates Found", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+                dialog = MessageBoxEx.Show(this, "A new version is available. Do you want to download it now?", "Updates Found", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
                 if (dialog != DialogResult.Yes)
                     return;
                 var phpDir = Path.GetDirectoryName(_php);
@@ -264,7 +265,7 @@ namespace RunPHP
                 CenterWindow(_dlForm.Handle, true);
             }
             else
-                MsgBoxEx.Show(this, "You have already the newest version.", "No Updates Found", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBoxEx.Show(this, "You have already the newest version.", "No Updates Found", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }

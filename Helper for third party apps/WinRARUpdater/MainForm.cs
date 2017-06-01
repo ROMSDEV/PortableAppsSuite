@@ -83,7 +83,8 @@ namespace AppUpdater
             catch (Exception ex)
             {
                 Log.Write(ex);
-                MessageBoxEx.Show(Resources.Msg_Warn_02, Resources.WindowTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                if (!_silent)
+                    MessageBoxEx.Show(Resources.Msg_Warn_02, Resources.WindowTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 Application.Exit();
             }
 

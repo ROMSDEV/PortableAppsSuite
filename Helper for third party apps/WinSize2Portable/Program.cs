@@ -27,7 +27,7 @@ namespace WinSize2Portable
                         File.Create(Path.Combine(dataPath, "WinSize2_FullScreen.INI")).Close();
                     }
                     var appdataPath = Path.Combine("%AppData%\\MagraSoft");
-                    Ini.File(appdataPath, "WinSize2_Root.INI");
+                    Ini.SetFile(appdataPath, "WinSize2_Root.INI");
                     Ini.Write("Settings", "INIWithScreenSize", 0);
                     Ini.Write("Settings", "INIFile_Path", dataPath);
                     using (var p = ProcessEx.Start("%CurDir%\\App\\WinSize2\\_WinSize2_Launcher.exe", false, false))
