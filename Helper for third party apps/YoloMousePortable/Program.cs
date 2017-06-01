@@ -1,9 +1,11 @@
 namespace YoloMousePortable
 {
     using System;
-    using System.Diagnostics;
+    using System.Collections.Generic;
     using System.IO;
     using System.Threading;
+    using Portable;
+    using Properties;
     using SilDev;
 
     internal static class Program
@@ -12,21 +14,77 @@ namespace YoloMousePortable
         private static void Main()
         {
             Log.AllowLogging();
-            var appPath = PathEx.Combine("%CurDir%\\App\\YoloMouse\\YoloMouse.exe");
-            if (!File.Exists(appPath) || Process.GetProcessesByName(Path.GetFileNameWithoutExtension(appPath)).Length > 0)
-                Environment.Exit(1);
+
+#if x86
+            var curPath64 = PathEx.Combine(PathEx.LocalDir, "YoloMouse64Portable.exe");
+            if (Environment.Is64BitOperatingSystem && File.Exists(curPath64))
+            {
+                ProcessEx.Start(curPath64, EnvironmentEx.CommandLine(false));
+                return;
+            }
+            var appDir = PathEx.Combine(PathEx.LocalDir, "App\\YoloMouse");
+            var updaterPath = PathEx.Combine(appDir, "YoloMouseUpdater.exe");
+#else
+            var appDir = PathEx.Combine(PathEx.LocalDir, "App\\YoloMouse64");
+            var updaterPath = PathEx.Combine(appDir, "YoloMouseUpdater64.exe");
+#endif
+
             bool newInstance;
-            using (new Mutex(true, Process.GetCurrentProcess().ProcessName, out newInstance))
-                if (newInstance)
+            using (new Mutex(true, ProcessEx.CurrentName, out newInstance))
+            {
+                if (!newInstance)
+                    return;
+
+                var appPath = PathEx.Combine(appDir, "YoloMouse.exe");
+                if (ProcessEx.InstancesCount(Path.GetFileNameWithoutExtension(appPath)) > 0 || !File.Exists(updaterPath) || ProcessEx.InstancesCount(Path.GetFileNameWithoutExtension(updaterPath)) > 0)
+                    return;
+
+                var dataDir = PathEx.Combine(PathEx.LocalDir, "Data");
+
+                var defCursorDir = PathEx.Combine(appDir, "Cursors");
+                var cursorDir = PathEx.Combine(dataDir, "Cursors");
+                var dirMap = new Dictionary<string, string>
                 {
-                    var dataDir = PathEx.Combine("%CurDir%\\Data");
-                    var defDataDir = PathEx.Combine("%LocalAppData%\\YoloMouse");
-                    Data.DirLink(defDataDir, dataDir, true);
-                    using (var p = ProcessEx.Start(appPath, false, false))
-                        if (!p?.HasExited == true)
-                            p?.WaitForExit();
-                    Data.DirUnLink(defDataDir, true);
+                    {
+                        "%LocalAppData%\\YoloMouse",
+                        dataDir
+                    },
+                    {
+                        defCursorDir,
+                        cursorDir
+                    }
+                };
+
+                Helper.ApplicationStart(updaterPath, "/silent", null);
+
+                var cfgPath = Path.Combine(dataDir, "Settings.ini");
+                if (!File.Exists(cfgPath))
+                {
+                    if (!Directory.Exists(dataDir))
+                        Directory.CreateDirectory(dataDir);
+                    File.WriteAllText(cfgPath, Resources.DefaultSettings);
                 }
+
+                if (Directory.Exists(defCursorDir))
+                {
+                    Data.DirCopy(defCursorDir, cursorDir, true, true);
+                    try
+                    {
+                        Directory.Delete(defCursorDir);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Write(ex);
+                        ProcessEx.SendHelper.WaitForExitThenDelete(defCursorDir, ProcessEx.CurrentName, Elevation.IsAdministrator);
+                    }
+                }
+
+                Helper.DirectoryForwarding(Helper.Options.Start, dirMap);
+
+                Helper.ApplicationStart(appPath, EnvironmentEx.CommandLine(false), false);
+
+                Helper.DirectoryForwarding(Helper.Options.Exit, dirMap);
+            }
         }
     }
 }

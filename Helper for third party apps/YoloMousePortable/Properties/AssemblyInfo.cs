@@ -2,9 +2,14 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-
+#if x86
 [assembly: AssemblyTitle("Yolo Mouse Portable")]
 [assembly: AssemblyProduct("YoloMousePortable")]
+#else
+[assembly: AssemblyTitle("Yolo Mouse (64-bit) Portable")]
+[assembly: AssemblyProduct("YoloMouse64Portable")]
+#endif
+
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Si13n7 Dev. ®")]
