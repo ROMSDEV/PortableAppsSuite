@@ -25,7 +25,7 @@ namespace RecuvaPortable
 
                 var appPath = Path.Combine(appDir, "Recuva.exe");
                 var updaterPath = Path.Combine(appDir, "RecuvaUpdater.exe");
-                if (!File.Exists(appPath) || ProcessEx.InstancesCount("Recuva") > 0 || !File.Exists(updaterPath) || ProcessEx.InstancesCount("RecuvaUpdater") > 0)
+                if (ProcessEx.InstancesCount(Path.GetFileNameWithoutExtension(appPath)) > 0 || !File.Exists(updaterPath) || ProcessEx.InstancesCount(Path.GetFileNameWithoutExtension(updaterPath)) > 0)
                     return;
 
                 CleanUpOld();
@@ -37,13 +37,14 @@ namespace RecuvaPortable
                         PathEx.Combine(dataDir, "recuva.ini")
                     }
                 };
+
+                Helper.ApplicationStart(updaterPath, "/silent", null);
+
                 Helper.FileForwarding(Helper.Options.Start, fileMap);
 
                 var portableDat = Path.Combine(appDir, "portable.dat");
                 if (!File.Exists(portableDat))
                     File.WriteAllText(portableDat, @"#PORTABLE#");
-
-                Helper.ApplicationStart(updaterPath, "/silent", false);
                 Helper.ApplicationStart(appPath, EnvironmentEx.CommandLine(false), false);
 
                 Helper.FileForwarding(Helper.Options.Exit, fileMap);
