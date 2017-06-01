@@ -38,7 +38,7 @@ namespace CDBurnerXPPortable
 #else
                 var updaterPath = PathEx.Combine(appDir, "CDBurnerXPUpdater64.exe");
 #endif
-                if (!File.Exists(appPath) || ProcessEx.InstancesCount(Path.GetFileNameWithoutExtension(appPath)) > 0 || !File.Exists(updaterPath) || ProcessEx.InstancesCount(Path.GetFileNameWithoutExtension(updaterPath)) > 0)
+                if (ProcessEx.InstancesCount(Path.GetFileNameWithoutExtension(appPath)) > 0 || !File.Exists(updaterPath) || ProcessEx.InstancesCount(Path.GetFileNameWithoutExtension(updaterPath)) > 0)
                     return;
 
                 var dataDir = PathEx.Combine(PathEx.LocalDir, "Data");
@@ -51,9 +51,10 @@ namespace CDBurnerXPPortable
                     }
                 };
 
+                Helper.ApplicationStart(updaterPath, "/silent", null);
+
                 Helper.FileForwarding(Helper.Options.Start, fileMap, true);
 
-                Helper.ApplicationStart(updaterPath, "/silent", null);
                 Helper.ApplicationStart(appPath, EnvironmentEx.CommandLine(false), false);
 
                 Helper.FileForwarding(Helper.Options.Exit, fileMap, true);
