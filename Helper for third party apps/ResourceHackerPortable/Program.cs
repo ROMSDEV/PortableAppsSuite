@@ -16,16 +16,19 @@ namespace ResourceHackerPortable
             bool newInstance;
             using (new Mutex(true, ProcessEx.CurrentName, out newInstance))
             {
-                if (!newInstance)
-                    return;
-
                 var appDir = PathEx.Combine(PathEx.LocalDir, "App\\ResourceHacker");
                 if (!Directory.Exists(appDir))
                     return;
-
                 var appPath = Path.Combine(appDir, "ResourceHacker.exe");
+
+                if (!newInstance)
+                {
+                    ProcessEx.Start(appPath, EnvironmentEx.CommandLine(false));
+                    return;
+                }
+
                 var updaterPath = Path.Combine(appDir, "ResourceHackerUpdater.exe");
-                if (!File.Exists(appPath) || ProcessEx.InstancesCount("ResourceHacker") > 0 || !File.Exists(updaterPath) || ProcessEx.InstancesCount("ResourceHackerUpdater") > 0)
+                if (ProcessEx.InstancesCount(Path.GetFileNameWithoutExtension(appPath)) > 0 || !File.Exists(updaterPath) || ProcessEx.InstancesCount(Path.GetFileNameWithoutExtension(updaterPath)) > 0)
                     return;
 
                 CleanUpOld();
@@ -37,9 +40,11 @@ namespace ResourceHackerPortable
                         PathEx.Combine(dataDir, "ResourceHacker.ini")
                     }
                 };
+
+                Helper.ApplicationStart(updaterPath, "/silent", null);
+
                 Helper.FileForwarding(Helper.Options.Start, fileMap);
 
-                Helper.ApplicationStart(updaterPath, "/silent", false);
                 Helper.ApplicationStart(appPath, EnvironmentEx.CommandLine(false), false);
 
                 Helper.FileForwarding(Helper.Options.Exit, fileMap);
