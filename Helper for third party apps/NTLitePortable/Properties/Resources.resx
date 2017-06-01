@@ -131,7 +131,7 @@
 	&lt;SkipLiveWarning&gt;false&lt;/SkipLiveWarning&gt;
 	&lt;SkipExploreWarning&gt;false&lt;/SkipExploreWarning&gt;
 	&lt;SkipEsdWarning&gt;false&lt;/SkipEsdWarning&gt;
-	&lt;VisualStyle&gt;2&lt;/VisualStyle&gt;
+	&lt;VisualStyle&gt;0&lt;/VisualStyle&gt;
 	&lt;VisualAccent&gt;0&lt;/VisualAccent&gt;
 	&lt;TempFolder&gt;%TEMP%&lt;/TempFolder&gt;
 	&lt;Images&gt;&lt;/Images&gt;
