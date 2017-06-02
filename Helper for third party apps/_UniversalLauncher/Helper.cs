@@ -67,6 +67,11 @@
             var file = PathEx.Combine(path);
             try
             {
+                var dir = Path.GetDirectoryName(file);
+                if (string.IsNullOrEmpty(dir))
+                    throw new ArgumentNullException(dir);
+                if (!Directory.Exists(dir))
+                    Directory.CreateDirectory(dir);
                 if (!File.Exists(file))
                     File.Create(file).Close();
             }
@@ -82,11 +87,9 @@
                 {
                     var key = pair.Key;
                     var value = pair.Value;
-                    Ini.Write(section, key, value, path);
+                    Ini.WriteDirect(section, key, value, path);
                 }
             }
-            Ini.WriteAll(path);
-            Ini.Detach();
         }
 #endif
 
