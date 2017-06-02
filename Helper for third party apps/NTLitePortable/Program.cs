@@ -2,7 +2,6 @@ namespace NTLitePortable
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.IO;
     using System.Text;
     using System.Text.RegularExpressions;
@@ -40,7 +39,7 @@ namespace NTLitePortable
                 return;
 
             bool newInstance;
-            using (new Mutex(true, Process.GetCurrentProcess().ProcessName, out newInstance))
+            using (new Mutex(true, ProcessEx.CurrentName, out newInstance))
             {
                 if (!newInstance)
                     return;

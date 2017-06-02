@@ -16,7 +16,7 @@ namespace OriginPortable
             var appDir = PathEx.Combine(@"%CurDir%\App\Origin");
             var appPath = Path.Combine(appDir, "Origin.exe");
             bool newInstance;
-            using (new Mutex(true, Process.GetCurrentProcess().ProcessName, out newInstance))
+            using (new Mutex(true, ProcessEx.CurrentName, out newInstance))
             {
                 if (!newInstance)
                     return;

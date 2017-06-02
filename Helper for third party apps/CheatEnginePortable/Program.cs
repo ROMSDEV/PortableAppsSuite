@@ -13,7 +13,7 @@ namespace CheatEnginePortable
         {
             Log.AllowLogging();
             bool newInstance;
-            using (new Mutex(true, Process.GetCurrentProcess().ProcessName, out newInstance))
+            using (new Mutex(true, ProcessEx.CurrentName, out newInstance))
             {
                 var appPath = PathEx.Combine("%CurDir%\\App\\CheatEngine");
                 if (!File.Exists(Path.Combine(appPath, "Cheat Engine.exe")))

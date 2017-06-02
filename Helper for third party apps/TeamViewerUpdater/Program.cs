@@ -33,7 +33,7 @@ namespace TeamViewerUpdater
                 return;
             }
             bool newInstance;
-            using (new Mutex(true, Process.GetCurrentProcess().ProcessName, out newInstance))
+            using (new Mutex(true, ProcessEx.CurrentName, out newInstance))
             {
                 if (!newInstance)
                     return;

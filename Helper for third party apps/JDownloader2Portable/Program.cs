@@ -1,7 +1,6 @@
 namespace JDownloader2Portable
 {
     using System;
-    using System.Diagnostics;
     using System.IO;
     using System.Threading;
     using System.Windows.Forms;
@@ -21,33 +20,33 @@ namespace JDownloader2Portable
                 if (!File.Exists(exePath))
                 {
                     var drive = new DriveInfo(envVar).RootDirectory.Root.Name;
-                    var JavaDir = drive;
+                    var javaDir = drive;
                     foreach (var dirName in envVar.Split('\\'))
                         try
                         {
                             if (drive.Contains(dirName))
                                 continue;
-                            JavaDir = Path.Combine(JavaDir, dirName);
+                            javaDir = Path.Combine(javaDir, dirName);
                             string tmpDir;
                             if (Environment.Is64BitOperatingSystem)
                             {
-                                tmpDir = Path.Combine(JavaDir, "CommonFiles\\Java64");
+                                tmpDir = Path.Combine(javaDir, "CommonFiles\\Java64");
                                 if (Directory.Exists(tmpDir))
                                     foreach (var file in Directory.GetFiles(tmpDir, "javaw.exe", SearchOption.AllDirectories))
                                     {
-                                        JavaDir = tmpDir;
+                                        javaDir = tmpDir;
                                         javaPath = file;
                                         break;
                                     }
                             }
-                            tmpDir = Path.Combine(JavaDir, "CommonFiles\\Java64");
+                            tmpDir = Path.Combine(javaDir, "CommonFiles\\Java64");
                             if (!File.Exists(tmpDir))
                                 continue;
                             if (!Directory.Exists(tmpDir))
                                 continue;
                             foreach (var file in Directory.GetFiles(tmpDir, "javaw.exe", SearchOption.AllDirectories))
                             {
-                                JavaDir = tmpDir;
+                                javaDir = tmpDir;
                                 javaPath = file;
                                 break;
                             }
@@ -77,7 +76,7 @@ namespace JDownloader2Portable
                     return;
                 }
                 bool newInstance;
-                using (new Mutex(true, Process.GetCurrentProcess().ProcessName, out newInstance))
+                using (new Mutex(true, ProcessEx.CurrentName, out newInstance))
                 {
                     var jdDir = Path.GetDirectoryName(jDownloader);
                     if (newInstance)

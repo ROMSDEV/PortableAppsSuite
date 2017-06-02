@@ -2,7 +2,6 @@ namespace WinRARPortable
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using System.Threading;
@@ -47,7 +46,7 @@ namespace WinRARPortable
                 Ini.SetFile(iniPath);
 
             bool newInstance;
-            using (new Mutex(true, Process.GetCurrentProcess().ProcessName, out newInstance))
+            using (new Mutex(true, ProcessEx.CurrentName, out newInstance))
             {
                 if (!newInstance && !Environment.CommandLine.ContainsEx("{5C1A7995-36C7-4346-B549-D6392EFC86E4}"))
                 {

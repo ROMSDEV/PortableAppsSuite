@@ -2,7 +2,6 @@ namespace HeidiSQLPortable
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.IO;
     using System.Threading;
     using Portable;
@@ -15,7 +14,7 @@ namespace HeidiSQLPortable
         {
             Log.AllowLogging();
             bool newInstance;
-            using (new Mutex(true, Process.GetCurrentProcess().ProcessName, out newInstance))
+            using (new Mutex(true, ProcessEx.CurrentName, out newInstance))
             {
                 var appDir = PathEx.Combine(PathEx.LocalDir, "App\\HeidiSQL");
                 if (!Directory.Exists(appDir))

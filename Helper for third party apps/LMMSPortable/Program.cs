@@ -14,7 +14,7 @@ namespace LMMSPortable
         {
             Log.AllowLogging();
             bool newInstance;
-            using (new Mutex(true, Process.GetCurrentProcess().ProcessName, out newInstance))
+            using (new Mutex(true, ProcessEx.CurrentName, out newInstance))
             {
 #if x86
                 var appDir = PathEx.Combine(PathEx.LocalDir, "App\\lmms");

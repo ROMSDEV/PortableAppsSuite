@@ -2,7 +2,6 @@ namespace VLCPortable
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.IO;
     using System.Threading;
     using Portable;
@@ -32,7 +31,7 @@ namespace VLCPortable
                 return;
 
             bool newInstance;
-            using (new Mutex(true, Process.GetCurrentProcess().ProcessName, out newInstance))
+            using (new Mutex(true, ProcessEx.CurrentName, out newInstance))
             {
                 var appPath = PathEx.Combine(appDir, "vlc.exe");
 

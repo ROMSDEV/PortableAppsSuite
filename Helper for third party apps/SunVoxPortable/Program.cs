@@ -13,7 +13,7 @@ namespace SunVoxPortable
         {
             Log.AllowLogging();
             bool newInstance;
-            using (new Mutex(true, Process.GetCurrentProcess().ProcessName, out newInstance))
+            using (new Mutex(true, ProcessEx.CurrentName, out newInstance))
             {
                 var appPath = PathEx.Combine("%CurDir%\\App\\sunvox_win32\\sunvox.exe");
                 if (!File.Exists(appPath) || Process.GetProcessesByName(Path.GetFileNameWithoutExtension(appPath)).Length > 0)

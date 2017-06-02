@@ -1,7 +1,6 @@
 namespace mpTrimPortable
 {
     using System;
-    using System.Diagnostics;
     using System.Threading;
     using System.Windows.Forms;
     using Microsoft.Win32;
@@ -14,7 +13,7 @@ namespace mpTrimPortable
         {
             Log.AllowLogging();
             bool newInstance;
-            using (new Mutex(true, Process.GetCurrentProcess().ProcessName, out newInstance))
+            using (new Mutex(true, ProcessEx.CurrentName, out newInstance))
                 if (newInstance)
                 {
                     var left = (int)Math.Round(Screen.PrimaryScreen.WorkingArea.Width / 2f - 335f / 2f);

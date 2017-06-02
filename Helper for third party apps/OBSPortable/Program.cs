@@ -13,7 +13,7 @@ namespace OBSPortable
         {
             Log.AllowLogging();
             bool newInstance;
-            using (new Mutex(true, Process.GetCurrentProcess().ProcessName, out newInstance))
+            using (new Mutex(true, ProcessEx.CurrentName, out newInstance))
                 if (newInstance)
                 {
                     var appPath = PathEx.Combine("%CurDir%\\OBS\\OBS.exe");
