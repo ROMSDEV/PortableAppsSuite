@@ -7,7 +7,6 @@
 #endif
     using System.IO;
     using System.Linq;
-    using System.Windows.Forms;
 #if ApplicationStart
     using System.Threading;
 #endif
