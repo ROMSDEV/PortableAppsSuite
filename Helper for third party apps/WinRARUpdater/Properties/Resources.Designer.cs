@@ -264,7 +264,9 @@ namespace AppUpdater.Properties {
         /// <summary>
         ///   Looks up a localized string similar to archivecomment.txt
         ///sildev.csharplib.dll
+        ///sildev.csharplib.pdb
         ///sildev.csharplib64.dll
+        ///sildev.csharplib64.pdb
         ///rarreg.key
         ///winrar.ini
         ///winrarupdater64.exe

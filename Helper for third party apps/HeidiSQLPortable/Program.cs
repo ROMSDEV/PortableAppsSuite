@@ -32,8 +32,6 @@ namespace HeidiSQLPortable
                     return;
 
                 var dataDir = PathEx.Combine(PathEx.LocalDir, "Data");
-                CleanUpHelper(dataDir);
-
                 var dirMap = new Dictionary<string, string>
                 {
                     {
@@ -51,6 +49,13 @@ namespace HeidiSQLPortable
                 };
 
                 Helper.ApplicationStart(updaterPath, "/silent", null);
+                if (!File.Exists(appPath))
+                {
+                    var updIniPath = Path.ChangeExtension(updaterPath, ".ini");
+                    if (!string.IsNullOrEmpty(updIniPath) && File.Exists(updIniPath))
+                        File.Delete(updIniPath);
+                    return;
+                }
 
                 Helper.DirectoryForwarding(Helper.Options.Start, dirMap);
                 Helper.FileForwarding(Helper.Options.Start, fileMap, true);
@@ -60,21 +65,6 @@ namespace HeidiSQLPortable
                 Helper.DirectoryForwarding(Helper.Options.Exit, dirMap);
                 Helper.FileForwarding(Helper.Options.Exit, fileMap, true);
             }
-        }
-
-        private static void CleanUpHelper(string dataDir)
-        {
-            var appDir = PathEx.Combine(PathEx.LocalDir, "HeidiSQL");
-            if (!Directory.Exists(appDir))
-                return;
-            var oldCfgPath = Path.Combine(appDir, "portable_settings.txt");
-            if (File.Exists(oldCfgPath))
-            {
-                if (!Directory.Exists(dataDir))
-                    Directory.CreateDirectory(dataDir);
-                File.Move(oldCfgPath, PathEx.Combine(dataDir, "portable_settings.txt"));
-            }
-            Directory.Delete(appDir, true);
         }
     }
 }

@@ -181,7 +181,9 @@ cheatengineupdater.exe.config
 cheatengineupdater.ini
 cheatengineupdater.pdb
 sildev.csharplib.dll
-sildev.csharplib64.dll</value>
+sildev.csharplib.pdb
+sildev.csharplib64.dll
+sildev.csharplib64.pdb</value>
   </data>
   <data name="WindowTitle" xml:space="preserve">
     <value>CheatEngine Updater</value>

@@ -35,7 +35,7 @@ namespace HWMonitorPortable
                 if (!File.Exists(appPath))
                 {
                     var updIniPath = Path.ChangeExtension(updaterPath, ".ini");
-                    if (File.Exists(updIniPath))
+                    if (!string.IsNullOrEmpty(updIniPath) && File.Exists(updIniPath))
                         File.Delete(updIniPath);
                     return;
                 }

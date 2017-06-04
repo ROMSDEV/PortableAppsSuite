@@ -215,7 +215,9 @@ namespace AppUpdater.Properties {
         ///YoloMouseupdater.ini
         ///YoloMouseupdater.pdb
         ///sildev.csharplib.dll
+        ///sildev.csharplib.pdb
         ///sildev.csharplib64.dll
+        ///sildev.csharplib64.pdb
         ///settings.ini.
         /// </summary>
         internal static string WhiteList {

@@ -244,7 +244,9 @@ namespace AppUpdater.Properties {
         ///cdburnerxpupdater.ini
         ///cdburnerxpupdater.pdb
         ///sildev.csharplib.dll
+        ///sildev.csharplib.pdb
         ///sildev.csharplib64.dll
+        ///sildev.csharplib64.pdb
         ///usersettings.ini.
         /// </summary>
         internal static string WhiteList {

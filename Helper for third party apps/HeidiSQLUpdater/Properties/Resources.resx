@@ -124,6 +124,9 @@
   <data name="_7z" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\7z;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="HeidiSQLUpdater" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\HeidiSQLUpdater.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="AppName" xml:space="preserve">
     <value>HeidiSQL</value>
   </data>
@@ -172,12 +175,10 @@ HeidiSQLupdater.exe.config
 HeidiSQLupdater.ini
 HeidiSQLupdater.pdb
 sildev.csharplib.dll
+sildev.csharplib.pdb
 portable_settings.txt</value>
   </data>
   <data name="WindowTitle" xml:space="preserve">
     <value>HeidiSQL Updater</value>
-  </data>
-  <data name="HeidiSQLUpdater" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\HeidiSQLUpdater.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

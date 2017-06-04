@@ -54,8 +54,6 @@ namespace WinRARPortable
                     return;
                 }
 
-                CleanUpHelper(dataDir);
-
                 var entries = Ini.Read("ContextMenu", "EntriesAllowed", false);
                 RegistryHelper(appDir, entries);
 
@@ -76,6 +74,13 @@ namespace WinRARPortable
                 };
 
                 Helper.ApplicationStart(updPath, "/archlock /silent", null);
+                if (!File.Exists(appPath))
+                {
+                    var updIniPath = Path.ChangeExtension(updPath, ".ini");
+                    if (!string.IsNullOrEmpty(updIniPath) && File.Exists(updIniPath))
+                        File.Delete(updIniPath);
+                    return;
+                }
 
                 Helper.DirectoryForwarding(Helper.Options.Start, dirMap);
                 Helper.FileForwarding(Helper.Options.Start, fileMap, entries);
@@ -98,32 +103,6 @@ namespace WinRARPortable
 
                 if (!entries && regKeys.Any(Reg.SubKeyExists))
                     Elevation.RestartAsAdministrator("{CFFB1200-8B38-451D-80A0-BE187E64EC61}");
-            }
-        }
-
-        private static void CleanUpHelper(string dataDir)
-        {
-#if x86
-            var oldAppDir = PathEx.Combine(PathEx.LocalDir, "winrar");
-#else
-            var oldAppDir = PathEx.Combine(PathEx.LocalDir, "winrar-x64");
-#endif
-            if (!Directory.Exists(oldAppDir))
-                return;
-            try
-            {
-                var cfgPath = Path.Combine(oldAppDir, "WinRAR.ini");
-                if (File.Exists(cfgPath))
-                {
-                    if (!Directory.Exists(dataDir))
-                        Directory.CreateDirectory(dataDir);
-                    File.Copy(cfgPath, PathEx.Combine(dataDir, "WinRAR.ini"), true);
-                }
-                Directory.Delete(oldAppDir, true);
-            }
-            catch (Exception ex)
-            {
-                Log.Write(ex);
             }
         }
 

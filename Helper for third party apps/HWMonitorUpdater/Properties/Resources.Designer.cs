@@ -234,7 +234,8 @@ namespace AppUpdater.Properties {
         ///hwmontray.exe
         ///hwmontray.exe.config
         ///hwmontray.pdb
-        ///sildev.csharplib.dll.
+        ///sildev.csharplib.dll
+        ///sildev.csharplib.pdb.
         /// </summary>
         internal static string WhiteList {
             get {

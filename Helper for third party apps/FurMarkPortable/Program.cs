@@ -28,8 +28,6 @@ namespace FurMarkPortable
                     return;
                 }
 
-                CleanUpHelper();
-
                 var updaterPath = PathEx.Combine(appDir, "FurMarkUpdater.exe");
                 if (ProcessEx.InstancesCount(Path.GetFileNameWithoutExtension(appPath)) > 0 || !File.Exists(updaterPath) || ProcessEx.InstancesCount(Path.GetFileNameWithoutExtension(updaterPath)) > 0)
                     return;
@@ -73,7 +71,6 @@ namespace FurMarkPortable
                 }
 
                 Helper.DirectoryForwarding(Helper.Options.Start, dirMap);
-
                 Helper.FileForwarding(Helper.Options.Start, fileMap, true);
 
                 Helper.ApplicationStart(updaterPath, "/silent", null);
@@ -82,29 +79,15 @@ namespace FurMarkPortable
                     var updIniPath = Path.ChangeExtension(updaterPath, ".ini");
                     if (!string.IsNullOrEmpty(updIniPath) && File.Exists(updIniPath))
                         File.Delete(updIniPath);
+                    Helper.DirectoryForwarding(Helper.Options.Exit, dirMap);
+                    Helper.FileForwarding(Helper.Options.Exit, fileMap, true);
                     return;
                 }
 
                 Helper.ApplicationStart(appPath, EnvironmentEx.CommandLine(false), false);
 
                 Helper.DirectoryForwarding(Helper.Options.Exit, dirMap);
-
                 Helper.FileForwarding(Helper.Options.Exit, fileMap, true);
-            }
-        }
-
-        private static void CleanUpHelper()
-        {
-            var appDir = PathEx.Combine(PathEx.LocalDir, "FurMark");
-            if (!Directory.Exists(appDir))
-                return;
-            try
-            {
-                Directory.Delete(appDir, true);
-            }
-            catch (Exception ex)
-            {
-                Log.Write(ex);
             }
         }
     }

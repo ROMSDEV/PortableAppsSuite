@@ -222,6 +222,7 @@ namespace AppUpdater.Properties {
         ///HeidiSQLupdater.ini
         ///HeidiSQLupdater.pdb
         ///sildev.csharplib.dll
+        ///sildev.csharplib.pdb
         ///portable_settings.txt.
         /// </summary>
         internal static string WhiteList {

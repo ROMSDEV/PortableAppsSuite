@@ -187,7 +187,9 @@
   <data name="WhiteList" xml:space="preserve">
     <value>archivecomment.txt
 sildev.csharplib.dll
+sildev.csharplib.pdb
 sildev.csharplib64.dll
+sildev.csharplib64.pdb
 rarreg.key
 winrar.ini
 winrarupdater64.exe

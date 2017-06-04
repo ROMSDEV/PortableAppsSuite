@@ -278,7 +278,9 @@ namespace AppUpdater.Properties {
         ///furmarkupdater.ini
         ///furmarkupdater.pdb
         ///sildev.csharplib.dll
-        ///sildev.csharplib64.dll.
+        ///sildev.csharplib.pdb
+        ///sildev.csharplib64.dll
+        ///sildev.csharplib64.pdb.
         /// </summary>
         internal static string WhiteList {
             get {

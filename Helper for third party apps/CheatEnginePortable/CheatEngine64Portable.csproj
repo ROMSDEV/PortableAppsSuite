@@ -18,7 +18,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\.bin\</OutputPath>
+    <OutputPath>..\.bin\CheatEnginePortable\</OutputPath>
     <DefineConstants>TRACE;DEBUG;ApplicationStart;DirectoryForwarding;RegistryForwarding</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
@@ -27,7 +27,7 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <OutputPath>..\.bin\</OutputPath>
+    <OutputPath>..\.bin\CheatEnginePortable\</OutputPath>
     <DefineConstants>TRACE;ApplicationStart;DirectoryForwarding;RegistryForwarding</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
@@ -66,6 +66,14 @@
     <Content Include="appicon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>if exist "$(TargetDir)SilDev.CSharpLib64.dll" move /y "$(TargetDir)SilDev.CSharpLib64.dll" "$(TargetDir)App\CheatEngine\SilDev.CSharpLib64.dll"
+if exist "$(TargetDir)SilDev.CSharpLib64.pdb" (
+move /y "$(TargetDir)SilDev.CSharpLib64.pdb" "$(TargetDir)App\CheatEngine\SilDev.CSharpLib64.pdb"
+attrib +h "$(TargetDir)App\CheatEngine\*.pdb"
+)
+if exist "$(TargetDir)SilDev.CSharpLib64.xml" del /f /q "$(TargetDir)SilDev.CSharpLib64.xml"</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

@@ -28,7 +28,6 @@ namespace RecuvaPortable
                 if (ProcessEx.InstancesCount(Path.GetFileNameWithoutExtension(appPath)) > 0 || !File.Exists(updaterPath) || ProcessEx.InstancesCount(Path.GetFileNameWithoutExtension(updaterPath)) > 0)
                     return;
 
-                CleanUpOld();
                 var dataDir = PathEx.Combine(PathEx.LocalDir, "Data");
                 var fileMap = new Dictionary<string, string>
                 {
@@ -39,6 +38,13 @@ namespace RecuvaPortable
                 };
 
                 Helper.ApplicationStart(updaterPath, "/silent", null);
+                if (!File.Exists(appPath))
+                {
+                    var updIniPath = Path.ChangeExtension(updaterPath, ".ini");
+                    if (!string.IsNullOrEmpty(updIniPath) && File.Exists(updIniPath))
+                        File.Delete(updIniPath);
+                    return;
+                }
 
                 Helper.FileForwarding(Helper.Options.Start, fileMap);
 
@@ -49,22 +55,6 @@ namespace RecuvaPortable
 
                 Helper.FileForwarding(Helper.Options.Exit, fileMap);
             }
-        }
-
-        private static void CleanUpOld()
-        {
-            var dataDir = PathEx.Combine(PathEx.LocalDir, "Data");
-            var appDir = PathEx.Combine(PathEx.LocalDir, "Recuva");
-            if (!Directory.Exists(appDir))
-                return;
-            var oldCfgPath = Path.Combine(appDir, "recuva.ini");
-            if (File.Exists(oldCfgPath))
-            {
-                if (!Directory.Exists(dataDir))
-                    Directory.CreateDirectory(dataDir);
-                File.Move(oldCfgPath, PathEx.Combine(dataDir, "recuva.ini"));
-            }
-            Directory.Delete(appDir, true);
         }
     }
 }

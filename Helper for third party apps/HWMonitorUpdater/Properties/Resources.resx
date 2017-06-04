@@ -124,11 +124,17 @@
   <data name="_7z" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\7z;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="HWMonitorUpdater" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\HWMonitorUpdater.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="AppName" xml:space="preserve">
     <value>HWMonitor</value>
   </data>
   <data name="AppPath" xml:space="preserve">
     <value>%CurDir%\HWMonitor_x32.exe</value>
+  </data>
+  <data name="AppPath64" xml:space="preserve">
+    <value>%CurDir%\HWMonitor_x64.exe</value>
   </data>
   <data name="Msg_Hint_00" xml:space="preserve">
     <value>A newer version is available. Would you like to update now?</value>
@@ -175,15 +181,10 @@ hwmonitorw.ini
 hwmontray.exe
 hwmontray.exe.config
 hwmontray.pdb
-sildev.csharplib.dll</value>
+sildev.csharplib.dll
+sildev.csharplib.pdb</value>
   </data>
   <data name="WindowTitle" xml:space="preserve">
     <value>HWMonitor Updater</value>
-  </data>
-  <data name="HWMonitorUpdater" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\HWMonitorUpdater.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="AppPath64" xml:space="preserve">
-    <value>%CurDir%\HWMonitor_x64.exe</value>
   </data>
 </root>

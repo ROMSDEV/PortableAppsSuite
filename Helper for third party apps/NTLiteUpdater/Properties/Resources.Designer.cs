@@ -226,7 +226,9 @@ namespace AppUpdater.Properties {
         ///ntliteupdater.ini
         ///ntliteupdater.pdb
         ///sildev.csharplib.dll
+        ///sildev.csharplib.pdb
         ///sildev.csharplib64.dll
+        ///sildev.csharplib64.pdb
         ///settings.xml
         ///settingsui.xml.
         /// </summary>

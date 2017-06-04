@@ -72,6 +72,7 @@ namespace AppUpdater
                 if (!_silent)
                     MessageBoxEx.Show(Resources.Msg_Warn_01, Resources.WindowTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 Application.Exit();
+                return;
             }
 
             var appPath = PathEx.Combine(Resources.AppPath);
@@ -200,8 +201,7 @@ namespace AppUpdater
 
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-            Ini.Write("History", "LastCheck", DateTime.Now);
-            Ini.WriteAll();
+            Ini.WriteDirect("History", "LastCheck", DateTime.Now);
             ProcessEx.SendHelper.WaitThenDelete(_tmpDir, 5, Elevation.IsAdministrator);
             ProcessEx.SendHelper.WaitThenDelete(_transfer.FilePath, 5, Elevation.IsAdministrator);
         }

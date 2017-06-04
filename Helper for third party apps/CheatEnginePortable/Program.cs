@@ -46,7 +46,12 @@ namespace CheatEnginePortable
 
                 Helper.ApplicationStart(updaterPath, "/silent", null);
                 if (!File.Exists(appPath))
+                {
+                    var updIniPath = Path.ChangeExtension(updaterPath, ".ini");
+                    if (!string.IsNullOrEmpty(updIniPath) && File.Exists(updIniPath))
+                        File.Delete(updIniPath);
                     return;
+                }
 
                 var dataDir = PathEx.Combine(PathEx.LocalDir, "Data");
                 var tablesDir = PathEx.Combine(dataDir, "My Cheat Tables");

@@ -56,6 +56,13 @@ namespace YoloMousePortable
                 };
 
                 Helper.ApplicationStart(updaterPath, "/silent", null);
+                if (!File.Exists(appPath))
+                {
+                    var updIniPath = Path.ChangeExtension(updaterPath, ".ini");
+                    if (!string.IsNullOrEmpty(updIniPath) && File.Exists(updIniPath))
+                        File.Delete(updIniPath);
+                    return;
+                }
 
                 var cfgPath = Path.Combine(dataDir, "Settings.ini");
                 if (!File.Exists(cfgPath))

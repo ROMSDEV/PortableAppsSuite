@@ -16,9 +16,6 @@ namespace NTLitePortable
         private static void Main()
         {
             Log.AllowLogging();
-
-            CleanUpHelper();
-
 #if x86
             var curPath64 = PathEx.Combine(PathEx.LocalDir, "NTLite64Portable.exe");
             if (Environment.Is64BitOperatingSystem && File.Exists(curPath64))
@@ -128,6 +125,13 @@ namespace NTLitePortable
                 };
 
                 Helper.ApplicationStart(updaterPath, "/silent", null);
+                if (!File.Exists(appPath))
+                {
+                    var updIniPath = Path.ChangeExtension(updaterPath, ".ini");
+                    if (!string.IsNullOrEmpty(updIniPath) && File.Exists(updIniPath))
+                        File.Delete(updIniPath);
+                    return;
+                }
 
                 Helper.DirectoryForwarding(Helper.Options.Start, dirMap);
                 Helper.FileForwarding(Helper.Options.Start, fileMap, true);
@@ -137,27 +141,6 @@ namespace NTLitePortable
                 Helper.DirectoryForwarding(Helper.Options.Exit, dirMap);
                 Helper.FileForwarding(Helper.Options.Exit, fileMap, true);
             }
-        }
-
-        private static void CleanUpHelper()
-        {
-#if x86
-            var dllPath = PathEx.Combine(PathEx.LocalDir, "SilDev.CSharpLib.dll");
-#else
-            var dllPath = PathEx.Combine(PathEx.LocalDir, "SilDev.CSharpLib64.dll");
-#endif
-            if (string.IsNullOrEmpty(dllPath))
-                throw new ArgumentNullException(nameof(dllPath));
-            var oldPath = Path.ChangeExtension(dllPath, ".old");
-            if (File.Exists(dllPath))
-            {
-                File.Move(dllPath, oldPath);
-                ProcessEx.Start(PathEx.LocalPath, EnvironmentEx.CommandLine(false), Elevation.IsAdministrator);
-                Environment.ExitCode = 0;
-                Environment.Exit(Environment.ExitCode);
-            }
-            if (File.Exists(oldPath))
-                File.Delete(oldPath);
         }
     }
 }
