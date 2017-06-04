@@ -1,8 +1,10 @@
 namespace GyazoPortable
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Threading;
+    using Portable;
     using SilDev;
 
     internal static class Program
@@ -14,29 +16,72 @@ namespace GyazoPortable
             bool newInstance;
             using (new Mutex(true, ProcessEx.CurrentName, out newInstance))
             {
-                if (!newInstance)
+                var appDir = PathEx.Combine(PathEx.LocalDir, "App\\Gyazo");
+                if (!Directory.Exists(appDir))
                     return;
-                Ini.SetFile(Path.ChangeExtension(PathEx.LocalPath, ".ini"));
-                if (Ini.Read("Settings", "SecondRunMode", true))
+
+                var appPath = Path.Combine(appDir, "Gyazowin.exe");
+                var trayMode = Environment.CommandLine.ContainsEx("/Tray") || Ini.Read("Settings", "Tray", false, Path.ChangeExtension(PathEx.LocalPath, ".ini"));
+
+                if (!newInstance)
                 {
-                    var defCacheDir = PathEx.Combine("%AppData%\\Gyazo");
-                    var cacheDir = PathEx.Combine("%CurDir%\\Data\\cache");
-                    Data.DirLink(defCacheDir, cacheDir, true);
-                    var regPath = PathEx.Combine("%CurDir%\\Data\\settings.reg");
-                    if (File.Exists(regPath))
-                        Reg.ImportFile(regPath);
-                    using (var p = ProcessEx.Start("%CurDir%\\App\\Gyazo\\GyStation.exe", true, false))
-                        if (!p?.HasExited == true)
-                            p?.WaitForExit();
-                    Reg.ExportKeys(regPath, "HKCU\\Software\\Gyazo");
-                    Data.DirUnLink(defCacheDir, true);
+                    if (trayMode)
+                        ProcessEx.Start(appPath, EnvironmentEx.CommandLine(false));
+                    return;
                 }
-                else
+
+                if (trayMode)
+                    appPath = Path.Combine(appDir, "GyStation.exe");
+                var updaterPath = Path.Combine(appDir, "GyazoUpdater.exe");
+                if (ProcessEx.InstancesCount(Path.GetFileNameWithoutExtension(appPath)) > 0 || !File.Exists(updaterPath) || ProcessEx.InstancesCount(Path.GetFileNameWithoutExtension(updaterPath)) > 0)
+                    return;
+
+                CleanUpOld();
+
+                Helper.ApplicationStart(updaterPath, "/silent", null);
+                if (!File.Exists(appPath))
                 {
-                    using (var p = ProcessEx.Start("%CurDir%\\App\\Gyazo\\Gyazowin.exe", true, false))
-                        if (!p?.HasExited == true)
-                            p?.WaitForExit();
+                    var updIniPath = Path.ChangeExtension(updaterPath, ".ini");
+                    if (!string.IsNullOrEmpty(updIniPath) && File.Exists(updIniPath))
+                        File.Delete(updIniPath);
+                    return;
                 }
+
+                var dirMap = new Dictionary<string, string>
+                {
+                    {
+                        "%AppData%\\Gyazo",
+                        "%CurDir%\\Data"
+                    }
+                };
+
+                var regKeys = new[]
+                {
+                    "HKCU\\Software\\Gyazo"
+                };
+
+                Helper.DirectoryForwarding(Helper.Options.Start, dirMap);
+                Helper.RegForwarding(Helper.Options.Start, regKeys);
+
+                Helper.ApplicationStart(appPath, EnvironmentEx.CommandLine(false), false);
+
+                Helper.DirectoryForwarding(Helper.Options.Exit, dirMap);
+                Helper.RegForwarding(Helper.Options.Exit, regKeys);
+            }
+        }
+
+        private static void CleanUpOld()
+        {
+            var appDir = PathEx.Combine(PathEx.LocalDir, "Gyazo");
+            if (!Directory.Exists(appDir))
+                return;
+            try
+            {
+                Directory.Delete(appDir, true);
+            }
+            catch (Exception ex)
+            {
+                Log.Write(ex);
             }
         }
     }
