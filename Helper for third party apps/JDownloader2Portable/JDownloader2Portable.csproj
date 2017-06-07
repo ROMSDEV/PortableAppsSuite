@@ -18,7 +18,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>..\.bin\JDownloader2Portable\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>true</Prefer32Bit>
@@ -61,6 +61,24 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>if exist "$(SolutionDir).helper\AssemblyDateVersion.exe" "$(SolutionDir).helper\AssemblyDateVersion.exe" "$(ProjectDir)Properties\AssemblyInfo.cs"</PreBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>if not exist "$(TargetDir)App\jd2" md "$(TargetDir)App\jd2"
+if not exist "$(TargetDir)App\SilDev.CSharpLib.dll" copy NUL "$(TargetDir)App\SilDev.CSharpLib.dll"
+if not exist "$(TargetDir)App\SilDev.CSharpLib.pdb" copy NUL "$(TargetDir)App\SilDev.CSharpLib.pdb"
+if exist "$(TargetDir)SilDev.CSharpLib.dll" (
+xcopy /h /y "$(TargetDir)SilDev.CSharpLib.dll" "$(TargetDir)App\SilDev.CSharpLib.dll"
+del /f /q "$(TargetDir)SilDev.CSharpLib.dll"
+)
+if exist "$(TargetDir)SilDev.CSharpLib.pdb" (
+xcopy /h /y "$(TargetDir)SilDev.CSharpLib.pdb" "$(TargetDir)App\SilDev.CSharpLib.pdb"
+del /f /q "$(TargetDir)SilDev.CSharpLib.pdb"
+)
+if exist "$(TargetDir)SilDev.CSharpLib.pdb" del /f /q /a:h "$(TargetDir)SilDev.CSharpLib.pdb"
+if exist "$(TargetDir)SilDev.CSharpLib.xml" del /f /q "$(TargetDir)SilDev.CSharpLib.xml"
+attrib +h "$(TargetDir)*.exe.config"
+attrib +h "$(TargetDir)*.pdb"
+attrib +h "$(TargetDir)App\*.pdb"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
