@@ -180,6 +180,21 @@ namespace AppUpdater.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to CCleanerUpdater.exe
+        ///CCleanerUpdater.exe.config
+        ///CCleanerUpdater.ini
+        ///CCleanerUpdater.pdb
+        ///SilDev.CSharpLib.dll
+        ///SilDev.CSharpLib.pdb
+        ///ccleaner.ini.
+        /// </summary>
+        internal static string WhiteList {
+            get {
+                return ResourceManager.GetString("WhiteList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to CCleaner Updater.
         /// </summary>
         internal static string WindowTitle {

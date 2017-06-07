@@ -2,7 +2,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("RecuvaUpdater")]
+[assembly: AssemblyTitle("Recuva Updater")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Si13n7 Dev. ®")]
@@ -15,4 +15,4 @@ using System.Runtime.InteropServices;
 
 [assembly: Guid("605f89d3-0154-481b-a41e-996bd602d3a1")]
 
-[assembly: AssemblyVersion("17.6.4.*")]
+[assembly: AssemblyVersion("17.6.7.*")]

@@ -121,14 +121,17 @@
   <data name="diagonal_pattern" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\diagonal_pattern.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="_7z" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\7z;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="HWMonitorUpdater" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\HWMonitorUpdater.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="AppName" xml:space="preserve">
+  <data name="AppDisplayName" xml:space="preserve">
     <value>HWMonitor</value>
+  </data>
+  <data name="AppName" xml:space="preserve">
+    <value>HWMonitor_x32</value>
+  </data>
+  <data name="AppName64" xml:space="preserve">
+    <value>HWMonitor_x64</value>
   </data>
   <data name="AppPath" xml:space="preserve">
     <value>%CurDir%\HWMonitor_x32.exe</value>
@@ -159,12 +162,6 @@
   </data>
   <data name="RegexUrl" xml:space="preserve">
     <value>http://www.cpuid.com/softwares/hwmonitor.html</value>
-  </data>
-  <data name="TmpDir" xml:space="preserve">
-    <value>%TEMP%\HWMonitorUpdater-{{{0}}}</value>
-  </data>
-  <data name="UpdateDir" xml:space="preserve">
-    <value>%CurDir%\Update-{{{0}}}</value>
   </data>
   <data name="UpdateUrl" xml:space="preserve">
     <value>http://download.cpuid.com/hwmonitor/{0}.zip</value>

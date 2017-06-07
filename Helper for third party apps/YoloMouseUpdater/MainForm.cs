@@ -16,7 +16,7 @@ namespace AppUpdater
     public partial class MainForm : Form
     {
         private readonly NetEx.AsyncTransfer _transfer = new NetEx.AsyncTransfer();
-        private string _guid, _tmpDir;
+        private string _tmpDir;
         private int _countdown = 10;
         private bool _silent;
 
@@ -31,14 +31,12 @@ namespace AppUpdater
             _silent = Environment.CommandLine.ContainsEx("/silent");
             Text = Resources.WindowTitle;
             TaskBar.Progress.SetState(Handle, TaskBar.Progress.Flags.Indeterminate);
-
             var source = NetEx.Transfer.DownloadString(Resources.RegexUrl);
             string updUrl = null;
             try
             {
                 var urls = new List<string>();
                 var vers = new List<Version>();
-
                 var pattern = string.Format(Resources.RegexFileNamePattern,
 #if !x86
                     "64", "and 64 bit games"
@@ -46,21 +44,17 @@ namespace AppUpdater
                     "32", "bit games only"
 #endif
                 );
-
                 foreach (Match match in Regex.Matches(source, pattern, RegexOptions.Multiline))
                 {
                     var mName = match.Groups[1].ToString();
                     if (string.IsNullOrWhiteSpace(mName) || !mName.ContainsEx(Resources.AppName))
                         continue;
-
                     var mVer = mName.Split('/').FirstOrDefault()?.Trim();
                     if (string.IsNullOrWhiteSpace(mVer))
                         continue;
-
                     Version ver;
                     if (!Version.TryParse(mVer, out ver))
                         continue;
-
                     urls.Add(string.Format(Resources.UpdateUrl, mName,
 #if !x86
                         "64"
@@ -70,7 +64,6 @@ namespace AppUpdater
                     ));
                     vers.Add(ver);
                 }
-
                 updUrl = urls.First(x => x.ContainsEx(vers.Max().ToString()));
                 if (!NetEx.FileIsAvailable(updUrl, 60000, Resources.UserAgent))
                     throw new PathNotFoundException(updUrl);
@@ -82,7 +75,6 @@ namespace AppUpdater
                     MessageBoxEx.Show(Resources.Msg_Warn_01, Resources.WindowTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 Application.Exit();
             }
-
             var appPath = PathEx.Combine(Resources.AppPath);
             var localDate = File.GetLastWriteTime(appPath);
             var onlineDate = NetEx.GetFileDate(updUrl, Resources.UserAgent);
@@ -90,13 +82,10 @@ namespace AppUpdater
             {
                 if (_silent || MessageBoxEx.Show(Resources.Msg_Hint_00, Resources.WindowTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
                 {
-                    var archivePath = PathEx.Combine(PathEx.LocalDir, "setup.msi");
+                    var archivePath = PathEx.Combine(PathEx.LocalDir, $"..\\{PathEx.GetTempFileName()}");
                     if (!File.Exists(archivePath))
                     {
-                        _guid = Guid.NewGuid().ToString();
-                        if (_guid.Length >= 8)
-                            _guid = _guid.Substring(0, 8);
-                        _tmpDir = PathEx.Combine(string.Format(Resources.TmpDir, _guid));
+                        _tmpDir = PathEx.Combine(Path.GetTempPath(), PathEx.GetTempDirName(Resources.AppName));
                         _transfer.DownloadFile(updUrl, archivePath);
                         Opacity = 1f;
                         CheckDownload.Enabled = true;
@@ -130,27 +119,25 @@ namespace AppUpdater
 
         private void ExtractDownload_DoWork(object sender, DoWorkEventArgs e)
         {
+            var updDir = PathEx.Combine(PathEx.LocalDir, $"..\\{PathEx.GetTempDirName()}");
             try
             {
                 if (_transfer?.FilePath == null || !File.Exists(_transfer.FilePath))
                     return;
-
-                var updDir = PathEx.Combine(string.Format(Resources.UpdateDir, _guid));
                 if (!Directory.Exists(updDir))
                     Directory.CreateDirectory(updDir);
-
                 using (var p = ProcessEx.Start("%system%\\msiexec.exe", string.Format(Resources.Extract, _transfer.FilePath, updDir), Elevation.IsAdministrator, ProcessWindowStyle.Minimized, false))
                     if (!p?.HasExited == true)
                         p?.WaitForExit();
-
                 Thread.Sleep(1500);
                 var innerDir = Path.Combine(updDir, "YoloMouse");
                 var updFiles = Directory.GetFiles(innerDir, "*", SearchOption.TopDirectoryOnly);
                 if (updFiles.Length == 0)
                     throw new ArgumentNullException(nameof(updFiles));
-
-                var curFiles = Directory.EnumerateFiles(PathEx.LocalDir, "*", SearchOption.AllDirectories)
-                                        .Where(s => !s.ContainsEx(updDir) && !Resources.WhiteList.ContainsEx(Path.GetFileName(s)));
+                var appPath = Directory.EnumerateFiles(updDir, $"*{Resources.AppName}.exe", SearchOption.AllDirectories).FirstOrDefault();
+                if (string.IsNullOrEmpty(appPath))
+                    throw new ArgumentNullException(nameof(appPath));
+                var curFiles = Directory.EnumerateFiles(PathEx.LocalDir, "*", SearchOption.AllDirectories).Where(x => !Resources.WhiteList.ContainsEx(Path.GetFileName(x)));
                 foreach (var file in curFiles)
                     try
                     {
@@ -160,28 +147,26 @@ namespace AppUpdater
                     {
                         try
                         {
-                            File.Move(file, $"{file}.{{{_guid}}}");
+                            File.Move(file, $"{file}.{{{Path.GetDirectoryName(updDir)}}}");
                         }
                         catch (Exception ex)
                         {
                             Log.Write(ex);
                         }
                     }
-
                 Data.DirCopy(innerDir, PathEx.LocalDir, true, true);
                 if (Directory.Exists(updDir))
                     Directory.Delete(updDir, true);
-
-                var exePath = PathEx.Combine(Resources.AppPath);
-                if (File.Exists(exePath))
-                    File.SetLastWriteTime(exePath, DateTime.Now);
-
+                appPath = PathEx.Combine(Resources.AppPath);
+                if (File.Exists(appPath))
+                    File.SetLastWriteTime(appPath, DateTime.Now);
                 e.Result = true;
             }
             catch (Exception ex)
             {
                 Log.Write(ex);
                 e.Result = false;
+                Data.ForceDelete(updDir);
             }
         }
 
@@ -204,7 +189,8 @@ namespace AppUpdater
 
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-            Ini.WriteDirect("History", "LastCheck", DateTime.Now);
+            var appPath = PathEx.Combine(Resources.AppPath);
+            Ini.WriteDirect("History", "LastCheck", File.Exists(appPath) ? DateTime.Now : DateTime.MinValue);
             ProcessEx.SendHelper.WaitThenDelete(_tmpDir, 5, Elevation.IsAdministrator);
             ProcessEx.SendHelper.WaitThenDelete(_transfer.FilePath, 5, Elevation.IsAdministrator);
         }

@@ -61,16 +61,6 @@ namespace AppUpdater.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] _7z {
-            get {
-                object obj = ResourceManager.GetObject("_7z", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to CDBurnerXP.
         /// </summary>
         internal static string AppDisplayName {
@@ -195,24 +185,6 @@ namespace AppUpdater.Properties {
         internal static string RegexVersionPattern {
             get {
                 return ResourceManager.GetString("RegexVersionPattern", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to %TEMP%\CDBurnerXPUpdater-{{{0}}}.
-        /// </summary>
-        internal static string TmpDir {
-            get {
-                return ResourceManager.GetString("TmpDir", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to %CurDir%\Update-{{{0}}}.
-        /// </summary>
-        internal static string UpdateDir {
-            get {
-                return ResourceManager.GetString("UpdateDir", resourceCulture);
             }
         }
         

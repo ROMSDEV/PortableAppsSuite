@@ -180,6 +180,27 @@ namespace AppUpdater.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Prime95Updater.exe
+        ///Prime95Updater.exe.config
+        ///Prime95Updater.ini
+        ///Prime95Updater.pdb
+        ///Prime95Updater64.exe
+        ///Prime95Updater64.exe.config
+        ///Prime95Updater64.ini
+        ///Prime95Updater64.pdb
+        ///SilDev.CSharpLib.dll
+        ///SilDev.CSharpLib.pdb
+        ///SilDev.CSharpLib64.dll
+        ///SilDev.CSharpLib64.pdb
+        ///prime.txt.
+        /// </summary>
+        internal static string WhiteList {
+            get {
+                return ResourceManager.GetString("WhiteList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Prime95 Updater.
         /// </summary>
         internal static string WindowTitle {

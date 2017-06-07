@@ -180,6 +180,20 @@ namespace AppUpdater.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to SpeccyUpdater.exe
+        ///SpeccyUpdater.exe.config
+        ///SpeccyUpdater.ini
+        ///SpeccyUpdater.pdb
+        ///SilDev.CSharpLib.dll
+        ///SilDev.CSharpLib.pdb.
+        /// </summary>
+        internal static string WhiteList {
+            get {
+                return ResourceManager.GetString("WhiteList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Speccy Updater.
         /// </summary>
         internal static string WindowTitle {

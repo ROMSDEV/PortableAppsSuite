@@ -29,7 +29,7 @@ namespace AppUpdater
                 if (!Elevation.WritableLocation())
                     Elevation.RestartAsAdministrator();
                 Ini.SetFile(Path.ChangeExtension(PathEx.LocalPath, ".ini"));
-                if ((DateTime.Now - Ini.Read("History", "LastCheck", DateTime.MinValue)).Days < 1)
+                if ((DateTime.Now - Ini.Read("History", "LastCheck", DateTime.MinValue)).Days < 7)
                     return;
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);

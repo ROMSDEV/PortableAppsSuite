@@ -2,7 +2,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("FurMarkUpdater")]
+[assembly: AssemblyTitle("FurMark Updater")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Si13n7 Dev. ®")]
@@ -15,4 +15,4 @@ using System.Runtime.InteropServices;
 
 [assembly: Guid("8d7783de-fdaf-42c9-9499-bc34ba1555ab")]
 
-[assembly: AssemblyVersion("17.6.4.*")]
+[assembly: AssemblyVersion("17.6.7.*")]

@@ -2,7 +2,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("CCleanerUpdater")]
+[assembly: AssemblyTitle("CCleaner Updater")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Si13n7 Dev. ®")]
@@ -15,4 +15,4 @@ using System.Runtime.InteropServices;
 
 [assembly: Guid("96592975-cd87-4db7-ae55-83d4037931a2")]
 
-[assembly: AssemblyVersion("17.6.4.*")]
+[assembly: AssemblyVersion("17.6.7.*")]

@@ -20,8 +20,6 @@ namespace HWMonitorPortable
                 if (!newInstance)
                     return;
 
-                CleanUpHelper();
-
                 var appDir = PathEx.Combine(PathEx.LocalDir, "App\\hwmon");
                 if (!Directory.Exists(appDir))
                     return;
@@ -69,16 +67,6 @@ namespace HWMonitorPortable
                 Helper.ApplicationStart(appPath, EnvironmentEx.CommandLine(false), false);
 
                 Helper.FileForwarding(Helper.Options.Exit, fileMap, true);
-            }
-        }
-
-        private static void CleanUpHelper()
-        {
-            foreach (var file in Resources.FileList.SplitNewLine())
-            {
-                var path = PathEx.Combine(PathEx.LocalDir, file);
-                if (File.Exists(path))
-                    File.Delete(path);
             }
         }
     }

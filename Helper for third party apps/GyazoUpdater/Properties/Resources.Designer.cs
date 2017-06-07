@@ -63,6 +63,15 @@ namespace AppUpdater.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Gyazo.
         /// </summary>
+        internal static string AppDisplayName {
+            get {
+                return ResourceManager.GetString("AppDisplayName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gyazowin.
+        /// </summary>
         internal static string AppName {
             get {
                 return ResourceManager.GetString("AppName", resourceCulture);
@@ -237,7 +246,7 @@ namespace AppUpdater.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to %CurDir%\Update-{{{0}}}.
+        ///   Looks up a localized string similar to %CurDir%\..\Update-{{{0}}}.
         /// </summary>
         internal static string UpdateDir {
             get {

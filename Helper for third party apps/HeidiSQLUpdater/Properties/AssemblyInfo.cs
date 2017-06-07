@@ -2,7 +2,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("HeidiSQLUpdater")]
+[assembly: AssemblyTitle("HeidiSQL Updater")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Si13n7 Dev. ®")]
@@ -15,4 +15,4 @@ using System.Runtime.InteropServices;
 
 [assembly: Guid("08397f6c-512d-4ca5-a41a-b62e5faa0fbd")]
 
-[assembly: AssemblyVersion("17.6.4.*")]
+[assembly: AssemblyVersion("17.6.7.*")]

@@ -161,7 +161,7 @@
     <value>%TEMP%\YoloMouseUpdater-{{{0}}}</value>
   </data>
   <data name="UpdateDir" xml:space="preserve">
-    <value>%CurDir%\Update-{{{0}}}</value>
+    <value>%CurDir%\..\Update-{{{0}}}</value>
   </data>
   <data name="UpdateUrl" xml:space="preserve">
     <value>https://github.com/PandaTeemo/YoloMouse/releases/download/{0}{1}.msi</value>

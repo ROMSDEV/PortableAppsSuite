@@ -181,24 +181,6 @@ namespace AppUpdater.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to %TEMP%\NTLiteUpdater-{{{0}}}.
-        /// </summary>
-        internal static string TmpDir {
-            get {
-                return ResourceManager.GetString("TmpDir", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to %CurDir%\Update-{{{0}}}.
-        /// </summary>
-        internal static string UpdateDir {
-            get {
-                return ResourceManager.GetString("UpdateDir", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to http://downloads.ntlite.com/files/NTLite_setup_{0}.exe.
         /// </summary>
         internal static string UpdateUrl {

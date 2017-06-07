@@ -2,7 +2,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("CheatEngineUpdater")]
+[assembly: AssemblyTitle("Cheat Engine Updater")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Si13n7 Dev. ®")]
@@ -15,4 +15,4 @@ using System.Runtime.InteropServices;
 
 [assembly: Guid("0c1f0763-db99-4640-8a02-f6f22d6d7ff8")]
 
-[assembly: AssemblyVersion("17.6.4.*")]
+[assembly: AssemblyVersion("17.6.6.*")]

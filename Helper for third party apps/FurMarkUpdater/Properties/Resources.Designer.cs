@@ -246,7 +246,7 @@ namespace AppUpdater.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to %CurDir%\Update-{{{0}}}.
+        ///   Looks up a localized string similar to %CurDir%\..\Update-{{{0}}}.
         /// </summary>
         internal static string UpdateDir {
             get {

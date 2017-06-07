@@ -99,9 +99,9 @@ namespace AppUpdater.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        internal static System.Drawing.Icon DefraglerUpdater {
+        internal static System.Drawing.Icon DefragglerUpdater {
             get {
-                object obj = ResourceManager.GetObject("DefraglerUpdater", resourceCulture);
+                object obj = ResourceManager.GetObject("DefragglerUpdater", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
             }
         }
@@ -176,6 +176,22 @@ namespace AppUpdater.Properties {
         internal static string UserAgent {
             get {
                 return ResourceManager.GetString("UserAgent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DefragglerUpdater.exe
+        ///DefragglerUpdater.exe.config
+        ///DefragglerUpdater.ini
+        ///DefragglerUpdater.pdb
+        ///SilDev.CSharpLib.dll
+        ///SilDev.CSharpLib.pdb
+        ///defraggler.ini
+        ///statistics.bin.
+        /// </summary>
+        internal static string WhiteList {
+            get {
+                return ResourceManager.GetString("WhiteList", resourceCulture);
             }
         }
         

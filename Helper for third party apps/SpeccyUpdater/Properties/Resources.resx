@@ -117,6 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="diagonal_pattern" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\diagonal_pattern.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="AppName" xml:space="preserve">
     <value>Speccy</value>
   </data>
@@ -128,10 +132,6 @@
   </data>
   <data name="AppPath64" xml:space="preserve">
     <value>%CurDir%\Speccy64.exe</value>
-  </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="diagonal_pattern" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\diagonal_pattern.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Msg_Hint_00" xml:space="preserve">
     <value>A newer version is available. Would you like to update now?</value>
@@ -153,6 +153,14 @@
   </data>
   <data name="UserAgent" xml:space="preserve">
     <value>Mozilla/5.0</value>
+  </data>
+  <data name="WhiteList" xml:space="preserve">
+    <value>SpeccyUpdater.exe
+SpeccyUpdater.exe.config
+SpeccyUpdater.ini
+SpeccyUpdater.pdb
+SilDev.CSharpLib.dll
+SilDev.CSharpLib.pdb</value>
   </data>
   <data name="WindowTitle" xml:space="preserve">
     <value>Speccy Updater</value>

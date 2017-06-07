@@ -125,13 +125,16 @@
     <value>..\Resources\GyazoUpdater.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="iu" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\iu;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\..\.helper\iu\iu;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="js" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\js;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\..\.helper\js\js;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="AppDisplayName" xml:space="preserve">
+    <value>Gyazo</value>
   </data>
   <data name="AppName" xml:space="preserve">
-    <value>Gyazo</value>
+    <value>Gyazowin</value>
   </data>
   <data name="AppPath" xml:space="preserve">
     <value>%CurDir%\Gyazowin.exe</value>
@@ -183,7 +186,7 @@ p.open("https://gyazo.com/download?lang=en", function(status) {
     <value>%TEMP%\GyazoUpdater-{{{0}}}</value>
   </data>
   <data name="UpdateDir" xml:space="preserve">
-    <value>%CurDir%\Update-{{{0}}}</value>
+    <value>%CurDir%\..\Update-{{{0}}}</value>
   </data>
   <data name="UserAgent" xml:space="preserve">
     <value>Mozilla/5.0</value>

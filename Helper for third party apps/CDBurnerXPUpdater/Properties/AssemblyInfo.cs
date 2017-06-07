@@ -3,11 +3,11 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 #if x86
-[assembly: AssemblyTitle("CDBurnerXPUpdater")]
+[assembly: AssemblyTitle("CDBurnerXP Updater")]
 [assembly: AssemblyProduct("CDBurnerXPUpdater")]
 #else
-[assembly: AssemblyTitle("CDBurnerXP64Updater")]
-[assembly: AssemblyProduct("CDBurnerXP64Updater")]
+[assembly: AssemblyTitle("CDBurnerXP Updater (64-bit)")]
+[assembly: AssemblyProduct("CDBurnerXPUpdater64")]
 #endif
 
 [assembly: AssemblyDescription("")]
@@ -21,4 +21,4 @@ using System.Runtime.InteropServices;
 
 [assembly: Guid("d11b001a-08c9-421b-bcaa-b7c4809ce734")]
 
-[assembly: AssemblyVersion("17.6.4.*")]
+[assembly: AssemblyVersion("17.6.7.*")]

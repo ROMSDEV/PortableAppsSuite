@@ -23,8 +23,6 @@ namespace AIDA64Portable
                 if (!File.Exists(appPath) || ProcessEx.InstancesCount(Path.GetFileNameWithoutExtension(appPath)) > 0)
                     return;
 
-                CleanUpHelper();
-
                 const string iniPath = "%CurDir%\\Data\\aida64.ini";
                 var iniMap = new Dictionary<string, Dictionary<string, string>>
                 {
@@ -67,16 +65,6 @@ namespace AIDA64Portable
 
                 Helper.FileForwarding(Helper.Options.Exit, fileMap, true);
             }
-        }
-
-        private static void CleanUpHelper()
-        {
-            var appDir = PathEx.Combine(PathEx.LocalDir, "AIDA64");
-            if (Directory.Exists(appDir))
-                Directory.Delete(appDir, true);
-            var settingsPath = PathEx.Combine(PathEx.LocalDir, "settings.reg");
-            if (File.Exists(settingsPath))
-                File.Delete(settingsPath);
         }
     }
 }

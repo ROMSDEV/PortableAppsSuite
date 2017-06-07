@@ -3,11 +3,11 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 #if x86
-[assembly: AssemblyTitle("VLCUpdater")]
+[assembly: AssemblyTitle("VLC Media Player Updater")]
 [assembly: AssemblyProduct("VLCUpdater")]
 #else
-[assembly: AssemblyTitle("VLC64Updater")]
-[assembly: AssemblyProduct("VLC64Updater")]
+[assembly: AssemblyTitle("VLC Media Player Updater (64-bit)")]
+[assembly: AssemblyProduct("VLCUpdater64")]
 #endif
 
 [assembly: AssemblyDescription("")]
@@ -21,4 +21,4 @@ using System.Runtime.InteropServices;
 
 [assembly: Guid("d11b001a-08c9-421b-bcaa-b7c4809ce734")]
 
-[assembly: AssemblyVersion("17.6.4.*")]
+[assembly: AssemblyVersion("17.6.7.*")]

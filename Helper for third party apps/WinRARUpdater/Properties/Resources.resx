@@ -125,7 +125,7 @@
     <value>..\Resources\RAR.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="_7z" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\7z;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\..\.helper\7z\7z;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="AppName" xml:space="preserve">
     <value>WinRAR</value>
@@ -171,12 +171,6 @@
   </data>
   <data name="RegexVersionPattern" xml:space="preserve">
     <value>&lt;td align="center"&gt;(.+?)&lt;/td&gt;</value>
-  </data>
-  <data name="TmpDir" xml:space="preserve">
-    <value>%TEMP%\WinRARUpdater-{{{0}}}</value>
-  </data>
-  <data name="UpdateDir" xml:space="preserve">
-    <value>%CurDir%\Update-{{{0}}}</value>
   </data>
   <data name="UpdateUrl" xml:space="preserve">
     <value>http://www.rarsoft.com/rar/{0}</value>

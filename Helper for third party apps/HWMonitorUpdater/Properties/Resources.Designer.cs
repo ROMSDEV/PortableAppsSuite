@@ -61,21 +61,29 @@ namespace AppUpdater.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
+        ///   Looks up a localized string similar to HWMonitor.
         /// </summary>
-        internal static byte[] _7z {
+        internal static string AppDisplayName {
             get {
-                object obj = ResourceManager.GetObject("_7z", resourceCulture);
-                return ((byte[])(obj));
+                return ResourceManager.GetString("AppDisplayName", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HWMonitor.
+        ///   Looks up a localized string similar to HWMonitor_x32.
         /// </summary>
         internal static string AppName {
             get {
                 return ResourceManager.GetString("AppName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to HWMonitor_x64.
+        /// </summary>
+        internal static string AppName64 {
+            get {
+                return ResourceManager.GetString("AppName64", resourceCulture);
             }
         }
         
@@ -186,24 +194,6 @@ namespace AppUpdater.Properties {
         internal static string RegexUrl {
             get {
                 return ResourceManager.GetString("RegexUrl", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to %TEMP%\HWMonitorUpdater-{{{0}}}.
-        /// </summary>
-        internal static string TmpDir {
-            get {
-                return ResourceManager.GetString("TmpDir", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to %CurDir%\Update-{{{0}}}.
-        /// </summary>
-        internal static string UpdateDir {
-            get {
-                return ResourceManager.GetString("UpdateDir", resourceCulture);
             }
         }
         

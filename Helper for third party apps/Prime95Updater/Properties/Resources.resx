@@ -157,6 +157,21 @@
   <data name="UserAgent" xml:space="preserve">
     <value>Mozilla/5.0</value>
   </data>
+  <data name="WhiteList" xml:space="preserve">
+    <value>Prime95Updater.exe
+Prime95Updater.exe.config
+Prime95Updater.ini
+Prime95Updater.pdb
+Prime95Updater64.exe
+Prime95Updater64.exe.config
+Prime95Updater64.ini
+Prime95Updater64.pdb
+SilDev.CSharpLib.dll
+SilDev.CSharpLib.pdb
+SilDev.CSharpLib64.dll
+SilDev.CSharpLib64.pdb
+prime.txt</value>
+  </data>
   <data name="WindowTitle" xml:space="preserve">
     <value>Prime95 Updater</value>
   </data>

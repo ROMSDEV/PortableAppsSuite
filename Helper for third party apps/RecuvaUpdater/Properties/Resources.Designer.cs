@@ -180,6 +180,20 @@ namespace AppUpdater.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to RecuvaUpdater.exe
+        ///RecuvaUpdater.exe.config
+        ///RecuvaUpdater.ini
+        ///RecuvaUpdater.pdb
+        ///SilDev.CSharpLib.dll
+        ///SilDev.CSharpLib.pdb.
+        /// </summary>
+        internal static string WhiteList {
+            get {
+                return ResourceManager.GetString("WhiteList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Recuva Updater.
         /// </summary>
         internal static string WindowTitle {

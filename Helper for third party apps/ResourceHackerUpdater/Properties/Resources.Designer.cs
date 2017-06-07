@@ -162,6 +162,20 @@ namespace AppUpdater.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ResourceHackerUpdater.exe
+        ///ResourceHackerUpdater.exe.config
+        ///ResourceHackerUpdater.ini
+        ///ResourceHackerUpdater.pdb
+        ///SilDev.CSharpLib.dll
+        ///SilDev.CSharpLib.pdb.
+        /// </summary>
+        internal static string WhiteList {
+            get {
+                return ResourceManager.GetString("WhiteList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Resource Hacker Updater.
         /// </summary>
         internal static string WindowTitle {

@@ -42,7 +42,6 @@ namespace CDBurnerXPPortable
                     return;
 
                 var dataDir = PathEx.Combine(PathEx.LocalDir, "Data");
-                CleanUpHelper(dataDir);
                 var fileMap = new Dictionary<string, string>
                 {
                     {
@@ -65,32 +64,6 @@ namespace CDBurnerXPPortable
                 Helper.ApplicationStart(appPath, EnvironmentEx.CommandLine(false), false);
 
                 Helper.FileForwarding(Helper.Options.Exit, fileMap, true);
-            }
-        }
-
-        private static void CleanUpHelper(string dataDir)
-        {
-#if x86
-            var appDir = PathEx.Combine(PathEx.LocalDir, "CDBurnerXP");
-#else
-            var appDir = PathEx.Combine(PathEx.LocalDir, "CDBurnerXP64");
-#endif
-            if (!Directory.Exists(appDir))
-                return;
-            try
-            {
-                var oldCfgPath = Path.Combine(appDir, "UserSettings.ini");
-                if (File.Exists(oldCfgPath))
-                {
-                    if (!Directory.Exists(dataDir))
-                        Directory.CreateDirectory(dataDir);
-                    File.Move(oldCfgPath, PathEx.Combine(dataDir, "UserSettings.ini"));
-                }
-                Directory.Delete(appDir, true);
-            }
-            catch (Exception ex)
-            {
-                Log.Write(ex);
             }
         }
     }

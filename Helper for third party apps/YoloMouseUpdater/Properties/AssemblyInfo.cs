@@ -3,10 +3,10 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 #if x86
-[assembly: AssemblyTitle("YoloMouseUpdater")]
+[assembly: AssemblyTitle("YoloMouse Updater")]
 [assembly: AssemblyProduct("YoloMouseUpdater")]
 #else
-[assembly: AssemblyTitle("YoloMouse64Updater")]
+[assembly: AssemblyTitle("YoloMouse Updater (64-bit)")]
 [assembly: AssemblyProduct("YoloMouse64Updater")]
 #endif
 
@@ -21,4 +21,4 @@ using System.Runtime.InteropServices;
 
 [assembly: Guid("d11b001a-08c9-421b-bcaa-b7c4809ce734")]
 
-[assembly: AssemblyVersion("17.6.4.*")]
+[assembly: AssemblyVersion("17.6.7.*")]

@@ -36,8 +36,6 @@ namespace GyazoPortable
                 if (ProcessEx.InstancesCount(Path.GetFileNameWithoutExtension(appPath)) > 0 || !File.Exists(updaterPath) || ProcessEx.InstancesCount(Path.GetFileNameWithoutExtension(updaterPath)) > 0)
                     return;
 
-                CleanUpOld();
-
                 Helper.ApplicationStart(updaterPath, "/silent", null);
                 if (!File.Exists(appPath))
                 {
@@ -67,21 +65,6 @@ namespace GyazoPortable
 
                 Helper.DirectoryForwarding(Helper.Options.Exit, dirMap);
                 Helper.RegForwarding(Helper.Options.Exit, regKeys);
-            }
-        }
-
-        private static void CleanUpOld()
-        {
-            var appDir = PathEx.Combine(PathEx.LocalDir, "Gyazo");
-            if (!Directory.Exists(appDir))
-                return;
-            try
-            {
-                Directory.Delete(appDir, true);
-            }
-            catch (Exception ex)
-            {
-                Log.Write(ex);
             }
         }
     }

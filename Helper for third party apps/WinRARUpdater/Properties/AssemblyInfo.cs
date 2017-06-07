@@ -3,10 +3,10 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 #if x86
-[assembly: AssemblyTitle("WinRARUpdater")]
+[assembly: AssemblyTitle("WinRAR Updater")]
 [assembly: AssemblyProduct("WinRARUpdater")]
 #else
-[assembly: AssemblyTitle("WinRAR64Updater")]
+[assembly: AssemblyTitle("WinRAR Updater (64-bit)")]
 [assembly: AssemblyProduct("WinRAR64Updater")]
 #endif
 
@@ -21,4 +21,4 @@ using System.Runtime.InteropServices;
 
 [assembly: Guid("a629d938-72b1-43f1-b6b2-9ba93a47e780")]
 
-[assembly: AssemblyVersion("17.6.4.*")]
+[assembly: AssemblyVersion("17.6.7.*")]

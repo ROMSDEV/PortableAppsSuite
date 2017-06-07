@@ -61,16 +61,6 @@ namespace AppUpdater.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] _7z {
-            get {
-                object obj = ResourceManager.GetObject("_7z", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to HeidiSQL.
         /// </summary>
         internal static string AppName {
@@ -181,24 +171,6 @@ namespace AppUpdater.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to %TEMP%\HeidiSQLUpdater-{{{0}}}.
-        /// </summary>
-        internal static string TmpDir {
-            get {
-                return ResourceManager.GetString("TmpDir", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to %CurDir%\Update-{{{0}}}.
-        /// </summary>
-        internal static string UpdateDir {
-            get {
-                return ResourceManager.GetString("UpdateDir", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to http://www.heidisql.com/downloads/releases/{0}_Portable.zip.
         /// </summary>
         internal static string UpdateUrl {
@@ -217,12 +189,12 @@ namespace AppUpdater.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HeidiSQLupdater.exe
-        ///HeidiSQLupdater.exe.config
-        ///HeidiSQLupdater.ini
-        ///HeidiSQLupdater.pdb
-        ///sildev.csharplib.dll
-        ///sildev.csharplib.pdb
+        ///   Looks up a localized string similar to HeidiSQLUpdater.exe
+        ///HeidiSQLUpdater.exe.config
+        ///HeidiSQLUpdater.ini
+        ///HeidiSQLUpdater.pdb
+        ///SilDev.CSharpLib.dll
+        ///SilDev.CSharpLib.pdb
         ///portable_settings.txt.
         /// </summary>
         internal static string WhiteList {

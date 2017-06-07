@@ -226,24 +226,6 @@ namespace AppUpdater.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to %TEMP%\WinRARUpdater-{{{0}}}.
-        /// </summary>
-        internal static string TmpDir {
-            get {
-                return ResourceManager.GetString("TmpDir", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to %CurDir%\Update-{{{0}}}.
-        /// </summary>
-        internal static string UpdateDir {
-            get {
-                return ResourceManager.GetString("UpdateDir", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to http://www.rarsoft.com/rar/{0}.
         /// </summary>
         internal static string UpdateUrl {
