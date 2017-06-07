@@ -498,7 +498,11 @@
                 foreach (var data in regMap)
                 {
                     var section = data.Key;
-                    sw.WriteLine($"[{section}]");
+                    if (!section.StartsWith("["))
+                        section = $"[{section}";
+                    if (!section.EndsWith("]"))
+                        section = $"{section}]";
+                    sw.WriteLine(section);
                     if (regMap[section]?.Any() != true)
                     {
                         sw.WriteLine();
