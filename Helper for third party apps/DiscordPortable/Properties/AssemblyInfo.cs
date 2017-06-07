@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -15,4 +15,4 @@ using System.Runtime.InteropServices;
 
 [assembly: Guid("613a9181-e474-40d0-a983-ddf5679207c5")]
 
-[assembly: AssemblyVersion("1.0.*")]
+[assembly: AssemblyVersion("17.6.7.*")]

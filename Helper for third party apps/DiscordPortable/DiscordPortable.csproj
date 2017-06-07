@@ -2,8 +2,8 @@
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProjectGuid>{613A9181-E474-40D0-A983-DDF5679207C5}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -15,8 +15,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\.bin\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;x86</DefineConstants>
+    <OutputPath>..\.bin\DiscordPortable\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;x86;ApplicationStart;DirectoryForwarding</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
@@ -24,8 +24,8 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
-    <OutputPath>..\.bin\</OutputPath>
-    <DefineConstants>TRACE;x86</DefineConstants>
+    <OutputPath>..\.bin\DiscordPortable\</OutputPath>
+    <DefineConstants>TRACE;x86;ApplicationStart;DirectoryForwarding</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x86</PlatformTarget>
@@ -49,6 +49,7 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\.helper\Portable.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -77,6 +78,28 @@
     <Content Include="appicon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>if exist "$(SolutionDir).helper\AssemblyDateVersion.exe" "$(SolutionDir).helper\AssemblyDateVersion.exe" "$(ProjectDir)Properties\AssemblyInfo.cs"</PreBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>if not exist "$(TargetDir)App\AIDA64" md "$(TargetDir)App\Discord"
+if not exist "$(TargetDir)App\SilDev.CSharpLib.dll" copy NUL "$(TargetDir)App\SilDev.CSharpLib.dll"
+if not exist "$(TargetDir)App\SilDev.CSharpLib.pdb" copy NUL "$(TargetDir)App\SilDev.CSharpLib.pdb"
+if exist "$(TargetDir)SilDev.CSharpLib.dll" (
+xcopy /h /y "$(TargetDir)SilDev.CSharpLib.dll" "$(TargetDir)App\SilDev.CSharpLib.dll"
+del /f /q "$(TargetDir)SilDev.CSharpLib.dll"
+)
+if exist "$(TargetDir)SilDev.CSharpLib.pdb" (
+xcopy /h /y "$(TargetDir)SilDev.CSharpLib.pdb" "$(TargetDir)App\SilDev.CSharpLib.pdb"
+del /f /q "$(TargetDir)SilDev.CSharpLib.pdb"
+)
+if exist "$(TargetDir)SilDev.CSharpLib.pdb" del /f /q /a:h "$(TargetDir)SilDev.CSharpLib.pdb"
+if exist "$(TargetDir)SilDev.CSharpLib.xml" del /f /q "$(TargetDir)SilDev.CSharpLib.xml"
+attrib +h "$(TargetDir)*.exe.config"
+attrib +h "$(TargetDir)*.pdb"
+attrib +h "$(TargetDir)App\*.pdb"
+</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

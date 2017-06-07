@@ -5,6 +5,7 @@
     using System.IO;
     using System.Linq;
     using System.Threading;
+    using Portable;
     using SilDev;
 
     internal static class Program
@@ -19,86 +20,49 @@
                 if (!newInstance)
                     return;
 
-                var defaultKeys = new[]
+                var regKeys = new[]
                 {
                     "HKCR\\Discord"
-                };
-
-                var backupKeys = new[]
-                {
-                    "HKCR\\SI13N7-BACKUP: Discord"
                 };
 
                 if (Elevation.IsAdministrator && Environment.CommandLine.ContainsEx("{E429830E-A5A1-4FA0-9D5F-B21964F4698E}"))
                     goto ClearRegistry;
 
-                for (var i = 0; i < defaultKeys.Length; i++)
-                    if (!Reg.EntryExists(defaultKeys[i], "Portable App"))
-                        Reg.MoveSubKey(defaultKeys[i], backupKeys[i]);
-
-                if (!Elevation.IsAdministrator && defaultKeys.Any(Reg.SubKeyExists))
-                {
-                    Elevation.RestartAsAdministrator();
+                var updaterPath = PathEx.Combine(PathEx.LocalDir, "App\\Discord\\Update.exe");
+                if (!File.Exists(updaterPath) || ProcessEx.IsRunning("Discord"))
                     return;
-                }
 
-                var defAppDir = PathEx.Combine("%LocalAppData%\\Discord");
-                var appDir = PathEx.Combine(PathEx.LocalDir, "App\\Discord");
-                Data.DirLink(defAppDir, appDir, true);
+                var anyKeyExists = regKeys.Any(Reg.SubKeyExists);
 
-                var defTmpDir = PathEx.Combine("%LocalAppData%\\SquirrelTemp");
-                var tmpDir = Path.Combine(appDir, "packages\\SquirrelTemp");
-                Data.DirLink(defTmpDir, tmpDir, true);
-
-                var defDataDir = PathEx.Combine("%AppData%\\discord");
-                var dataDir = PathEx.Combine(PathEx.LocalDir, "Data\\AppData");
-                Data.DirLink(defDataDir, dataDir, true);
-
-                var regPath = PathEx.Combine(PathEx.LocalDir, "Data\\settings.reg");
-                Reg.ImportFile(regPath);
-
-                var appPath = Path.Combine(appDir, "Update.exe");
-                using (var p = ProcessEx.Start(appPath, "--processStart Discord.exe", false, false))
-                    if (!p?.HasExited == true)
-                        p?.WaitForExit();
-
-                var fList = new List<string>();
-                foreach (var d in Directory.GetDirectories(appDir, "app-*", SearchOption.TopDirectoryOnly))
-                    fList.AddRange(Directory.GetFiles(d, "*.exe", SearchOption.TopDirectoryOnly));
-                for (var i = 0; i < 10; i++)
+                var dirMap = new Dictionary<string, string>
                 {
-                    var isRunning = true;
-                    while (isRunning)
                     {
-                        foreach (var f in fList)
-                        {
-                            isRunning = ProcessEx.IsRunning(f);
-                            if (!isRunning)
-                                continue;
-                            i = 0;
-                            break;
-                        }
-                        Thread.Sleep(200);
+                        "%LocalAppData%\\Discord",
+                        "%CurDir%\\App\\Discord"
+                    },
+                    {
+                        "%LocalAppData%\\SquirrelTemp",
+                        "%CurDir%\\App\\Discord\\packages\\SquirrelTemp"
+                    },
+                    {
+                        "%AppData%\\discord",
+                        "%CurDir%\\Data\\AppData"
                     }
-                    Thread.Sleep(250);
-                }
+                };
 
-                Data.DirUnLink(defAppDir, true);
-                Data.DirUnLink(defTmpDir, true);
-                Data.DirUnLink(defDataDir, true);
+                Helper.DirectoryForwarding(Helper.Options.Start, dirMap);
 
-                if (defaultKeys.Any(Reg.SubKeyExists))
-                    Reg.ExportKeys(regPath, defaultKeys);
+                Helper.ApplicationStart(updaterPath, "--processStart Discord.exe", false);
+
+                Helper.DirectoryForwarding(Helper.Options.Exit, dirMap);
+
+                if (anyKeyExists)
+                    return;
 
                 ClearRegistry:
-
-                foreach (var key in defaultKeys)
+                foreach (var key in regKeys)
                     Reg.RemoveSubKey(key);
-
-                for (var i = 0; i < backupKeys.Length; i++)
-                    Reg.MoveSubKey(backupKeys[i], defaultKeys[i]);
-
-                if (!Elevation.IsAdministrator && defaultKeys.Any(Reg.SubKeyExists))
+                if (!Elevation.IsAdministrator && regKeys.Any(Reg.SubKeyExists))
                     Elevation.RestartAsAdministrator("{E429830E-A5A1-4FA0-9D5F-B21964F4698E}");
             }
         }
