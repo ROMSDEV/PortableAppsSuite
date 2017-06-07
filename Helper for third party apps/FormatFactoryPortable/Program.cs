@@ -3,11 +3,12 @@ namespace FFactoryPortable
     using System;
 #if !Legacy
     using System.Collections.Generic;
-#endif
     using System.Diagnostics;
+#endif
     using System.IO;
     using System.Threading;
     using Microsoft.Win32;
+    using Portable;
     using SilDev;
 
     internal static class Program
@@ -23,59 +24,44 @@ namespace FFactoryPortable
                     return;
 
                 var appPath = PathEx.Combine("%CurDir%\\App\\FormatFactory\\FormatFactory.exe");
-
-                if (!File.Exists(appPath) || Process.GetProcessesByName(Path.GetFileNameWithoutExtension(appPath)).Length > 0)
+                if (!File.Exists(appPath) || ProcessEx.IsRunning(Path.GetFileNameWithoutExtension(appPath)))
                     return;
 
-                if (!Reg.EntryExists("HKCU\\Software\\FreeTime", "Portable App"))
-                    Reg.MoveSubKey("HKCU\\Software\\FreeTime", "HKCU\\Software\\SI13N7-BACKUP: FreeTime");
+                var regKeys = new[]
+                {
+                    "HKCU\\Software\\FreeTime",
+                    "HKCU\\Software\\FreeTime\\FormatFactory"
+                };
 
-                var settingsPath = PathEx.Combine("%CurDir%\\Data\\settings.reg");
-                if (File.Exists(settingsPath))
-                    Reg.ImportFile(settingsPath);
+                Helper.RegForwarding(Helper.Options.Start, regKeys[0]);
 
-                var hkcu = Registry.CurrentUser;
-                const string appSubKey = "Software\\FreeTime\\FormatFactory";
-                const string subKey = "Software\\FreeTime";
-                Reg.Write(hkcu, subKey, "Portable App", true, RegistryValueKind.String);
-                Reg.Write(hkcu, subKey, "FormatFactory", Path.GetDirectoryName(appPath), RegistryValueKind.String);
-                Reg.Write(hkcu, appSubKey, "CheckNewVersion", 0, RegistryValueKind.DWord);
-                Reg.Write(hkcu, appSubKey, "CodecInstalled", 0, RegistryValueKind.DWord);
-                Reg.Write(hkcu, appSubKey, "OptionActivePage", 0, RegistryValueKind.DWord);
-                Reg.Write(hkcu, appSubKey, "OutputDir", PathEx.Combine("%CurDir%\\Data\\Output"), RegistryValueKind.String);
-                Reg.Write(hkcu, appSubKey, "UseCount", 1, RegistryValueKind.DWord);
+                Reg.Write(regKeys[0], "FormatFactory", Path.GetDirectoryName(appPath), RegistryValueKind.String);
+                Reg.Write(regKeys[1], "CheckNewVersion", 0, RegistryValueKind.DWord);
+                Reg.Write(regKeys[1], "CodecInstalled", 0, RegistryValueKind.DWord);
+                Reg.Write(regKeys[1], "OptionActivePage", 0, RegistryValueKind.DWord);
+                Reg.Write(regKeys[1], "OutputDir", PathEx.Combine("%CurDir%\\Data\\Output"), RegistryValueKind.String);
+                Reg.Write(regKeys[1], "UseCount", 1, RegistryValueKind.DWord);
 #if Legacy
-                Reg.Write(hkcu, appSubKey, "Skin", 2, RegistryValueKind.DWord);
-                Reg.Write(hkcu, appSubKey, "Version", "3.3.5", RegistryValueKind.String);
+                Reg.Write(regKeys[1], "Skin", 2, RegistryValueKind.DWord);
+                Reg.Write(regKeys[1], "Version", "3.3.5", RegistryValueKind.String);
 #else
-                Reg.Write(hkcu, appSubKey, "Skin", 6, RegistryValueKind.DWord);
-                Reg.Write(hkcu, appSubKey, "StartMethodTab", 0, RegistryValueKind.DWord);
-
+                Reg.Write(regKeys[1], "Skin", 6, RegistryValueKind.DWord);
+                Reg.Write(regKeys[1], "StartMethodTab", 0, RegistryValueKind.DWord);
                 try
                 {
-                    var fvi = FileVersionInfo.GetVersionInfo(PathEx.Combine("%CurDir%\\App\\FormatFactory\\FormatFactory.exe"));
-                    Reg.Write(hkcu, appSubKey, "Version", $"{string.Join(".", new List<string>(fvi.ProductVersion.Split('.')).GetRange(0, 3))}", RegistryValueKind.String);
+                    var fvi = FileVersionInfo.GetVersionInfo(appPath);
+                    var str = new List<string>(fvi.ProductVersion.Split('.')).GetRange(0, 3).Join('.');
+                    Reg.Write(regKeys[1], "Version", str, RegistryValueKind.String);
                 }
                 catch (Exception ex)
                 {
                     Log.Write(ex);
                 }
 #endif
-                using (var p = ProcessEx.Start(appPath, EnvironmentEx.CommandLine(false), false, false))
-                    if (!p?.HasExited == true)
-                        p?.WaitForExit();
 
-                bool isRunning;
-                do
-                {
-                    isRunning = ProcessEx.IsRunning(appPath);
-                    Thread.Sleep(200);
-                }
-                while (isRunning);
+                Helper.ApplicationStart(appPath, EnvironmentEx.CommandLine(false), false);
 
-                Reg.ExportKeys(settingsPath, "HKCU\\Software\\FreeTime");
-                Reg.RemoveSubKey(hkcu, subKey);
-                Reg.MoveSubKey("HKCU\\Software\\SI13N7-BACKUP: FreeTime", "HKCU\\Software\\FreeTime");
+                Helper.RegForwarding(Helper.Options.Exit, regKeys[0]);
             }
         }
     }
