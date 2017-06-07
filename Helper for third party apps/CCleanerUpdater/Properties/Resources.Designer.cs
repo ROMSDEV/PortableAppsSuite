@@ -180,6 +180,33 @@ namespace AppUpdater.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &lt;h1&gt;Version History&lt;/h1&gt;.
+        /// </summary>
+        internal static string VersionHeader {
+            get {
+                return ResourceManager.GetString("VersionHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;h6&gt;(.*?)&lt;/h6&gt;.
+        /// </summary>
+        internal static string VersionRegex {
+            get {
+                return ResourceManager.GetString("VersionRegex", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to https://www.piriform.com/ccleaner/version-history.
+        /// </summary>
+        internal static string VersionUrl {
+            get {
+                return ResourceManager.GetString("VersionUrl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to CCleanerUpdater.exe
         ///CCleanerUpdater.exe.config
         ///CCleanerUpdater.ini

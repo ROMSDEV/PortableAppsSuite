@@ -2,13 +2,15 @@ namespace AppUpdater
 {
     using System;
     using System.ComponentModel;
+    using System.Diagnostics;
     using System.IO;
     using System.IO.Compression;
+    using System.Linq;
+    using System.Text.RegularExpressions;
     using System.Windows.Forms;
     using Properties;
     using SilDev;
     using SilDev.Forms;
-    using System.Linq;
 
     public partial class MainForm : Form
     {
@@ -28,9 +30,44 @@ namespace AppUpdater
             Text = Resources.WindowTitle;
             TaskBar.Progress.SetState(Handle, TaskBar.Progress.Flags.Indeterminate);
             var appPath = PathEx.Combine(Resources.AppPath);
-            var localDate = File.GetLastWriteTime(appPath);
-            var onlineDate = NetEx.GetFileDate(Resources.UpdateUrl, Resources.UserAgent);
-            if ((onlineDate - localDate).Days > 0)
+            Version localVersion;
+            try
+            {
+                var version = FileVersionInfo.GetVersionInfo(appPath).FileVersion;
+                if (version.Contains(','))
+                    version = version.Split(',').Select(c => c.Trim()).Join('.');
+                localVersion = Version.Parse(version);
+            }
+            catch
+            {
+                localVersion = new Version("0.0.0.0");
+            }
+            Version onlineVersion;
+            try
+            {
+                var source = NetEx.Transfer.DownloadString(Resources.VersionUrl);
+                if (string.IsNullOrEmpty(source))
+                    throw new ArgumentNullException(nameof(source));
+                source = TextEx.FormatNewLine(source).SplitNewLine().SkipWhile(x => !x.ContainsEx(Resources.VersionHeader)).Take(1).Join();
+                var inner = Regex.Match(source, Resources.VersionRegex).Groups[1].ToString();
+                if (string.IsNullOrEmpty(inner))
+                    throw new ArgumentNullException(nameof(inner));
+                var index = inner.IndexOf('(');
+                if (index < 0)
+                    throw new ArgumentOutOfRangeException(nameof(index));
+                var ver = inner.Substring(0, index).Trim(' ', 'v').Split('.');
+                if (!Version.TryParse($"{ver.Take(2).Join('.')}.0.{ver.Last()}", out onlineVersion))
+                    throw new ArgumentNullException(nameof(onlineVersion));
+            }
+            catch (Exception ex)
+            {
+                Log.Write(ex);
+                if (!_silent)
+                    MessageBoxEx.Show(Resources.Msg_Warn_01, Resources.WindowTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                Application.Exit();
+                return;
+            }
+            if (localVersion < onlineVersion)
             {
                 if (_silent || MessageBoxEx.Show(Resources.Msg_Hint_00, Resources.WindowTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
                 {

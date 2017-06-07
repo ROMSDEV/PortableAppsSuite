@@ -121,6 +121,9 @@
   <data name="diagonal_pattern" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\diagonal_pattern.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="DefragglerUpdater" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\DefragglerUpdater.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="AppName" xml:space="preserve">
     <value>Defraggler</value>
   </data>
@@ -154,6 +157,15 @@
   <data name="UserAgent" xml:space="preserve">
     <value>Mozilla/5.0</value>
   </data>
+  <data name="VersionHeader" xml:space="preserve">
+    <value>&lt;h1&gt;Version History&lt;/h1&gt;</value>
+  </data>
+  <data name="VersionRegex" xml:space="preserve">
+    <value>&lt;h6&gt;(.*?)&lt;/h6&gt;</value>
+  </data>
+  <data name="VersionUrl" xml:space="preserve">
+    <value>https://www.piriform.com/defraggler/version-history</value>
+  </data>
   <data name="WhiteList" xml:space="preserve">
     <value>DefragglerUpdater.exe
 DefragglerUpdater.exe.config
@@ -166,8 +178,5 @@ statistics.bin</value>
   </data>
   <data name="WindowTitle" xml:space="preserve">
     <value>Defraggler Updater</value>
-  </data>
-  <data name="DefragglerUpdater" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\DefragglerUpdater.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>
