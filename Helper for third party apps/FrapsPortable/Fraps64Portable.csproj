@@ -2,11 +2,8 @@
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
-    <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
-  </PropertyGroup>
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
     <ProjectGuid>{97E580D9-ED3D-4A75-92FC-DEC78118994F}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -18,8 +15,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\.bin\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <OutputPath>..\.bin\FrapsPortable\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;ApplicationStart;FileSecureForwarding;RegistryForwarding;RegistrySecureOverwrite</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
@@ -27,8 +24,8 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <OutputPath>..\.bin\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <OutputPath>..\.bin\FrapsPortable\</OutputPath>
+    <DefineConstants>TRACE;ApplicationStart;FileSecureForwarding;RegistryForwarding;RegistrySecureOverwrite</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x64</PlatformTarget>
@@ -55,28 +52,10 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\.helper\Portable.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <None Include="app.manifest" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -85,6 +64,29 @@
     <Content Include="appicon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>if exist "$(SolutionDir).helper\AssemblyDateVersion.exe" "$(SolutionDir).helper\AssemblyDateVersion.exe" "$(ProjectDir)Properties\AssemblyInfo.cs"</PreBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>if not exist "$(TargetDir)App\Fraps" md "$(TargetDir)App\Fraps"
+if not exist "$(TargetDir)App\Driver\System32" md "$(TargetDir)App\Driver\System32"
+if not exist "$(TargetDir)App\SilDev.CSharpLib64.dll" copy NUL "$(TargetDir)App\SilDev.CSharpLib64.dll"
+if not exist "$(TargetDir)App\SilDev.CSharpLib64.pdb" copy NUL "$(TargetDir)App\SilDev.CSharpLib64.pdb"
+if exist "$(TargetDir)SilDev.CSharpLib64.dll" (
+xcopy /h /y "$(TargetDir)SilDev.CSharpLib64.dll" "$(TargetDir)App\SilDev.CSharpLib64.dll"
+del /f /q "$(TargetDir)SilDev.CSharpLib64.dll"
+)
+if exist "$(TargetDir)SilDev.CSharpLib64.pdb" (
+xcopy /h /y "$(TargetDir)SilDev.CSharpLib64.pdb" "$(TargetDir)App\SilDev.CSharpLib64.pdb"
+del /f /q "$(TargetDir)SilDev.CSharpLib64.pdb"
+)
+if exist "$(TargetDir)SilDev.CSharpLib64.pdb" del /f /q /a:h "$(TargetDir)SilDev.CSharpLib64.pdb"
+if exist "$(TargetDir)SilDev.CSharpLib64.xml" del /f /q "$(TargetDir)SilDev.CSharpLib64.xml"
+attrib +h "$(TargetDir)*.exe.config"
+attrib +h "$(TargetDir)*.pdb"
+attrib +h "$(TargetDir)App\*.pdb"
+</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
