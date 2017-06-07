@@ -2,7 +2,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("CINEBENCH (64-bit) Portable")]
+[assembly: AssemblyTitle("Cinebench (64-bit) Portable")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Si13n7 Dev. ®")]
@@ -13,6 +13,6 @@ using System.Runtime.InteropServices;
 
 [assembly: ComVisible(false)]
 
-[assembly: Guid("021d99cb-9f04-4f9c-8c73-2dacbfc691af")]
+[assembly: Guid("79fbc055-4707-41c6-918e-70352ed8a2ff")]
 
-[assembly: AssemblyVersion("1.0.*")]
+[assembly: AssemblyVersion("17.6.7.*")]

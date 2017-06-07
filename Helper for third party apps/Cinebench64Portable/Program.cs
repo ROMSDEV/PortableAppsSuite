@@ -1,9 +1,11 @@
-namespace Cinebench64Portable // CINEBENCH_R15
+namespace Cinebench64Portable
 {
     using System;
-    using System.Diagnostics;
+    using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Threading;
+    using Portable;
     using SilDev;
 
     internal static class Program
@@ -18,40 +20,88 @@ namespace Cinebench64Portable // CINEBENCH_R15
                 if (!newInstance)
                     return;
 
-                var appDir = PathEx.Combine("%CurDir%\\App\\cinebench64");
+                var appDir = PathEx.Combine(PathEx.LocalDir, "App\\cinebench64");
                 var appPath = PathEx.Combine(appDir, "CINEBENCH Windows 64 Bit.exe");
-
-                if (!File.Exists(appPath) || Process.GetProcessesByName(Path.GetFileNameWithoutExtension(appPath)).Length > 0)
+                var updaterPath = Path.Combine(appDir, "CinebenchUpdater64.exe");
+                if (ProcessEx.InstancesCount(Path.GetFileNameWithoutExtension(appPath)) > 0 || !File.Exists(updaterPath) || ProcessEx.InstancesCount(Path.GetFileNameWithoutExtension(updaterPath)) > 0)
                     return;
 
-                var dataDirMap = new[,]
+                var appDataDir = PathEx.Combine("%AppData%\\MAXON");
+                var dataDir = PathEx.Combine("%CurDir%\\Data");
+
+                RemoveLongPaths(appDir);
+                RemoveLongPaths(appDataDir);
+                RemoveLongPaths(dataDir);
+
+                var dirMap = new Dictionary<string, string>
                 {
                     {
-                        PathEx.Combine("%AppData%\\MAXON"),
-                        PathEx.Combine("%CurDir%\\Data")
+                        appDataDir,
+                        dataDir
+                    },
+                    {
+                        PathEx.Combine(appDir, "cb_ranking"),
+                        PathEx.Combine(dataDir, "cb_ranking")
                     }
                 };
-                for (var i = 0; i < dataDirMap.GetLength(0); i++)
+
+                Helper.DirectoryForwarding(Helper.Options.Start, dirMap);
+
+                Helper.ApplicationStart(updaterPath, "/silent", null);
+                if (!File.Exists(appPath))
                 {
-                    if (!Directory.Exists(dataDirMap[i, 1]))
-                        Directory.CreateDirectory(dataDirMap[i, 1]);
-                    Data.DirLink(dataDirMap[i, 0], dataDirMap[i, 1], true);
+                    var updIniPath = Path.ChangeExtension(updaterPath, ".ini");
+                    if (!string.IsNullOrEmpty(updIniPath) && File.Exists(updIniPath))
+                        File.Delete(updIniPath);
+
+                    RemoveLongPaths(appDir);
+                    RemoveLongPaths(appDataDir);
+                    RemoveLongPaths(dataDir);
+
+                    Helper.DirectoryForwarding(Helper.Options.Exit, dirMap);
+                    return;
                 }
 
-                using (var p = ProcessEx.Start(appPath, true, false))
-                    if (!p?.HasExited == true)
-                        p?.WaitForExit();
+                Helper.ApplicationStart(appPath, EnvironmentEx.CommandLine(false), false);
 
-                bool isRunning;
-                do
-                {
-                    isRunning = ProcessEx.IsRunning(appPath);
-                    Thread.Sleep(200);
-                }
-                while (isRunning);
+                RemoveLongPaths(appDir);
+                RemoveLongPaths(appDataDir);
+                RemoveLongPaths(dataDir);
 
-                for (var i = 0; i < dataDirMap.GetLength(0); i++)
-                    Data.DirUnLink(dataDirMap[i, 0], true);
+                Helper.DirectoryForwarding(Helper.Options.Exit, dirMap);
+            }
+        }
+
+        /****************************************************************************************
+         
+            Cinebench creates ultra long paths in some cases... This causes a lot of critical
+            issues in which the users are not able to access these files without any tricks.
+
+        ****************************************************************************************/
+
+        private static void RemoveLongPaths(string path)
+        {
+            if (!Directory.Exists(path))
+                return;
+            try
+            {
+                foreach (var dir in Directory.EnumerateDirectories(path, "*", SearchOption.AllDirectories))
+                    try
+                    {
+                        if (dir.Length >= 248)
+                            throw new PathTooLongException();
+                        if (Directory.EnumerateFiles(dir, "*", SearchOption.TopDirectoryOnly).Any(x => x.Length >= 260))
+                            throw new PathTooLongException();
+                    }
+                    catch
+                    {
+                        Data.ForceDelete(dir);
+                    }
+            }
+            catch
+            {
+                if (!path.EqualsEx(PathEx.LocalDir))
+                    Data.ForceDelete(path);
             }
         }
     }
