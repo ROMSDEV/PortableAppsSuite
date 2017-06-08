@@ -24,6 +24,7 @@
     using System.Windows.Forms;
 #endif
     using SilDev;
+
 #if RedistHandling
     using SilDev.Forms;
 #endif
@@ -498,17 +499,57 @@
                 foreach (var data in regMap)
                 {
                     var section = data.Key;
+                    if (!section.ContainsEx('\\'))
+                        continue;
+                    var levels = section.Split('\\');
+                    var first = levels[0];
+                    switch (first.TrimStart('[', '-'))
+                    {
+                        case "HKEY_CLASSES_ROOT":
+                        case "HKEY_CURRENT_CONFIG":
+                        case "HKEY_CURRENT_USER":
+                        case "HKEY_LOCAL_MACHINE":
+                        case "HKEY_PERFORMANCE_DATA":
+                        case "HKEY_USERS":
+                            break;
+                        case "HKCR":
+                            levels[0] = "HKEY_CLASSES_ROOT";
+                            break;
+                        case "HKCC":
+                            levels[0] = "HKEY_CURRENT_CONFIG";
+                            break;
+                        case "HKCU":
+                            levels[0] = "HKEY_CURRENT_USER";
+                            break;
+                        case "HKLM":
+                            levels[0] = "HKEY_LOCAL_MACHINE";
+                            break;
+                        case "HKPD":
+                            levels[0] = "HKEY_PERFORMANCE_DATA";
+                            break;
+                        case "HKU":
+                            levels[0] = "HKEY_USERS";
+                            break;
+                        default:
+                            continue;
+                    }
+                    if (!first.Equals(levels[0]))
+                    {
+                        if (first.StartsWithEx("[-", "-"))
+                            levels[0] = $"-{levels[0]}";
+                        section = levels.Join('\\');
+                    }
                     if (!section.StartsWith("["))
                         section = $"[{section}";
                     if (!section.EndsWith("]"))
                         section = $"{section}]";
                     sw.WriteLine(section);
-                    if (regMap[section]?.Any() != true)
+                    if (regMap[data.Key]?.Any() != true)
                     {
                         sw.WriteLine();
                         continue;
                     }
-                    foreach (var pair in regMap[section])
+                    foreach (var pair in regMap[data.Key])
                     {
                         var key = pair.Key;
                         if (string.IsNullOrWhiteSpace(key))
