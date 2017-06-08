@@ -35,18 +35,18 @@ namespace FrapsPortable
 
                 var regKeys = new[]
                 {
-                    "HKEY_CURRENT_USER\\SOFTWARE\\Fraps3",
+                    "HKCU\\SOFTWARE\\Fraps3",
 #if x86
-                    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Fraps"
+                    "HKLM\\SOFTWARE\\Fraps"
 #else
-                    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Fraps"
+                    "HKLM\\SOFTWARE\\Wow6432Node\\Fraps"
 #endif
                 };
 
                 var regSecureMap = new Dictionary<string, Dictionary<string, string>>
                 {
                     {
-                        "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Drivers32", new Dictionary<string, string>
+                        "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Drivers32", new Dictionary<string, string>
                         {
                             {
                                 "VIDC.FPS1",
@@ -55,7 +55,7 @@ namespace FrapsPortable
                         }
                     },
                     {
-                        "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\drivers.desc", new Dictionary<string, string>
+                        "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\drivers.desc", new Dictionary<string, string>
                         {
                             {
                                 "frapsv64.dll",
@@ -64,7 +64,7 @@ namespace FrapsPortable
                         }
                     },
                     {
-                        "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\MediaResources\\icm\\VIDC.FPS1", new Dictionary<string, string>
+                        "HKLM\\SYSTEM\\CurrentControlSet\\Control\\MediaResources\\icm\\VIDC.FPS1", new Dictionary<string, string>
                         {
                             {
                                 "Description",
@@ -78,9 +78,9 @@ namespace FrapsPortable
                     },
                     {
 #if x86
-                        "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Fraps", new Dictionary<string, string>
+                        "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Fraps", new Dictionary<string, string>
 #else
-                        "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Fraps", new Dictionary<string, string>
+                        "HKLM\\SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Fraps", new Dictionary<string, string>
 #endif
                             {
                                 {
@@ -162,7 +162,7 @@ namespace FrapsPortable
                 regSecureMap = new Dictionary<string, Dictionary<string, string>>
                 {
                     {
-                        "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Drivers32", new Dictionary<string, string>
+                        "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Drivers32", new Dictionary<string, string>
                         {
                             {
                                 "VIDC.FPS1",
@@ -171,7 +171,7 @@ namespace FrapsPortable
                         }
                     },
                     {
-                        "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\drivers.desc", new Dictionary<string, string>
+                        "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\drivers.desc", new Dictionary<string, string>
                         {
                             {
                                 "frapsv64.dll",
@@ -180,13 +180,13 @@ namespace FrapsPortable
                         }
                     },
                     {
-                        "-HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\MediaResources\\icm\\VIDC.FPS1", null
+                        "-HKLM\\SYSTEM\\CurrentControlSet\\Control\\MediaResources\\icm\\VIDC.FPS1", null
                     },
                     {
 #if x86
-                        "-HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Fraps", new Dictionary<string, string>()
+                        "-HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Fraps", null
 #else
-                        "-HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Fraps", null
+                        "-HKLM\\SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Fraps", null
 #endif
                     }
                 };
