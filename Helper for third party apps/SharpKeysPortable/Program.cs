@@ -5,6 +5,7 @@ namespace SharpKeysPortable
     using System.Linq;
     using System.Threading;
     using Microsoft.Win32;
+    using Portable;
     using SilDev;
 
     internal static class Program
@@ -17,16 +18,22 @@ namespace SharpKeysPortable
             {
                 if (!newInstance)
                     return;
-                Ini.SetFile(Path.ChangeExtension(PathEx.LocalPath, ".ini"));
-                if (Ini.Read("Settings", "ShowWarning", false))
-                    Reg.Write("HKCU\\Software\\RandyRants\\SharpKeys", "ShowWarning", 1, RegistryValueKind.DWord);
-                using (var p = ProcessEx.Start("%CurDir%\\SharpKeys\\SharpKeys.exe", true, false))
-                    if (!p?.HasExited == true)
-                        p?.WaitForExit();
-                Ini.Write("Settings", "ShowWarning", true);
-                Reg.RemoveSubKey("HKCU\\Software\\RandyRants\\SharpKeys");
-                if (Reg.GetSubKeys("HKCU\\Software\\RandyRants").Any())
-                    Reg.RemoveSubKey("HKCU\\Software\\RandyRants");
+
+                var appPath = PathEx.Combine(PathEx.LocalDir, "App\\SharpKeys\\SharpKeys.exe");
+                if (!File.Exists(appPath))
+                    return;
+
+                const string firstKey = "HKCU\\Software\\RandyRants";
+                const string lastKey = "HKCU\\Software\\RandyRants\\SharpKeys";
+
+                Helper.RegForwarding(Helper.Options.Start, lastKey);
+                Reg.Write(lastKey, "ShowWarning", 1, RegistryValueKind.DWord);
+
+                Helper.ApplicationStart(appPath, EnvironmentEx.CommandLine(false), false);
+
+                Helper.RegForwarding(Helper.Options.Exit, firstKey);
+                if (!Reg.GetSubKeys(firstKey).Any())
+                    Reg.RemoveSubKey(firstKey);
             }
         }
     }
