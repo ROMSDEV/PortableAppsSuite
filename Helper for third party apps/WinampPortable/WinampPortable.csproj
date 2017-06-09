@@ -17,8 +17,8 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\.bin\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <OutputPath>..\.bin\WinampPortable\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;ApplicationStart;DirectoryForwarding;FileForwarding</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>true</Prefer32Bit>
@@ -27,8 +27,8 @@
     <PlatformTarget>x86</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\.bin\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <OutputPath>..\.bin\WinampPortable\</OutputPath>
+    <DefineConstants>TRACE;ApplicationStart;DirectoryForwarding;FileForwarding</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>true</Prefer32Bit>
@@ -37,7 +37,7 @@
     <StartupObject>WinampPortable.Program</StartupObject>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>appicon.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\Winamp.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="SilDev.CSharpLib">
@@ -49,18 +49,58 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\.helper\Portable.cs" />
+    <Compile Include="LangSelectionForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LangSelectionForm.designer.cs">
+      <DependentUpon>LangSelectionForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="appicon.ico" />
+    <None Include="Resources\Winamp.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="LangSelectionForm.resx">
+      <DependentUpon>LangSelectionForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>if exist "$(SolutionDir).helper\AssemblyDateVersion.exe" "$(SolutionDir).helper\AssemblyDateVersion.exe" "$(ProjectDir)Properties\AssemblyInfo.cs"</PreBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>if not exist "$(TargetDir)App\winamp" md "$(TargetDir)App\winamp"
+if not exist "$(TargetDir)App\SilDev.CSharpLib.dll" copy NUL "$(TargetDir)App\SilDev.CSharpLib.dll"
+if not exist "$(TargetDir)App\SilDev.CSharpLib.pdb" copy NUL "$(TargetDir)App\SilDev.CSharpLib.pdb"
+if exist "$(TargetDir)SilDev.CSharpLib.dll" (
+xcopy /h /y "$(TargetDir)SilDev.CSharpLib.dll" "$(TargetDir)App\SilDev.CSharpLib.dll"
+del /f /q "$(TargetDir)SilDev.CSharpLib.dll"
+)
+if exist "$(TargetDir)SilDev.CSharpLib.pdb" (
+xcopy /h /y "$(TargetDir)SilDev.CSharpLib.pdb" "$(TargetDir)App\SilDev.CSharpLib.pdb"
+del /f /q "$(TargetDir)SilDev.CSharpLib.pdb"
+)
+if exist "$(TargetDir)SilDev.CSharpLib.pdb" del /f /q /a:h "$(TargetDir)SilDev.CSharpLib.pdb"
+if exist "$(TargetDir)SilDev.CSharpLib.xml" del /f /q "$(TargetDir)SilDev.CSharpLib.xml"
+attrib +h "$(TargetDir)*.exe.config"
+attrib +h "$(TargetDir)*.pdb"
+attrib +h "$(TargetDir)App\*.pdb"
+</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
