@@ -333,102 +333,142 @@
 #endif
 
 #if RedistHandling
-        public static void RedistHandling(Options options, EnvironmentEx.RedistPack version)
+        public static void RedistHandling(Options options, params EnvironmentEx.RedistPack[] versions)
         {
-            string arch, year;
-            switch (version)
+            var dict = new Dictionary<EnvironmentEx.RedistPack, Dictionary<int, List<int>>>();
+            foreach (var version in versions)
             {
-                case EnvironmentEx.RedistPack.VC2005_x86:
-                    arch = "x86";
-                    year = "2005";
-                    break;
-                case EnvironmentEx.RedistPack.VC2005_x64:
-                    arch = "x64";
-                    year = "2005";
-                    break;
-                case EnvironmentEx.RedistPack.VC2008_x86:
-                    arch = "x86";
-                    year = "2008";
-                    break;
-                case EnvironmentEx.RedistPack.VC2008_x64:
-                    arch = "x64";
-                    year = "2008";
-                    break;
-                case EnvironmentEx.RedistPack.VC2010_x86:
-                    arch = "x86";
-                    year = "2010";
-                    break;
-                case EnvironmentEx.RedistPack.VC2010_x64:
-                    arch = "x64";
-                    year = "2010";
-                    break;
-                case EnvironmentEx.RedistPack.VC2012_x86:
-                    arch = "x86";
-                    year = "2012";
-                    break;
-                case EnvironmentEx.RedistPack.VC2012_x64:
-                    arch = "x64";
-                    year = "2012";
-                    break;
-                case EnvironmentEx.RedistPack.VC2013_x86:
-                    arch = "x86";
-                    year = "2013";
-                    break;
-                case EnvironmentEx.RedistPack.VC2013_x64:
-                    arch = "x64";
-                    year = "2013";
-                    break;
-                case EnvironmentEx.RedistPack.VC2015_x86:
-                    arch = "x86";
-                    year = "2015";
-                    break;
-                case EnvironmentEx.RedistPack.VC2015_x64:
-                    arch = "x64";
-                    year = "2015";
-                    break;
-                default:
-                    return;
-            }
-            var path = PathEx.Combine(PathEx.LocalDir, $"_CommonRedist\\vcredist\\{year}\\vcredist_{arch}.exe");
-            if (!File.Exists(path))
-                return;
-            var iniPath = Path.ChangeExtension(PathEx.LocalPath, ".ini");
-            switch (options)
-            {
-                case Options.Exit:
-                    if (Ini.ReadDirect("Redist", "Installed", iniPath).EqualsEx("True"))
-                        return;
-                    using (var p = ProcessEx.Start(path, "/q /uninstall /norestart", Elevation.IsAdministrator, false))
-                        if (p?.HasExited == false)
-                            p.WaitForExit();
-                    break;
-                default:
-                    if (Ini.ReadDirect("Redist", "Installed", iniPath).EqualsEx("False"))
-                        Elevation.RestartAsAdministrator(EnvironmentEx.CommandLine(false));
-                    if (EnvironmentEx.RedistPackIsInstalled(version))
-                    {
-                        Ini.WriteDirect("Redist", "Installed", true, iniPath);
+                if (!dict.ContainsKey(version))
+                    dict.Add(version, new Dictionary<int, List<int>>());
+                switch (version)
+                {
+                    case EnvironmentEx.RedistPack.VC2005_x86:
+                        if (!dict[version].ContainsKey(2005))
+                            dict[version].Add(2005, new List<int>());
+                        dict[version][2005].Add(86);
                         break;
-                    }
-                    if (!Ini.ReadDirect("Redist", "Installed", iniPath).EqualsEx("True", "False"))
+                    case EnvironmentEx.RedistPack.VC2005_x64:
+                        if (!dict[version].ContainsKey(2005))
+                            dict[version].Add(2005, new List<int>());
+                        dict[version][2005].Add(64);
+                        break;
+                    case EnvironmentEx.RedistPack.VC2008_x86:
+                        if (!dict[version].ContainsKey(2008))
+                            dict[version].Add(2008, new List<int>());
+                        dict[version][2008].Add(86);
+                        break;
+                    case EnvironmentEx.RedistPack.VC2008_x64:
+                        if (!dict[version].ContainsKey(2008))
+                            dict[version].Add(2008, new List<int>());
+                        dict[version][2008].Add(64);
+                        break;
+                    case EnvironmentEx.RedistPack.VC2010_x86:
+                        if (!dict[version].ContainsKey(2010))
+                            dict[version].Add(2010, new List<int>());
+                        dict[version][2010].Add(86);
+                        break;
+                    case EnvironmentEx.RedistPack.VC2010_x64:
+                        if (!dict[version].ContainsKey(2010))
+                            dict[version].Add(2010, new List<int>());
+                        dict[version][2010].Add(64);
+                        break;
+                    case EnvironmentEx.RedistPack.VC2012_x86:
+                        if (!dict[version].ContainsKey(2012))
+                            dict[version].Add(2012, new List<int>());
+                        dict[version][2012].Add(86);
+                        break;
+                    case EnvironmentEx.RedistPack.VC2012_x64:
+                        if (!dict[version].ContainsKey(2012))
+                            dict[version].Add(2012, new List<int>());
+                        dict[version][2012].Add(64);
+                        break;
+                    case EnvironmentEx.RedistPack.VC2013_x86:
+                        if (!dict[version].ContainsKey(2013))
+                            dict[version].Add(2013, new List<int>());
+                        dict[version][2013].Add(86);
+                        break;
+                    case EnvironmentEx.RedistPack.VC2013_x64:
+                        if (!dict[version].ContainsKey(2013))
+                            dict[version].Add(2013, new List<int>());
+                        dict[version][2013].Add(64);
+                        break;
+                    case EnvironmentEx.RedistPack.VC2015_x86:
+                        if (!dict[version].ContainsKey(2015))
+                            dict[version].Add(2015, new List<int>());
+                        dict[version][2015].Add(86);
+                        break;
+                    case EnvironmentEx.RedistPack.VC2015_x64:
+                        if (!dict[version].ContainsKey(2015))
+                            dict[version].Add(2015, new List<int>());
+                        dict[version][2015].Add(64);
+                        break;
+                    default:
+                        return;
+                }
+            }
+            foreach (var data in dict)
+            {
+                var version = data.Key;
+                foreach (var vars in data.Value)
+                {
+                    var year = vars.Key;
+                    foreach (var arch in vars.Value)
                     {
-                        MessageBoxEx.TopMost = true;
-                        var msg = $"This application requires Microsoft Visual C++ {year} Redistributable Package ({arch}).{Environment.NewLine}{Environment.NewLine}Do you want to install it permanently (yes) or temporary (no)?";
-                        var info = FileVersionInfo.GetVersionInfo(PathEx.LocalPath ?? string.Empty);
-                        var result = MessageBoxEx.Show(msg, info.FileDescription, MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                        Ini.WriteDirect("Redist", "Installed", result == DialogResult.Yes, iniPath);
-                        if (result != DialogResult.Yes)
-                            Elevation.RestartAsAdministrator(EnvironmentEx.CommandLine(false));
+                        var path = PathEx.Combine(PathEx.LocalDir, $"_CommonRedist\\vcredist\\{year}\\vcredist_x{arch}.exe");
+                        if (!File.Exists(path))
+                            return;
+                        var iniPath = Path.ChangeExtension(PathEx.LocalPath, ".ini");
+                        switch (options)
+                        {
+                            case Options.Exit:
+                                if (Ini.ReadDirect("Redist", version.ToString(), iniPath).EqualsEx("True"))
+                                    return;
+                                using (var p = ProcessEx.Start(path, "/q /uninstall /norestart", Elevation.IsAdministrator, false))
+                                    if (p?.HasExited == false)
+                                        p.WaitForExit();
+                                break;
+                            default:
+                                if (Ini.ReadDirect("Redist", version.ToString(), iniPath).EqualsEx("False"))
+                                    Elevation.RestartAsAdministrator(EnvironmentEx.CommandLine(false));
+                                if (EnvironmentEx.RedistPackIsInstalled(version))
+                                {
+                                    Ini.WriteDirect("Redist", version.ToString(), true, iniPath);
+                                    break;
+                                }
+                                var info = FileVersionInfo.GetVersionInfo(PathEx.LocalPath ?? string.Empty);
+                                if (!Ini.ReadDirect("Redist", version.ToString(), iniPath).EqualsEx("True", "False"))
+                                {
+                                    MessageBoxEx.TopMost = true;
+                                    MessageBoxEx.ButtonText.OverrideEnabled = true;
+                                    MessageBoxEx.ButtonText.Yes = "&Yes";
+                                    MessageBoxEx.ButtonText.No = "&No";
+                                    MessageBoxEx.ButtonText.Cancel = "&Cancel";
+                                    var msg = $"Microsoft Visual C++ {year} Redistributable Package (x{arch}) is required to run this porgram.{Environment.NewLine}{Environment.NewLine}Would you like to permanently install this package (yes) or temporarily (no)?";
+                                    var result = MessageBoxEx.Show(msg, info.FileDescription, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+                                    if (result == DialogResult.Cancel)
+                                    {
+                                        RedistHandling(Options.Exit, versions);
+                                        Environment.Exit(Environment.ExitCode);
+                                    }
+                                    Ini.WriteDirect("Redist", version.ToString(), result == DialogResult.Yes, iniPath);
+                                    if (result != DialogResult.Yes)
+                                        Elevation.RestartAsAdministrator(EnvironmentEx.CommandLine(false));
+                                }
+                                var notifyBox = new NotifyBox();
+                                notifyBox.Show($"Microsoft Visual C++ {year} Redistributable Package (x{arch}) has been initialized . . .", info.FileDescription, NotifyBox.NotifyBoxStartPosition.Center);
+                                using (var p = ProcessEx.Start(path, "/q /norestart", Elevation.IsAdministrator, false))
+                                    if (p?.HasExited == false)
+                                        p.WaitForExit();
+                                notifyBox.Close();
+                                if (!EnvironmentEx.RedistPackIsInstalled(version))
+                                {
+                                    Environment.ExitCode = 1;
+                                    Environment.Exit(Environment.ExitCode);
+                                }
+                                break;
+                        }
                     }
-                    using (var p = ProcessEx.Start(path, "/q /norestart", Elevation.IsAdministrator, false))
-                        if (p?.HasExited == false)
-                            p.WaitForExit();
-                    if (!EnvironmentEx.RedistPackIsInstalled(version))
-                    {
-                        Environment.ExitCode = 1;
-                        Environment.Exit(Environment.ExitCode);
-                    }
-                    break;
+                }
             }
         }
 #endif
