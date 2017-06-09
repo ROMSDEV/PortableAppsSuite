@@ -24,7 +24,6 @@
     using System.Windows.Forms;
 #endif
     using SilDev;
-
 #if RedistHandling
     using SilDev.Forms;
 #endif
