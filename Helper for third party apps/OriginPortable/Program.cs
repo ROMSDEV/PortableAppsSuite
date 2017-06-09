@@ -1,10 +1,14 @@
 namespace OriginPortable
 {
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using System.Threading;
+    using System.Windows.Forms;
+    using Microsoft.Win32;
+    using Portable;
     using SilDev;
 
     internal static class Program
@@ -13,219 +17,258 @@ namespace OriginPortable
         private static void Main()
         {
             Log.AllowLogging();
-            var appDir = PathEx.Combine(@"%CurDir%\App\Origin");
-            var appPath = Path.Combine(appDir, "Origin.exe");
             bool newInstance;
             using (new Mutex(true, ProcessEx.CurrentName, out newInstance))
             {
+                var appDir = PathEx.Combine(PathEx.LocalDir, "App\\Origin");
+                var appPath = Path.Combine(appDir, "Origin.exe");
+
                 if (!newInstance)
+                {
+                    ProcessEx.Start(appPath, EnvironmentEx.CommandLine(false));
                     return;
+                }
+
 #if x86
                 if (Environment.Is64BitOperatingSystem)
                 {
-                    ProcessEx.Start($"%CurDir%\\{Path.GetFileNameWithoutExtension(PathEx.LocalPath)}64.exe", EnvironmentEx.CommandLine(false));
+                    var curPath64 = PathEx.Combine(PathEx.LocalDir, $"{Path.GetFileNameWithoutExtension(PathEx.LocalPath)}64.exe");
+                    ProcessEx.Start(curPath64, EnvironmentEx.CommandLine(false));
                     return;
                 }
 #endif
+
                 if (IsRunning(appDir))
-                    KillAll(appDir);
-                var dataDir = PathEx.Combine(@"%CurDir%\Data");
+                    CloseAll(appDir);
+
+                var dataDir = PathEx.Combine(PathEx.LocalDir, "Data");
                 if (IsRunning(dataDir))
-                    KillAll(dataDir);
+                    CloseAll(dataDir);
 
-                Data.DirLink(@"%SystemDrive%\temp", @"%CurDir%\Data\Temp", true);
-                Data.DirLink(@"%CommonProgramFiles(x86)%\EAInstaller", @"%CurDir%\App\Common\EAInstaller", true);
-                Data.DirLink(@"%AppData%\EA Games", @"%CurDir%\Data\AppData\Roaming\EA Games", true);
-                Data.DirLink(@"%AppData%\Electronic Arts", @"%CurDir%\Data\AppData\Roaming\Electronic Arts", true);
-                Data.DirLink(@"%AppData%\Origin", @"%CurDir%\Data\AppData\Roaming\Origin", true);
-                Data.DirLink(@"%LocalAppData%\EA Games", @"%CurDir%\Data\AppData\Local\EA Games", true);
-                Data.DirLink(@"%LocalAppData%\Electronic Arts", @"%CurDir%\Data\AppData\Local\Electronic Arts", true);
-                Data.DirLink(@"%LocalAppData%\Origin", @"%CurDir%\Data\AppData\Local\Origin", true);
-                Data.DirLink(@"%ProgramData%\EA Games", @"%CurDir%\Data\ProgramData\EA Games", true);
-                Data.DirLink(@"%ProgramData%\Electronic Arts", @"%CurDir%\Data\ProgramData\Electronic Arts", true);
-                Data.DirLink(@"%ProgramData%\Origin", @"%CurDir%\Data\ProgramData\Origin", true);
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
 
-                var defKeys = new[]
+                Helper.RedistHandling(Helper.Options.Start, EnvironmentEx.RedistPack.VC2010_x86, EnvironmentEx.RedistPack.VC2013_x86
+#if !x86
+                    , EnvironmentEx.RedistPack.VC2010_x64, EnvironmentEx.RedistPack.VC2013_x64
+#endif
+                );
+
+                var iniPath = Path.ChangeExtension(PathEx.LocalPath, ".ini");
+                if (!File.Exists(iniPath))
+                    Ini.WriteDirect("Settings", "Tray", false, iniPath);
+
+                var dirMap = new Dictionary<string, string>
                 {
-                    @"HKCR\origin",
-                    @"HKCR\origin2",
-                    @"HKCU\Software\EA Games",
-                    @"HKCU\Software\Electronic Arts",
-                    @"HKLM\SOFTWARE\EA Games",
-                    @"HKLM\SOFTWARE\Electronic Arts",
-                    @"HKLM\SOFTWARE\Origin",
+                    {
+                        "%SystemDrive%\\temp",
+                        "%CurDir%\\Data\\Temp"
+                    },
+                    {
+                        "%CommonProgramFiles(x86)%\\EAInstaller",
+                        "%CurDir%\\App\\Common\\EAInstaller"
+                    },
+                    {
+                        "%AppData%\\EA Games",
+                        "%CurDir%\\Data\\AppData\\Roaming\\EA Games"
+                    },
+                    {
+                        "%AppData%\\Electronic Arts",
+                        "%CurDir%\\Data\\AppData\\Roaming\\Electronic Arts"
+                    },
+                    {
+                        "%AppData%\\Origin",
+                        "%CurDir%\\Data\\AppData\\Roaming\\Origin"
+                    },
+                    {
+                        "%LocalAppData%\\EA Games",
+                        "%CurDir%\\Data\\AppData\\Local\\EA Games"
+                    },
+                    {
+                        "%LocalAppData%\\Electronic Arts",
+                        "%CurDir%\\Data\\AppData\\Local\\Electronic Arts"
+                    },
+                    {
+                        "%LocalAppData%\\Origin",
+                        "%CurDir%\\Data\\AppData\\Local\\Origin"
+                    },
+                    {
+                        "%ProgramData%\\EA Games",
+                        "%CurDir%\\Data\\ProgramData\\EA Games"
+                    },
+                    {
+                        "%ProgramData%\\Electronic Arts",
+                        "%CurDir%\\Data\\ProgramData\\Electronic Arts"
+                    },
+                    {
+                        "%ProgramData%\\Origin",
+                        "%CurDir%\\Data\\ProgramData\\Origin"
+                    }
+                };
+
+                Helper.DirectoryForwarding(Helper.Options.Start, dirMap);
+
+                var regKeys = new[]
+                {
+                    "HKCR\\origin",
+                    "HKCR\\origin2",
+                    "HKCU\\Software\\EA Games",
+                    "HKCU\\Software\\Electronic Arts",
+                    "HKLM\\SOFTWARE\\EA Games",
+                    "HKLM\\SOFTWARE\\Electronic Arts",
+                    "HKLM\\SOFTWARE\\Origin",
 #if x86
-                    @"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin",
+                    "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Origin",
 #else
-                    @"HKLM\SOFTWARE\Wow6432Node\EA Games",
-                    @"HKLM\SOFTWARE\Wow6432Node\Electronic Arts",
-                    @"HKLM\SOFTWARE\Wow6432Node\Origin",
-                    @"HKLM\SOFTWARE\Wow6432Node\Origin Games",
-                    @"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin"
+                    "HKLM\\SOFTWARE\\Wow6432Node\\EA Games",
+                    "HKLM\\SOFTWARE\\Wow6432Node\\Electronic Arts",
+                    "HKLM\\SOFTWARE\\Wow6432Node\\Origin",
+                    "HKLM\\SOFTWARE\\Wow6432Node\\Origin Games",
+                    "HKLM\\SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Origin"
 #endif
                 };
 
-                var bakKeys = new[]
-                {
-                    @"HKCR\SI13N7-BACKUP: origin",
-                    @"HKCR\SI13N7-BACKUP: origin2",
-                    @"HKCU\Software\SI13N7-BACKUP: EA Games",
-                    @"HKCU\Software\SI13N7-BACKUP: Electronic Arts",
-                    @"HKLM\SOFTWARE\SI13N7-BACKUP: EA Games",
-                    @"HKLM\SOFTWARE\SI13N7-BACKUP: Electronic Arts",
-                    @"HKLM\SOFTWARE\SI13N7-BACKUP: Origin",
-#if x86
-                    @"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\SI13N7-BACKUP: Origin",
-#else
-                    @"HKLM\SOFTWARE\Wow6432Node\SI13N7-BACKUP: EA Games",
-                    @"HKLM\SOFTWARE\Wow6432Node\SI13N7-BACKUP: Electronic Arts",
-                    @"HKLM\SOFTWARE\Wow6432Node\SI13N7-BACKUP: Origin",
-                    @"HKLM\SOFTWARE\Wow6432Node\SI13N7-BACKUP: Origin Games",
-                    @"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\SI13N7-BACKUP: Origin"
-#endif
-                };
+                Helper.RegForwarding(Helper.Options.Start, regKeys);
 
-                for (var i = 0; i < defKeys.Length; i++)
-                    if (!Reg.EntryExists(defKeys[i], "Portable App"))
-                        Reg.MoveSubKey(defKeys[i], bakKeys[i]);
+                var key = "HKCR\\origin";
+                Reg.Write(key, null, $"\"{appPath}\" \"%1\"");
+
+                key = "HKCR\\origin2";
+                Reg.Write(key, null, $"\"{appPath}\" \"%1\"");
+
+#if x86
+                key = "HKLM\\SOFTWARE\\Electronic Arts\\EA Core";
+#else
+                key = "HKLM\\SOFTWARE\\Wow6432Node\\Electronic Arts\\EA Core";
+#endif
+                Reg.Write(key, "ClientAccessDLLPath", Path.Combine(appDir, "LegacyPM\\CmdPortalClient.dll"));
+                Reg.Write(key, "ClientPath", Path.Combine(appDir, "LegacyPM\\OriginLegacyCLI.dll"));
+                Reg.Write(key, "EADM6InstallDir", appDir);
+
+#if x86
+                key = "HKLM\\SOFTWARE\\Electronic Arts\\EADM";
+#else
+                key = "HKLM\\SOFTWARE\\Wow6432Node\\Electronic Arts\\EADM";
+#endif
+                Reg.Write(key, "ClientPath", appPath);
+
+#if x86
+                key = "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Origin";
+#else
+                key = "HKLM\\SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Origin";
+#endif
+                Reg.Write(key, "DisplayIcon", PathEx.Combine(appDir, "OriginUninstall.exe"));
+                Reg.Write(key, "InstallLocation", appDir);
+                Reg.Write(key, "UninstallString", PathEx.Combine(appDir, "OriginUninstall.exe"));
 
                 var regPath = Path.Combine(dataDir, "settings.reg");
                 if (!File.Exists(regPath))
                 {
-                    Reg.Write(@"HKCU\Software\EA Games", "Portable App", "True");
-                    Reg.Write(@"HKCU\Software\Electronic Arts", "Portable App", "True");
+                    string version;
+                    try
+                    {
+                        version = FileVersionInfo.GetVersionInfo(appPath).FileVersion;
+                        if (version.Contains(','))
+                            version = version.Split(',').Select(c => c.Trim()).Join('.');
+                    }
+                    catch
+                    {
+                        version = "0.0.0.0";
+                    }
 
-                    Reg.Write(@"HKLM\SOFTWARE\EA Games", "Portable App", "True");
-                    Reg.Write(@"HKLM\SOFTWARE\Electronic Arts", "Portable App", "True");
-                    Reg.Write(@"HKLM\SOFTWARE\Origin", "Portable App", "True");
-                    Reg.Write(@"HKLM\SOFTWARE\Origin Games", "Portable App", "True");
 #if x86
-                    Reg.Write(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "Portable App", "True");
-
-                    Reg.Write(@"HKLM\SOFTWARE\Electronic Arts\EA Core", "ClientVersion", "7.0.0.1");
-                    Reg.Write(@"HKLM\SOFTWARE\Electronic Arts\EA Core", "EADM6Version", "7.0.0.1");
-                    Reg.Write(@"HKLM\SOFTWARE\Electronic Arts\EADM", "ClientVersion", "9.5.20.5318");
-                    Reg.Write(@"HKLM\SOFTWARE\Origin", "AutopatchGlobal", "false");
-                    Reg.Write(@"HKLM\SOFTWARE\Origin", "Autoupdate", "false");
-                    Reg.Write(@"HKLM\SOFTWARE\Origin", "InstallSuccesfull", "true");
-                    Reg.Write(@"HKLM\SOFTWARE\Origin", "IsBeta", "false");
-                    Reg.Write(@"HKLM\SOFTWARE\Origin", "Launch", "21375453");
-                    Reg.Write(@"HKLM\SOFTWARE\Origin", "ShowDirPage", "true");
-                    Reg.Write(@"HKLM\SOFTWARE\Origin", "TelemOO", "false");
-
-                    Reg.Write(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "DisplayName", "Origin");
-                    Reg.Write(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "Publisher", "Electronic Arts, Inc.");
-                    Reg.Write(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "DisplayName", "9.5.20.5318");
-                    Reg.Write(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "URLInfoAbout", "http://www.ea.com");
-                    Reg.Write(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "NoModify", 1);
-                    Reg.Write(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "NoRepair", 1);
+                    key = "HKLM\\SOFTWARE\\Electronic Arts\\EA Core";
 #else
-                    Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "Portable App", "True");
-
-                    Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\EA Games", "Portable App", "True");
-                    Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Electronic Arts", "Portable App", "True");
-                    Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Origin", "Portable App", "True");
-                    Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Origin Games", "Portable App", "True");
-
-                    Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Electronic Arts\EA Core", "ClientVersion", "7.0.0.1");
-                    Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Electronic Arts\EA Core", "EADM6Version", "7.0.0.1");
-                    Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Electronic Arts\EADM", "ClientVersion", "9.5.20.5318");
-                    Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Origin", "AutopatchGlobal", "false");
-                    Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Origin", "Autoupdate", "false");
-                    Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Origin", "InstallSuccesfull", "true");
-                    Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Origin", "IsBeta", "false");
-                    Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Origin", "Launch", "21375453");
-                    Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Origin", "ShowDirPage", "true");
-                    Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Origin", "TelemOO", "false");
-
-                    Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "DisplayName", "Origin");
-                    Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "Publisher", "Electronic Arts, Inc.");
-                    Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "DisplayName", "9.5.20.5318");
-                    Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "URLInfoAbout", "http://www.ea.com");
-                    Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "NoModify", 1);
-                    Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "NoRepair", 1);
+                    key = "HKLM\\SOFTWARE\\Wow6432Node\\Electronic Arts\\EA Core";
 #endif
-                    using (var p = ProcessEx.Start(StartInfoHelper(appPath, "/Register"), false))
-                        if (!p?.HasExited == true)
-                            p?.WaitForExit();
+                    Reg.Write(key, "ClientVersion", "7.0.0.1");
+                    Reg.Write(key, "EADM6Version", "7.0.0.1");
 
-                    Reg.Write(@"HKCR\origin", "Portable App", "True");
-                    Reg.Write(@"HKCR\origin2", "Portable App", "True");
+#if x86
+                    key = "HKLM\\SOFTWARE\\Electronic Arts\\EADM";
+#else
+                    key = "HKLM\\SOFTWARE\\Wow6432Node\\Electronic Arts\\EADM";
+#endif
+                    Reg.Write(key, "ClientVersion", version);
+
+#if x86
+                    key = "HKLM\\SOFTWARE\\Origin";
+#else
+                    key = "HKLM\\SOFTWARE\\Wow6432Node\\Origin";
+#endif
+
+                    Reg.Write(key, "AutopatchGlobal", false, RegistryValueKind.String);
+                    Reg.Write(key, "Autoupdate", false, RegistryValueKind.String);
+                    Reg.Write(key, "ClientVersion", version);
+                    Reg.Write(key, "InstallSuccesfull", true, RegistryValueKind.String);
+                    Reg.Write(key, "IsBeta", false, RegistryValueKind.String);
+                    Reg.Write(key, "Launch", 0x014629dd, RegistryValueKind.String);
+                    Reg.Write(key, "ShowDirPage", true, RegistryValueKind.String);
+                    Reg.Write(key, "TelemOO", false, RegistryValueKind.String);
+
+#if x86
+                    key = "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Origin";
+#else
+                    key = "HKLM\\SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Origin";
+#endif
+                    Reg.Write(key, "DisplayName", "Origin");
+                    Reg.Write(key, "DisplayVersion", version);
+                    Reg.Write(key, "EstimatedSize", 0x0004d338, RegistryValueKind.DWord);
+                    Reg.Write(key, "NoModify", 0x00000001, RegistryValueKind.DWord);
+                    Reg.Write(key, "NoRepair", 0x00000001, RegistryValueKind.DWord);
+                    Reg.Write(key, "OriginUninstall.exe", true, RegistryValueKind.String);
+                    Reg.Write(key, "Publisher", "Electronic Arts, Inc.");
+                    Reg.Write(key, "sEstimatedSize2", 0x00000000, RegistryValueKind.DWord);
+                    Reg.Write(key, "URLInfoAbout", "http://www.ea.com");
                 }
-                else
-                    Reg.ImportFile(regPath, true);
 
-                Reg.Write(@"HKEY_CLASSES_ROOT\origin\shell\open\command", null, $"\"{appPath}\" \"%1\"");
-                Reg.Write(@"HKEY_CLASSES_ROOT\origin2\shell\open\command", null, $"\"{appPath}\" \"%1\"");
-#if !x86
-                Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Electronic Arts\EA Core", "ClientAccessDLLPath", Path.Combine(appDir, @"LegacyPM\CmdPortalClient.dll"));
-                Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Electronic Arts\EA Core", "ClientPath", Path.Combine(appDir, @"LegacyPM\OriginLegacyCLI.dll"));
-                Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Electronic Arts\EA Core", "EADM6InstallDir", appDir);
-                Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Electronic Arts\EADM", "ClientPath", Path.Combine(appDir, @"Origin.exe"));
-                Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Origin", "ClientPath", Path.Combine(appDir, @"Origin.exe"));
+                using (var p = ProcessEx.Start(appPath, EnvironmentEx.CommandLine(false), Elevation.IsAdministrator, Ini.ReadDirect("Settings", "Tray").EqualsEx("True") ? ProcessWindowStyle.Minimized : ProcessWindowStyle.Normal, false))
+                    if (p?.HasExited == false)
+                        p.WaitForExit();
 
-                Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "UninstallString", Path.Combine(appDir, "OriginUninstall.exe"));
-                Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "InstallLocation", appDir);
-                Reg.Write(@"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "DisplayIcon", Path.Combine(appDir, "OriginUninstall.exe"));
-#else
-                Reg.Write(@"HKLM\SOFTWARE\Electronic Arts\EA Core", "ClientAccessDLLPath", Path.Combine(appDir, @"LegacyPM\CmdPortalClient.dll"));
-                Reg.Write(@"HKLM\SOFTWARE\Electronic Arts\EA Core", "ClientPath", Path.Combine(appDir, @"LegacyPM\OriginLegacyCLI.dll"));
-                Reg.Write(@"HKLM\SOFTWARE\Electronic Arts\EA Core", "EADM6InstallDir", appDir);
-                Reg.Write(@"HKLM\SOFTWARE\Electronic Arts\EADM", "ClientPath", Path.Combine(appDir, @"Origin.exe"));
-                Reg.Write(@"HKLM\SOFTWARE\Origin", "ClientPath", Path.Combine(appDir, @"Origin.exe"));
-
-                Reg.Write(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "UninstallString", Path.Combine(appDir, "OriginUninstall.exe"));
-                Reg.Write(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "InstallLocation", appDir);
-                Reg.Write(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Origin", "DisplayIcon", Path.Combine(appDir, "OriginUninstall.exe"));
-#endif
-                ProcessEx.Start(StartInfoHelper(appPath, EnvironmentEx.CommandLine(false)));
-                for (var i = 0; i < 10; i++)
+                var dirs = new[] { appDir, dataDir };
+                Recheck:
+                foreach (var dir in dirs)
                 {
-                    while (IsRunning(appDir) || IsRunning(dataDir))
+                    var wasRunning = false;
+                    while (IsRunning(dir))
+                    {
+                        if (!wasRunning)
+                            wasRunning = true;
                         Thread.Sleep(200);
-                    Thread.Sleep(300);
+                    }
+                    if (!wasRunning)
+                        continue;
+                    Thread.Sleep(250);
+                    goto Recheck;
                 }
+
                 CloseServices();
 
-                Reg.ExportKeys(regPath, defKeys);
-                foreach (var key in defKeys)
-                    Reg.RemoveSubKey(key);
-                for (var i = 0; i < bakKeys.Length; i++)
-                    Reg.MoveSubKey(bakKeys[i], defKeys[i]);
+                Helper.DirectoryForwarding(Helper.Options.Exit, dirMap);
 
-                Data.DirUnLink(@"%SystemDrive%\temp", true);
-                Data.DirUnLink(@"%CommonProgramFiles(x86)%\EAInstaller", true);
+                Helper.RegForwarding(Helper.Options.Exit, regKeys);
 
-                Data.DirUnLink(@"%AppData%\EA Games", true);
-                Data.DirUnLink(@"%AppData%\Electronic Arts", true);
-                Data.DirUnLink(@"%AppData%\Origin", true);
-
-                Data.DirUnLink(@"%LocalAppData%\EA Games", true);
-                Data.DirUnLink(@"%LocalAppData%\Electronic Arts", true);
-                Data.DirUnLink(@"%LocalAppData%\Origin", true);
-
-                Data.DirUnLink(@"%ProgramData%\EA Games", true);
-                Data.DirUnLink(@"%ProgramData%\Electronic Arts", true);
-                Data.DirUnLink(@"%ProgramData%\Origin", true);
+                Helper.RedistHandling(Helper.Options.Exit, EnvironmentEx.RedistPack.VC2010_x86, EnvironmentEx.RedistPack.VC2013_x86
+#if !x86
+                    , EnvironmentEx.RedistPack.VC2010_x64, EnvironmentEx.RedistPack.VC2013_x64
+#endif
+                );
             }
         }
 
-        private static ProcessStartInfo StartInfoHelper(string appPath, string cmdLine)
-        {
-            var psi = new ProcessStartInfo();
-            if (!string.IsNullOrWhiteSpace(cmdLine))
-                psi.Arguments = cmdLine;
-            psi.FileName = appPath;
-            psi.WindowStyle = ProcessWindowStyle.Minimized;
-            return psi;
-        }
+        private static bool IsNoService(string path) =>
+            !Path.GetFileNameWithoutExtension(path).ContainsEx("service");
 
         private static bool IsRunning(string path)
         {
             try
             {
-                var files = Directory.GetFiles(path, "*.exe", SearchOption.AllDirectories).Select(Path.GetFileNameWithoutExtension).Where(n => n.ContainsEx("Origin") && !n.EqualsEx("OriginClientService", "OriginWebHelperService"));
-                return Process.GetProcesses().Any(p => files.ContainsEx(p.ProcessName));
+                var names = Directory.EnumerateFiles(path, "*.exe", SearchOption.AllDirectories)
+                                     .Select(Path.GetFileNameWithoutExtension)
+                                     .Where(n => n.ContainsEx("Origin"))
+                                     .Where(IsNoService);
+                return names.Any(ProcessEx.IsRunning);
             }
             catch (Exception ex)
             {
@@ -234,34 +277,9 @@ namespace OriginPortable
             }
         }
 
-        private static void KillAll(string path)
-        {
-            try
-            {
-                CloseServices();
-                foreach (var f in Directory.GetFiles(path, "*.exe", SearchOption.AllDirectories))
-                {
-                    var name = Path.GetFileNameWithoutExtension(f);
-                    foreach (var p in Process.GetProcessesByName(name))
-                    {
-                        if (!p.StartInfo.WorkingDirectory.ContainsEx(path) && !p.StartInfo.FileName.ContainsEx(path))
-                            continue;
-                        p.CloseMainWindow();
-                        p.WaitForExit(100);
-                        if (!p.HasExited)
-                            p.Kill();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Log.Write(ex);
-            }
-        }
-
         private static void CloseServices()
         {
-            foreach (var srvName in new []
+            foreach (var srvName in new[]
             {
                 "Origin Client Service",
                 "Origin Web Helper Service"
@@ -271,6 +289,26 @@ namespace OriginPortable
                     continue;
                 Service.Stop(srvName);
                 Service.Uninstall(srvName);
+            }
+        }
+
+        private static void CloseAll(string path)
+        {
+            try
+            {
+                CloseServices();
+                foreach (var f in Directory.EnumerateFiles(path, "*.exe", SearchOption.AllDirectories))
+                    foreach (var p in ProcessEx.GetInstances(f))
+                    {
+                        p?.CloseMainWindow();
+                        p?.WaitForExit(100);
+                        if (p?.HasExited == false)
+                            p.Kill();
+                    }
+            }
+            catch (Exception ex)
+            {
+                Log.Write(ex);
             }
         }
     }
