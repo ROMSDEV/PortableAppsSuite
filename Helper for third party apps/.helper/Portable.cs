@@ -591,13 +591,11 @@
                     }
                     foreach (var pair in regMap[data.Key])
                     {
-                        var key = pair.Key;
-                        if (string.IsNullOrWhiteSpace(key))
-                            continue;
+                        var key = !string.IsNullOrWhiteSpace(pair.Key) ? $"\"{pair.Key}\"" : "@";
                         var value = pair.Value;
                         if (string.IsNullOrWhiteSpace(value))
                             value = "-";
-                        sw.WriteLine($"\"{key}\"={value}");
+                        sw.WriteLine($"{key}={value}");
                     }
                     sw.WriteLine();
                 }
