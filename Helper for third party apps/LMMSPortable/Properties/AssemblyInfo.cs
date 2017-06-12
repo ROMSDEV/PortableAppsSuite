@@ -3,10 +3,10 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 #if x86
-[assembly: AssemblyTitle("Linux MultiMedia Studio Portable")]
+[assembly: AssemblyTitle("LMMS Portable")]
 [assembly: AssemblyProduct("LMMSPortable")]
 #else
-[assembly: AssemblyTitle("Linux MultiMedia Studio (64-bit) Portable")]
+[assembly: AssemblyTitle("LMMS (64-bit) Portable")]
 [assembly: AssemblyProduct("LMMS64Portable")]
 #endif
 
@@ -21,4 +21,4 @@ using System.Runtime.InteropServices;
 
 [assembly: Guid("2ea7516b-8036-4736-8352-070f2a7de3c4")]
 
-[assembly: AssemblyVersion("17.6.7.*")]
+[assembly: AssemblyVersion("17.6.13.*")]

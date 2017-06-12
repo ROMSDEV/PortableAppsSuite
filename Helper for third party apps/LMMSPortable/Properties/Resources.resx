@@ -120,19 +120,16 @@
   <data name="DefaultConfig" xml:space="preserve">
     <value>&lt;?xml version="1.0"?&gt;
 &lt;!DOCTYPE lmms-config-file&gt;
-&lt;lmms version="1.2.0-rc2"&gt;
+&lt;lmms version="1.2.0-rc3"&gt;
   &lt;MidiAlsaRaw device=""/&gt;
-  &lt;app displaydbfs="0" nommpz="0" configured="1" nomsgaftersetup="0"/&gt;
+  &lt;app displaydbfs="0" nommpz="0" configured="1" nomsgaftersetup="0" language="" disablebackup="0" openlastproject="0"/&gt;
   &lt;audioportaudio device="Microsoft Soundmapper - Input" backend="MME"/&gt;
   &lt;audiosdl device=""/&gt;
-  &lt;mixer hqaudio="0" framesperaudiobuffer="256" audiodev="SDL (Simple DirectMedia Layer)" mididev="WinMM MIDI"/&gt;
-  &lt;paths sf2dir="{2}/lmms/samples/sf2/" gigdir="{2}/lmms/samples/gig/" defaultsf2="" backgroundartwork="" laddir="{0}\plugins\ladspa\,{0}\plugins\ladspa" stkdir="data:/stk/rawwaves/" workingdir="{1}\lmms\" fldir="{1}\" vstdir="C:\Program Files/VstPlugins/" artwork="data:/themes/default/"/&gt;
+  &lt;mixer framesperaudiobuffer="256" audiodev="SDL (Simple DirectMedia Layer)" mididev="WinMM MIDI" hqaudio="0"/&gt;
+  &lt;paths artwork="data:/themes/default/" workingdir="{2}/lmms/" vstdir="C:/Program Files/VstPlugins/" defaultsf2="" stkdir="data:/stk/rawwaves/" sf2dir="{2}/lmms/samples/sf2/" backgroundartwork="" gigdir="{2}/lmms/samples/gig/" fldir="{1}\" laddir="{3}/plugins/ladspa/,{3}/plugins/ladspa"/&gt;
   &lt;tooltips disabled="0"/&gt;
-  &lt;ui compacttrackbuttons="0" animateafp="0" enableautosave="0" oneinstrumenttrackwindow="0" syncvstplugins="0" printnotelabels="0" smoothscroll="0" displaywaveform="0"/&gt;
+  &lt;ui syncvstplugins="0" saveinterval="2" oneinstrumenttrackwindow="0" enablerunningautosave="1" disableautoquit="0" smoothscroll="0" printnotelabels="0" displaywaveform="0" animateafp="0" enableautosave="0" compacttrackbuttons="0"/&gt;
   &lt;recentfiles/&gt;
 &lt;/lmms&gt;</value>
-  </data>
-  <data name="DelayedRestoration" xml:space="preserve">
-    <value>PING LOCALHOST -n 5 &gt;NUL &amp;&amp; DEL /F /Q "{0}" &amp;&amp; MOVE /Y "{1}" "{0}" &amp;&amp; ATTR -H "{0}"</value>
   </data>
 </root>
