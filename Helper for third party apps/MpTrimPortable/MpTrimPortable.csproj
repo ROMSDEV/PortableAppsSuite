@@ -18,8 +18,8 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\.bin\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <OutputPath>..\.bin\mpTrimPortable\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;ApplicationStart;RegistryForwarding</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -27,8 +27,8 @@
     <PlatformTarget>x86</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\.bin\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <OutputPath>..\.bin\mpTrimPortable\</OutputPath>
+    <DefineConstants>TRACE;ApplicationStart;RegistryForwarding</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -48,6 +48,7 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\.helper\Portable.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -60,6 +61,25 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>if exist "$(SolutionDir).helper\AssemblyDateVersion.exe" "$(SolutionDir).helper\AssemblyDateVersion.exe" "$(ProjectDir)Properties\AssemblyInfo.cs"</PreBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>if not exist "$(TargetDir)App\mpTrim" md "$(TargetDir)App\mpTrim"
+if not exist "$(TargetDir)App\SilDev.CSharpLib.dll" copy NUL "$(TargetDir)App\SilDev.CSharpLib.dll"
+if not exist "$(TargetDir)App\SilDev.CSharpLib.pdb" copy NUL "$(TargetDir)App\SilDev.CSharpLib.pdb"
+if exist "$(TargetDir)SilDev.CSharpLib.dll" (
+xcopy /h /y "$(TargetDir)SilDev.CSharpLib.dll" "$(TargetDir)App\SilDev.CSharpLib.dll"
+del /f /q "$(TargetDir)SilDev.CSharpLib.dll"
+)
+if exist "$(TargetDir)SilDev.CSharpLib.pdb" (
+xcopy /h /y "$(TargetDir)SilDev.CSharpLib.pdb" "$(TargetDir)App\SilDev.CSharpLib.pdb"
+del /f /q "$(TargetDir)SilDev.CSharpLib.pdb"
+)
+if exist "$(TargetDir)SilDev.CSharpLib.pdb" del /f /q /a:h "$(TargetDir)SilDev.CSharpLib.pdb"
+if exist "$(TargetDir)SilDev.CSharpLib.xml" del /f /q "$(TargetDir)SilDev.CSharpLib.xml"
+attrib +h "$(TargetDir)*.exe.config"
+attrib +h "$(TargetDir)*.pdb"
+attrib +h "$(TargetDir)App\*.pdb"
+</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

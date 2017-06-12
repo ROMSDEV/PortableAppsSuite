@@ -1,9 +1,11 @@
 namespace mpTrimPortable
 {
     using System;
+    using System.IO;
     using System.Threading;
     using System.Windows.Forms;
     using Microsoft.Win32;
+    using Portable;
     using SilDev;
 
     internal static class Program
@@ -14,19 +16,38 @@ namespace mpTrimPortable
             Log.AllowLogging();
             bool newInstance;
             using (new Mutex(true, ProcessEx.CurrentName, out newInstance))
-                if (newInstance)
+            {
+                var appPath = PathEx.Combine(PathEx.LocalDir, "App\\mpTrim\\mpTrim.exe");
+                if (!File.Exists(appPath))
+                    return;
+
+                if (!newInstance)
                 {
-                    var left = (int)Math.Round(Screen.PrimaryScreen.WorkingArea.Width / 2f - 335f / 2f);
-                    Reg.Write("HKCU\\Software\\mpTrim", "MainFormLeft", left, RegistryValueKind.DWord);
-                    var top = (int)Math.Round(Screen.PrimaryScreen.WorkingArea.Height / 2f - 410f / 2f);
-                    Reg.Write("HKCU\\Software\\mpTrim", "MainFormTop", top, RegistryValueKind.DWord);
-                    using (var p = ProcessEx.Start("%CurDir%\\mpTrim\\mpTrim.exe", false, false))
-                        if (!p?.HasExited == true)
-                            p?.WaitForExit();
-                    Reg.RemoveSubKey("HKCU\\Software\\mpTrim");
+                    ProcessEx.Start(appPath, EnvironmentEx.CommandLine(false));
+                    return;
                 }
-                else
-                    ProcessEx.Start("%CurDir%\\mpTrim\\mpTrim.exe");
+
+                const string regKey = "HKCU\\Software\\mpTrim";
+                Helper.RegForwarding(Helper.Options.Start, regKey);
+
+                var regPath = PathEx.Combine(PathEx.LocalDir, "Data\\settings.reg");
+                if (!File.Exists(regPath))
+                {
+                    var screenWidth = Screen.PrimaryScreen.WorkingArea.Width;
+                    const int windowWidth = 335;
+                    var windowLeft = (int)Math.Round(screenWidth / 2d - windowWidth / 2d);
+                    Reg.Write(regKey, "MainFormLeft", windowLeft, RegistryValueKind.DWord);
+
+                    var screenHeight = Screen.PrimaryScreen.WorkingArea.Height;
+                    const int windowHeight = 410;
+                    var windowTop = (int)Math.Round(screenHeight / 2d - windowHeight / 2d);
+                    Reg.Write(regKey, "MainFormTop", windowTop, RegistryValueKind.DWord);
+                }
+
+                Helper.ApplicationStart(appPath, EnvironmentEx.CommandLine(false), false);
+
+                Helper.RegForwarding(Helper.Options.Exit, regKey);
+            }
         }
     }
 }
