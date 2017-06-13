@@ -27,7 +27,7 @@ namespace VLCPortable
             var updaterPath = PathEx.Combine(appDir, "VLCUpdater64.exe");
 #endif
 
-            if (!File.Exists(updaterPath) || ProcessEx.InstancesCount(Path.GetFileNameWithoutExtension(updaterPath)) > 0)
+            if (!File.Exists(updaterPath) || ProcessEx.IsRunning(Path.GetFileNameWithoutExtension(updaterPath)))
                 return;
 
             bool newInstance;
@@ -41,7 +41,7 @@ namespace VLCPortable
                     return;
                 }
 
-                if (ProcessEx.InstancesCount(Path.GetFileNameWithoutExtension(appPath)) > 0)
+                if (ProcessEx.IsRunning(Path.GetFileNameWithoutExtension(appPath)))
                     return;
 
                 var dirMap = new Dictionary<string, string>

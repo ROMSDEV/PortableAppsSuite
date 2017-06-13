@@ -32,7 +32,7 @@ namespace NTLitePortable
 #endif
             var appPath = Path.Combine(appDir, "NTLite.exe");
 
-            if (!File.Exists(updaterPath) || ProcessEx.InstancesCount(Path.GetFileNameWithoutExtension(appPath)) > 0 || ProcessEx.InstancesCount(Path.GetFileNameWithoutExtension(updaterPath)) > 0)
+            if (!File.Exists(updaterPath) || ProcessEx.IsRunning(Path.GetFileNameWithoutExtension(appPath)) || ProcessEx.IsRunning(Path.GetFileNameWithoutExtension(updaterPath)))
                 return;
 
             bool newInstance;

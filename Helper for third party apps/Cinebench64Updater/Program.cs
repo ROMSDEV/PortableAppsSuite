@@ -15,7 +15,7 @@ namespace AppUpdater
         {
             Log.AllowLogging();
             MessageBoxEx.TopMost = true;
-            if (ProcessEx.InstancesCount(Resources.AppName) > 0)
+            if (ProcessEx.IsRunning(Resources.AppName))
             {
                 MessageBoxEx.Show(Resources.Msg_Warn_00, Resources.WindowTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 Environment.ExitCode = 1;

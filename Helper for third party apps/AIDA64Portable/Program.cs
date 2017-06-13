@@ -20,7 +20,7 @@ namespace AIDA64Portable
                     return;
 
                 var appPath = PathEx.Combine(PathEx.LocalDir, "App\\AIDA64\\aida64.exe");
-                if (!File.Exists(appPath) || ProcessEx.InstancesCount(Path.GetFileNameWithoutExtension(appPath)) > 0)
+                if (!File.Exists(appPath) || ProcessEx.IsRunning(Path.GetFileNameWithoutExtension(appPath)))
                     return;
 
                 const string iniPath = "%CurDir%\\Data\\aida64.ini";

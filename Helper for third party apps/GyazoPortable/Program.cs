@@ -33,7 +33,7 @@ namespace GyazoPortable
                 if (trayMode)
                     appPath = Path.Combine(appDir, "GyStation.exe");
                 var updaterPath = Path.Combine(appDir, "GyazoUpdater.exe");
-                if (ProcessEx.InstancesCount(Path.GetFileNameWithoutExtension(appPath)) > 0 || !File.Exists(updaterPath) || ProcessEx.InstancesCount(Path.GetFileNameWithoutExtension(updaterPath)) > 0)
+                if (ProcessEx.IsRunning(Path.GetFileNameWithoutExtension(appPath)) || !File.Exists(updaterPath) || ProcessEx.IsRunning(Path.GetFileNameWithoutExtension(updaterPath)))
                     return;
 
                 Helper.ApplicationStart(updaterPath, "/silent", null);

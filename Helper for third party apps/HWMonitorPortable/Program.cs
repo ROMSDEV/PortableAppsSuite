@@ -26,7 +26,7 @@ namespace HWMonitorPortable
 
                 var appPath = Path.Combine(appDir, Environment.CommandLine.ContainsEx("/Tray") ? "HwMonTray.exe" : (Environment.Is64BitOperatingSystem ? "HWMonitor_x64.exe" : "HWMonitor_x32.exe"));
                 var updaterPath = Path.Combine(appDir, "HWMonitorUpdater.exe");
-                if (ProcessEx.InstancesCount(Path.GetFileNameWithoutExtension(appPath)) > 0 || !File.Exists(updaterPath) || ProcessEx.InstancesCount(Path.GetFileNameWithoutExtension(updaterPath)) > 0)
+                if (ProcessEx.IsRunning(Path.GetFileNameWithoutExtension(appPath)) || !File.Exists(updaterPath) || ProcessEx.IsRunning(Path.GetFileNameWithoutExtension(updaterPath)))
                     return;
 
                 Helper.ApplicationStart(updaterPath, "/silent", null);

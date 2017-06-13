@@ -23,7 +23,7 @@ namespace Cinebench64Portable
                 var appDir = PathEx.Combine(PathEx.LocalDir, "App\\cinebench64");
                 var appPath = PathEx.Combine(appDir, "CINEBENCH Windows 64 Bit.exe");
                 var updaterPath = Path.Combine(appDir, "CinebenchUpdater64.exe");
-                if (ProcessEx.InstancesCount(Path.GetFileNameWithoutExtension(appPath)) > 0 || !File.Exists(updaterPath) || ProcessEx.InstancesCount(Path.GetFileNameWithoutExtension(updaterPath)) > 0)
+                if (ProcessEx.IsRunning(Path.GetFileNameWithoutExtension(appPath)) || !File.Exists(updaterPath) || ProcessEx.IsRunning(Path.GetFileNameWithoutExtension(updaterPath)))
                     return;
 
                 var appDataDir = PathEx.Combine("%AppData%\\MAXON");
