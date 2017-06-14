@@ -51,7 +51,7 @@ namespace SteamPortable
                         "[Settings]",
                         "",
                         "; True to clear caches when Steam is closed; otherwise, False.",
-                        "ImproveSteamStartTime=False",
+                        "ImproveSteamStartTime=True",
                         "",
                         "; This option allows forwarding of the default steam game install directory.",
                         "; Steam handles this directory as if would be still on the default location.",
@@ -59,7 +59,7 @@ namespace SteamPortable
                         "",
                         "; Set start arguments that are used when Steam Portable creates a new instance.",
                         "; Options: https://developer.valvesoftware.com/wiki/Command_Line_Options",
-                        "StartArguments=-silent steam://friends/status/online"
+                        ";StartArguments=-silent steam://friends/status/online"
                     };
                     File.WriteAllLines(iniPath, iniContent);
                 }
@@ -111,6 +111,10 @@ namespace SteamPortable
                     {
                         "%CurDir%\\App\\Steam\\music",
                         "%CurDir%\\Data\\music"
+                    },
+                    {
+                        "%CurDir%\\App\\Steam\\remoteui",
+                        "%CurDir%\\Data\\remoteui"
                     },
                     {
                         "%CurDir%\\App\\Steam\\skins",
@@ -302,18 +306,18 @@ namespace SteamPortable
 
                 if (!Ini.Read("Settings", "ImproveSteamStartTime", false, iniPath))
                     return;
-                var pattern = new[]
+                var patternDict = new Dictionary<string, SearchOption>
                 {
-                    ".crash",
-                    "*.old",
-                    "*.log",
-                    "*.log.last",
-                    "ClientRegistry.blob"
+                    { ".crash", SearchOption.TopDirectoryOnly },
+                    { "*.old", SearchOption.TopDirectoryOnly },
+                    { "*.log", SearchOption.AllDirectories },
+                    { "*.log.last", SearchOption.TopDirectoryOnly },
+                    { "ClientRegistry.blob", SearchOption.TopDirectoryOnly },
                 };
-                foreach (var p in pattern)
+                foreach (var p in patternDict)
                     try
                     {
-                        foreach (var f in Directory.EnumerateFiles(appDir, p))
+                        foreach (var f in Directory.EnumerateFiles(appDir, p.Key, p.Value))
                             try
                             {
                                 File.Delete(f);
@@ -347,6 +351,24 @@ namespace SteamPortable
                     {
                         Log.Write(ex);
                     }
+                }
+                try
+                {
+                    foreach (var d in Directory.EnumerateDirectories(dataDir))
+                        try
+                        {
+                            if (Directory.EnumerateFiles(d).Any())
+                                continue;
+                            Directory.Delete(d, true);
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Write(ex);
+                        }
+                }
+                catch (Exception ex)
+                {
+                    Log.Write(ex);
                 }
             }
         }
