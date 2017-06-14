@@ -1,10 +1,13 @@
 namespace SteamPortable
 {
     using System;
-    using System.Diagnostics;
+    using System.Collections.Generic;
     using System.IO;
     using System.Linq;
     using System.Threading;
+    using Microsoft.Win32;
+    using Portable;
+    using Properties;
     using SilDev;
 
     internal static class Program
@@ -13,313 +16,338 @@ namespace SteamPortable
         private static void Main()
         {
             Log.AllowLogging();
-            var appDir = PathEx.Combine("%CurDir%\\App\\Steam");
-            var locName = Path.GetFileNameWithoutExtension(PathEx.LocalPath);
-            var cmdLineArgs = EnvironmentEx.CommandLine(false);
             bool newInstance;
             using (new Mutex(true, ProcessEx.CurrentName, out newInstance))
             {
-                if (!newInstance)
-                {
-                    ProcessEx.Start(Path.Combine(appDir, "Steam.exe"), cmdLineArgs, true);
-                    return;
-                }
-
 #if x86
                 if (Environment.Is64BitOperatingSystem)
                 {
-                    ProcessEx.Start($"%CurDir%\\{locName}64.exe", cmdLineArgs, true, false);
+                    var curName = Path.GetFileNameWithoutExtension(PathEx.LocalPath);
+                    var curPath64 = PathEx.Combine(PathEx.LocalDir, $"{curName}64.exe");
+                    ProcessEx.Start(curPath64, EnvironmentEx.CommandLine(false));
                     return;
                 }
 #endif
 
-                if (IsRunning(appDir, "steam"))
-                    KillAll(appDir, "steam");
+                var appDir = PathEx.Combine(PathEx.LocalDir, "App\\Steam");
+                var appPath = Path.Combine(appDir, "Steam.exe");
+                var cmdLine = EnvironmentEx.CommandLine(false);
+
+                if (!newInstance)
+                {
+                    ProcessEx.Start(appPath, cmdLine, true);
+                    return;
+                }
+
+                var iniPath = Path.ChangeExtension(PathEx.LocalPath, ".ini");
+                if (string.IsNullOrEmpty(iniPath))
+                    return;
+
+                const string steamAppsDefVar = "%CurDir%\\Data\\steamapps";
+                if (!File.Exists(iniPath))
+                {
+                    var iniContent = new[]
+                    {
+                        "[Settings]",
+                        "",
+                        "; True to clear caches when Steam is closed; otherwise, False.",
+                        "ImproveSteamStartTime=False",
+                        "",
+                        "; This option allows forwarding of the default steam game install directory.",
+                        "; Steam handles this directory as if would be still on the default location.",
+                        $"SteamAppsPathOverride={steamAppsDefVar}",
+                        "",
+                        "; Set start arguments that are used when Steam Portable creates a new instance.",
+                        "; Options: https://developer.valvesoftware.com/wiki/Command_Line_Options",
+                        "StartArguments=-silent steam://friends/status/online"
+                    };
+                    File.WriteAllLines(iniPath, iniContent);
+                }
+
+                var steamAppsVar = Ini.Read("Settings", "SteamAppsPathOverride", steamAppsDefVar, iniPath);
+                if (!steamAppsVar.EqualsEx(steamAppsDefVar))
+                {
+                    var steamAppsDir = PathEx.Combine(steamAppsVar);
+                    if (!PathEx.IsValidPath(steamAppsDir))
+                        steamAppsVar = steamAppsDefVar;
+                }
 
                 var defServiceDir = PathEx.Combine("%CommonProgramFiles(x86)%\\Steam");
-                var serviceDir = PathEx.Combine("%CurDir%\\App\\Service");
-                Data.DirLink(defServiceDir, serviceDir, true);
-
-                var defCacheDir = PathEx.Combine("%LocalAppData%\\Steam");
-                var cacheDir = PathEx.Combine("%CurDir%\\Data\\Cache");
-                Data.DirLink(defCacheDir, cacheDir, true);
-
-                var iniPath = PathEx.Combine($"%CurDir%\\{locName?.Replace("64", string.Empty)}.ini");
-                if (File.Exists(iniPath))
+                var serviceDir = PathEx.Combine(PathEx.LocalDir, "App\\Service");
+                var dirMap = new Dictionary<string, string>
                 {
-                    bool improveSteamStart;
-                    bool.TryParse(Ini.Read("Settings", "ImproveSteamStartTime", iniPath), out improveSteamStart);
-                    if (improveSteamStart)
-                        try
-                        {
-                            foreach (var f in Directory.GetFiles(appDir, "*.old"))
-                                File.Delete(f);
-                            foreach (var f in Directory.GetFiles(appDir, "*.log"))
-                                File.Delete(f);
-                            foreach (var f in Directory.GetFiles(appDir, "*.log.last"))
-                                File.Delete(f);
-                            var file = Path.Combine(appDir, ".crash");
-                            if (File.Exists(file))
-                                File.Delete(file);
-                            file = Path.Combine(appDir, "ClientRegistry.blob");
-                            if (File.Exists(file))
-                                File.Delete(file);
-                            var dir = Path.Combine(appDir, "appcache");
-                            if (Directory.Exists(dir))
-                                Directory.Delete(dir, true);
-                            dir = Path.Combine(appDir, "appcache");
-                            if (Directory.Exists(dir))
-                                Directory.Delete(dir, true);
-                            dir = Path.Combine(appDir, "depotcache");
-                            if (Directory.Exists(dir))
-                                Directory.Delete(dir, true);
-                            dir = Path.Combine(appDir, "dumps");
-                            if (Directory.Exists(dir))
-                                Directory.Delete(dir, true);
-                            dir = Path.Combine(appDir, "logs");
-                            if (Directory.Exists(dir))
-                                Directory.Delete(dir, true);
-                            dir = Path.Combine(cacheDir, "htmlcache");
-                            if (Directory.Exists(dir))
-                                Directory.Delete(dir, true);
-                        }
-                        catch (Exception ex)
-                        {
-                            Log.Write(ex);
-                        }
-                    var steamAppsDir = Ini.Read("Settings", "SteamAppsPathOverride", iniPath);
-                    if (!string.IsNullOrWhiteSpace(steamAppsDir))
                     {
-                        var defaultSteamAppsPath = Path.Combine(appDir, "steamapps");
-                        steamAppsDir = PathEx.Combine(steamAppsDir);
-                        Data.DirLink(defaultSteamAppsPath, steamAppsDir, true);
+                        defServiceDir,
+                        serviceDir
+                    },
+                    {
+                        "%LocalAppData%\\Steam",
+                        "%CurDir%\\Data\\cache"
+                    },
+                    {
+                        "%CurDir%\\App\\Steam\\appcache",
+                        "%CurDir%\\Data\\appcache"
+                    },
+                    {
+                        "%CurDir%\\App\\Steam\\config",
+                        "%CurDir%\\Data\\config"
+                    },
+                    {
+                        "%CurDir%\\App\\Steam\\depotcache",
+                        "%CurDir%\\Data\\depotcache"
+                    },
+                    {
+                        "%CurDir%\\App\\Steam\\dumps",
+                        "%CurDir%\\Data\\dumps"
+                    },
+                    {
+                        "%CurDir%\\App\\Steam\\htmlcache",
+                        "%CurDir%\\Data\\htmlcache"
+                    },
+                    {
+                        "%CurDir%\\App\\Steam\\logs",
+                        "%CurDir%\\Data\\logs"
+                    },
+                    {
+                        "%CurDir%\\App\\Steam\\music",
+                        "%CurDir%\\Data\\music"
+                    },
+                    {
+                        "%CurDir%\\App\\Steam\\skins",
+                        "%CurDir%\\Data\\skins"
+                    },
+                    {
+                        "%CurDir%\\App\\Steam\\steamapps",
+                        steamAppsVar
+                    },
+                    {
+                        "%CurDir%\\App\\Steam\\userdata",
+                        "%CurDir%\\Data\\userdata"
+                    },
+                    {
+                        "%CurDir%\\App\\Steam\\vrpanorama",
+                        "%CurDir%\\Data\\vrpanorama"
+                    }
+                };
+
+                var dataDir = PathEx.Combine(PathEx.LocalDir, "Data");
+                foreach (var d in dirMap.Keys.Skip(2))
+                {
+                    var dir = PathEx.Combine(d);
+                    if (!Directory.Exists(dir) || Data.DirIsLink(dir))
+                        continue;
+                    using (var p = ProcessEx.Send(string.Format(Resources.ForceMove, dir, dataDir), true, false))
+                        if (p?.HasExited == false)
+                            p.WaitForExit();
+                    if (!Directory.Exists(dir))
+                        continue;
+                    try
+                    {
+                        Directory.Delete(dir, true);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Write(ex);
+                        if (Data.ForceDelete(dir, true))
+                            continue;
+                        if (Ini.ReadDirect("Cache", "Hard", iniPath).EqualsEx("True"))
+                        {
+                            Ini.WriteDirect("Cache", null, null, iniPath);
+                            continue;
+                        }
+                        Ini.WriteDirect("Cache", "Hard", true, iniPath);
+                        ProcessEx.Start(PathEx.LocalPath, EnvironmentEx.CommandLine(false), true);
+                    }
+                }
+                if (Ini.ReadDirect("Cache", "Hard", iniPath).EqualsEx("True"))
+                    Ini.WriteDirect("Cache", null, null, iniPath);
+
+                Helper.DirectoryForwarding(Helper.Options.Start, dirMap);
+
+                var regKeys = new[]
+                {
+                    "HKCU\\Software\\Valve",
+                    "HKLM\\SOFTWARE\\Valve"
+#if !x86
+                    ,
+                    "HKLM\\SOFTWARE\\Wow6432Node\\Valve"
+#endif
+                };
+
+                Helper.RegForwarding(Helper.Options.Start, regKeys);
+
+                for (var i = 0; i < regKeys.Length; i++)
+                {
+                    var regKey = $"{regKeys[i]}\\Steam";
+                    switch (i)
+                    {
+                        case 0:
+                            Reg.Write(regKey, "SteamExe", PathEx.AltCombine(appPath).ToLower());
+                            Reg.Write(regKey, "SteamPath", PathEx.AltCombine(appDir).ToLower());
+                            Reg.Write(regKey, "SourceModInstallPath", PathEx.AltCombine(appDir, "steamapps\\sourcemods").ToLower());
+
+                            regKey = $"{regKey}\\ActiveProcess";
+                            Reg.Write(regKey, "SteamClientDll", PathEx.AltCombine(appDir, "steamclient.dll").ToLower());
+                            Reg.Write(regKey, "SteamClientDll64", PathEx.AltCombine(appDir, "steamclient64.dll").ToLower());
+                            break;
+                        case 1:
+#if !x86
+                        case 2:
+#endif
+                            Reg.Write(regKey, "InstallPath", appDir);
+
+#if !x86
+                            if (i == 1)
+                                continue;
+#endif
+
+                            regKey = $"{regKey}\\Apps\\CommonRedist";
+                            Reg.Write($"{regKey}\\.NET\\3.5", "3.5 SP1", 1, RegistryValueKind.DWord);
+                            Reg.Write($"{regKey}\\.NET\\3.5 Client Profile", "3.5 Client Profile SP1", 1, RegistryValueKind.DWord);
+                            Reg.Write($"{regKey}\\.NET\\4.0", "4.0", 1, RegistryValueKind.DWord);
+                            Reg.Write($"{regKey}\\.NET\\4.0 Client Profile", "4.0 Client Profile", 1, RegistryValueKind.DWord);
+                            Reg.Write($"{regKey}\\.NET\\4.5", "4.5", 1, RegistryValueKind.DWord);
+                            Reg.Write($"{regKey}\\.NET\\4.5.1", "4.5.1", 1, RegistryValueKind.DWord);
+                            Reg.Write($"{regKey}\\.NET\\4.5.2", "4.5.2", 1, RegistryValueKind.DWord);
+                            Reg.Write($"{regKey}\\.NET\\4.6", "4.6", 1, RegistryValueKind.DWord);
+                            Reg.Write($"{regKey}\\.NET\\4.6.1", "4.6.1", 1, RegistryValueKind.DWord);
+
+                            var value = File.Exists(PathEx.Combine("%system%\\d3d9.dll")) ? 1 : 0;
+                            Reg.Write($"{regKey}\\DirectX", "June2010", value, RegistryValueKind.DWord);
+                            Reg.Write($"{regKey}\\DirectX\\Jun2010", "dxsetup", value, RegistryValueKind.DWord);
+
+                            value = EnvironmentEx.Redist.IsInstalled(EnvironmentEx.Redist.Flags.VC2005X86) ? 1 : 0;
+                            Reg.Write($"{regKey}\\vcredist\\2005", "x86 SP1", value, RegistryValueKind.DWord);
+
+                            value = EnvironmentEx.Redist.IsInstalled(EnvironmentEx.Redist.Flags.VC2005X64) ? 1 : 0;
+                            Reg.Write($"{regKey}\\vcredist\\2005", "x64 SP1", value, RegistryValueKind.DWord);
+
+                            value = EnvironmentEx.Redist.IsInstalled(EnvironmentEx.Redist.Flags.VC2008X86) ? 1 : 0;
+                            Reg.Write($"{regKey}\\vcredist\\2008", "x86 SP1", value, RegistryValueKind.DWord);
+                            value = EnvironmentEx.Redist.IsInstalled(EnvironmentEx.Redist.Flags.VC2008X64) ? 1 : 0;
+                            Reg.Write($"{regKey}\\vcredist\\2008", "x64 SP1", value, RegistryValueKind.DWord);
+
+                            value = EnvironmentEx.Redist.IsInstalled(EnvironmentEx.Redist.Flags.VC2010X86) ? 1 : 0;
+                            Reg.Write($"{regKey}\\vcredist\\2010", "x86", value, RegistryValueKind.DWord);
+                            value = EnvironmentEx.Redist.IsInstalled(EnvironmentEx.Redist.Flags.VC2010X64) ? 1 : 0;
+                            Reg.Write($"{regKey}\\vcredist\\2010", "x64", value, RegistryValueKind.DWord);
+
+                            value = EnvironmentEx.Redist.IsInstalled(EnvironmentEx.Redist.Flags.VC2012X86) ? 1 : 0;
+                            Reg.Write($"{regKey}\\vcredist\\2012", "x86 Update 2", value, RegistryValueKind.DWord);
+                            value = EnvironmentEx.Redist.IsInstalled(EnvironmentEx.Redist.Flags.VC2012X64) ? 1 : 0;
+                            Reg.Write($"{regKey}\\vcredist\\2012", "x64 Update 2", value, RegistryValueKind.DWord);
+
+                            value = EnvironmentEx.Redist.IsInstalled(EnvironmentEx.Redist.Flags.VC2013X86) ? 1 : 0;
+                            Reg.Write($"{regKey}\\vcredist\\2013", "x86 Update 1", value, RegistryValueKind.DWord);
+                            value = EnvironmentEx.Redist.IsInstalled(EnvironmentEx.Redist.Flags.VC2013X64) ? 1 : 0;
+                            Reg.Write($"{regKey}\\vcredist\\2013", "x64 Update 1", value, RegistryValueKind.DWord);
+
+                            value = EnvironmentEx.Redist.IsInstalled(EnvironmentEx.Redist.Flags.VC2015X86) ? 1 : 0;
+                            Reg.Write($"{regKey}\\vcredist\\2015", "x86", value, RegistryValueKind.DWord);
+                            value = EnvironmentEx.Redist.IsInstalled(EnvironmentEx.Redist.Flags.VC2015X64) ? 1 : 0;
+                            Reg.Write($"{regKey}\\vcredist\\2015", "x64", value, RegistryValueKind.DWord);
+
+                            value = EnvironmentEx.Redist.IsInstalled(EnvironmentEx.Redist.Flags.VC2017X86) ? 1 : 0;
+                            Reg.Write($"{regKey}\\vcredist\\2017", "x86", value, RegistryValueKind.DWord);
+                            value = EnvironmentEx.Redist.IsInstalled(EnvironmentEx.Redist.Flags.VC2017X64) ? 1 : 0;
+                            Reg.Write($"{regKey}\\vcredist\\2017", "x64", value, RegistryValueKind.DWord);
+                            break;
                     }
                 }
 
-                if (!Reg.EntryExists("HKCU\\Software\\Valve", "Portable App"))
-                    Reg.MoveSubKey("HKCU\\Software\\Valve", "HKLM\\Software\\SI13N7-BACKUP: Valve");
-#if !x86
-                if (!Reg.EntryExists("HKLM\\SOFTWARE\\Wow6432Node\\Valve", "Portable App"))
-                    Reg.MoveSubKey("HKLM\\SOFTWARE\\Wow6432Node\\Valve", "HKLM\\SOFTWARE\\Wow6432Node\\SI13N7-BACKUP: Valve");
-#endif
-                if (!Reg.EntryExists("HKLM\\SOFTWARE\\Valve", "Portable App"))
-                    Reg.MoveSubKey("HKLM\\SOFTWARE\\Valve", "HKLM\\SOFTWARE\\SI13N7-BACKUP: Valve");
-
-                var settingsKeyPath = PathEx.Combine("%CurDir%\\Data\\settings.reg");
-                Reg.ImportFile(settingsKeyPath);
-
-                Reg.Write("HKCU\\Software\\Valve", "Portable App", "True");
-                Reg.Write("HKCU\\Software\\Valve\\Steam", "SteamExe", Path.Combine(appDir, "Steam.exe").Replace("\\", "/").ToLower());
-                Reg.Write("HKCU\\Software\\Valve\\Steam", "SteamPath", appDir.Replace("\\", "/").ToLower());
-                Reg.Write("HKCU\\Software\\Valve\\Steam", "SourceModInstallPath", Path.Combine(appDir, "SteamApps\\sourcemods").Replace("\\", "/").ToLower());
-                Reg.Write("HKCU\\Software\\Valve\\Steam\\ActiveProcess", "SteamClientDll", Path.Combine(appDir, "steamclient.dll").Replace("\\", "/").ToLower());
-                Reg.Write("HKCU\\Software\\Valve\\Steam\\ActiveProcess", "SteamClientDll64", Path.Combine(appDir, "steamclient64.dll").Replace("\\", "/").ToLower());
-
-                Reg.Write("HKLM\\SOFTWARE\\Valve", "Portable App", "True");
-                Reg.Write("HKLM\\SOFTWARE\\Valve\\Steam", "InstallPath", appDir);
-#if !x86
-                Reg.Write("HKLM\\SOFTWARE\\Wow6432Node\\Valve", "Portable App", "True");
-                Reg.Write("HKLM\\SOFTWARE\\Wow6432Node\\Valve\\Steam", "InstallPath", appDir);
-#endif
                 const string serviceName = "Steam Client Service";
-                if (Elevation.IsAdministrator && !Service.Exists(serviceName))
+                if (!Service.Exists(serviceName))
                 {
                     try
                     {
-                        var binServicePath = Path.Combine(appDir, "bin\\steamservice.exe");
-                        var servicePath = Path.Combine(serviceDir, "SteamService.exe");
-                        File.Copy(binServicePath, servicePath, true);
+                        var binSrvPath = Path.Combine(appDir, "bin\\steamservice.exe");
+                        var srvPath = Path.Combine(serviceDir, "SteamService.exe");
+                        File.Copy(binSrvPath, srvPath, true);
+                        binSrvPath = Path.ChangeExtension(binSrvPath, ".dll");
+                        srvPath = Path.ChangeExtension(srvPath, ".dll");
+                        File.Copy(binSrvPath, srvPath, true);
                     }
                     catch (Exception ex)
                     {
                         Log.Write(ex);
                     }
-                    Service.Install(serviceName, serviceName, Path.Combine(defServiceDir, "SteamService.exe"), "/RunAsService");
+                    var defSrvPath = Path.Combine(defServiceDir, "SteamService.exe");
+                    Service.Install(serviceName, serviceName, defSrvPath, "/RunAsService");
                     Service.Start(serviceName);
                 }
 
-                if (File.Exists(iniPath))
-                {
-                    cmdLineArgs = $"{Ini.Read("Settings", "StartArguments", iniPath)} {cmdLineArgs}";
-                    cmdLineArgs = cmdLineArgs.Trim();
-                }
+                var startArgs = Ini.Read("Settings", "StartArguments", iniPath);
+                if (!string.IsNullOrWhiteSpace(startArgs))
+                    cmdLine = $"{startArgs} {cmdLine}".Trim();
 
-                using (var p = ProcessEx.Start(Path.Combine(appDir, "Steam.exe"), cmdLineArgs, true, false))
-                    if (!p?.HasExited == true)
-                        p?.WaitForExit();
+                Helper.ApplicationStart(appPath, cmdLine);
 
-                for (var i = 0; i < 10; i++)
-                {
-                    while (IsRunning(appDir, "Steam"))
-                        Thread.Sleep(200);
-                    Thread.Sleep(300);
-                }
-
-                if (Elevation.IsAdministrator && Service.Exists(serviceName) && Data.DirIsLink(defServiceDir))
+                if (Service.Exists(serviceName))
                 {
                     Service.Stop(serviceName);
                     Service.Uninstall(serviceName);
                 }
 
-                Reg.ImportFile(new[]
-                {
-                    "Windows Registry Editor Version 5.00",
-                    "",
-                    "[-HKEY_CLASSES_ROOT\\steam]",
-                    ""
-                }, true);
+                Helper.DirectoryForwarding(Helper.Options.Exit, dirMap);
 
-                var tempRegPath = PathEx.Combine("%CurDir%\\Data\\temp.reg");
-                var regFileContent = string.Empty;
-                try
-                {
-                    if (File.Exists(tempRegPath))
-                        File.Delete(tempRegPath);
-                }
-                catch (Exception ex)
-                {
-                    Log.Write(ex);
-                }
-                Reg.ExportKeys(tempRegPath, "HKCU\\Software\\Valve");
-                if (File.Exists(tempRegPath))
-                {
-                    regFileContent = File.ReadAllText(tempRegPath);
-                    try
-                    {
-                        File.Delete(tempRegPath);
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.Write(ex);
-                    }
-                }
+                Helper.RegForwarding(Helper.Options.Exit, regKeys);
 
-                Reg.ExportKeys(tempRegPath, "HKLM\\SOFTWARE\\Valve");
-                if (File.Exists(tempRegPath))
+                var regSecureMap = new Dictionary<string, Dictionary<string, string>>
                 {
-                    if (string.IsNullOrWhiteSpace(regFileContent))
-                        regFileContent = File.ReadAllText(tempRegPath);
-                    else
                     {
-                        var lines = File.ReadAllLines(tempRegPath);
-                        for (var i = 2; i < lines.Length; i++)
-                        {
-                            string line = $"{lines[i]}{Environment.NewLine}";
-                            regFileContent += line;
-                        }
+                        "-HKCR\\steam", null
                     }
-                    try
-                    {
-                        File.Delete(tempRegPath);
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.Write(ex);
-                    }
-                }
-#if !x86
-                Reg.ExportKeys(tempRegPath, "HKLM\\SOFTWARE\\Wow6432Node\\Valve");
-                if (File.Exists(tempRegPath))
-                {
-                    if (string.IsNullOrWhiteSpace(regFileContent))
-                        regFileContent = File.ReadAllText(tempRegPath);
-                    else
-                    {
-                        var lines = File.ReadAllLines(tempRegPath);
-                        for (var i = 2; i < lines.Length; i++)
-                        {
-                            string line = $"{lines[i]}{Environment.NewLine}";
-                            regFileContent += line;
-                        }
-                    }
-                    try
-                    {
-                        File.Delete(tempRegPath);
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.Write(ex);
-                    }
-                }
-#endif
-                Reg.RemoveSubKey("HKCU\\Software\\Valve");
-                Reg.RemoveSubKey("HKLM\\SOFTWARE\\Valve");
-#if !x86
-                Reg.RemoveSubKey("HKLM\\SOFTWARE\\Wow6432Node\\Valve");
-#endif
-                Reg.RemoveSubKey("HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run", "Steam");
+                };
+                Helper.RegSecureOverwrite(regSecureMap);
 
-                Reg.MoveSubKey("HKCU\\Software\\SI13N7-BACKUP: Valve", "HKLM\\Software\\Valve");
-                Reg.MoveSubKey("HKLM\\SOFTWARE\\SI13N7-BACKUP: Valve", "HKLM\\SOFTWARE\\Valve");
-#if !x86
-                Reg.MoveSubKey("HKLM\\SOFTWARE\\Wow6432Node\\SI13N7-BACKUP: Valve", "HKLM\\SOFTWARE\\Wow6432Node\\Valve");
-#endif
-                try
-                {
-                    if (File.Exists(settingsKeyPath))
-                    {
-                        foreach (var p in Process.GetProcessesByName("reg"))
-                            if (p.StartInfo.Arguments.ToLower().Contains(settingsKeyPath.ToLower()))
-                                p.Kill();
-                        File.Delete(settingsKeyPath);
-                    }
-                    if (!File.Exists(settingsKeyPath))
-                        File.WriteAllText(settingsKeyPath, regFileContent);
-                }
-                catch (Exception ex)
-                {
-                    Log.Write(ex);
-                }
-
-                Data.DirUnLink(defServiceDir, true);
-                Data.DirUnLink(defCacheDir, true);
-
-                if (!File.Exists(iniPath))
+                if (!Ini.Read("Settings", "ImproveSteamStartTime", false, iniPath))
                     return;
-                var steamAppsPath = Ini.Read("Settings", "SteamAppsPathOverride", iniPath);
-                if (string.IsNullOrWhiteSpace(steamAppsPath))
-                    return;
-                var defSteamAppsPath = Path.Combine(appDir, "steamapps");
-                Data.DirUnLink(defSteamAppsPath, true);
-            }
-        }
-
-        private static bool IsRunning(string path, string match)
-        {
-            try
-            {
-                return Directory.GetFiles(path, "*.exe", SearchOption.AllDirectories)
-                                .Select(Path.GetFileNameWithoutExtension)
-                                .Any(x => x.ContainsEx(match) && Process.GetProcessesByName(x).Length > 0);
-            }
-            catch (Exception ex)
-            {
-                Log.Write(ex);
-                return false;
-            }
-        }
-
-        private static void KillAll(string path, string match)
-        {
-            try
-            {
-                foreach (var f in Directory.GetFiles(path, "*.exe", SearchOption.AllDirectories))
+                var pattern = new[]
                 {
-                    var name = Path.GetFileNameWithoutExtension(f);
-                    if (!name.ContainsEx(match))
-                        continue;
-                    foreach (var p in Process.GetProcessesByName(Path.GetFileNameWithoutExtension(f)))
+                    ".crash",
+                    "*.old",
+                    "*.log",
+                    "*.log.last",
+                    "ClientRegistry.blob"
+                };
+                foreach (var p in pattern)
+                    try
                     {
-                        p.CloseMainWindow();
-                        p.WaitForExit(100);
-                        if (!p.HasExited)
-                            p.Kill();
+                        foreach (var f in Directory.EnumerateFiles(appDir, p))
+                            try
+                            {
+                                File.Delete(f);
+                            }
+                            catch (Exception ex)
+                            {
+                                Log.Write(ex);
+                            }
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Write(ex);
+                    }
+                var dirs = new[]
+                {
+                    "appcache",
+                    "cache",
+                    "depotcache",
+                    "dumps",
+                    "logs",
+                    "htmlcache"
+                };
+                foreach (var d in dirs)
+                {
+                    var dir = PathEx.Combine(dataDir, d);
+                    try
+                    {
+                        Directory.Delete(dir, true);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Write(ex);
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                Log.Write(ex);
             }
         }
     }
