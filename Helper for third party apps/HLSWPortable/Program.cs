@@ -47,7 +47,7 @@ namespace HLSWPortable
                 if (!Crypto.EncryptFileToMd5(appPath).EqualsEx("8f4fcb7555b8a5cab46ca99750346321"))
                     return;
 
-                Helper.RedistHandling(Helper.Options.Start, EnvironmentEx.RedistPack.VC2008_x86);
+                Helper.RedistHandling(Helper.Options.Start, EnvironmentEx.Redist.Flags.VC2008X86);
 
                 var regKeys = new[]
                 {
@@ -79,17 +79,17 @@ namespace HLSWPortable
 
                 var regSecureMap = new Dictionary<string, Dictionary<string, string>>
                 {
-                    { "[-HKEY_CLASSES_ROOT\\.sslf]", null },
-                    { "[-HKEY_CLASSES_ROOT\\hlsw]", null },
-                    { "[-HKEY_CLASSES_ROOT\\HLSW Server List]", null }
+                    { "[-HKCR\\.sslf]", null },
+                    { "[-HKCR\\hlsw]", null },
+                    { "[-HKCR\\HLSW Server List]", null }
                 };
                 for (var i = 0; i < 34; i++)
-                    regSecureMap.Add($"[-HKEY_CLASSES_ROOT\\.sl{(i < 10 ? $"0{i}" : i.ToString())}]", null);
+                    regSecureMap.Add($"[-HKCR\\.sl{(i < 10 ? $"0{i}" : i.ToString())}]", null);
 
                 if (regSecureMap.Keys.Any(Reg.SubKeyExists))
                     Helper.RegSecureOverwrite(regSecureMap, true);
 
-                Helper.RedistHandling(Helper.Options.Exit, EnvironmentEx.RedistPack.VC2008_x86);
+                Helper.RedistHandling(Helper.Options.Exit, EnvironmentEx.Redist.Flags.VC2008X86);
             }
         }
     }

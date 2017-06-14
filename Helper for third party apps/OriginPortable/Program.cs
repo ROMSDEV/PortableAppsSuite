@@ -48,9 +48,13 @@ namespace OriginPortable
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
 
-                Helper.RedistHandling(Helper.Options.Start, EnvironmentEx.RedistPack.VC2010_x86, EnvironmentEx.RedistPack.VC2013_x86
+                Helper.RedistHandling(Helper.Options.Start, 
+                    EnvironmentEx.Redist.Flags.VC2010X86, 
+                    EnvironmentEx.Redist.Flags.VC2013X86
 #if !x86
-                    , EnvironmentEx.RedistPack.VC2010_x64, EnvironmentEx.RedistPack.VC2013_x64
+                    , 
+                    EnvironmentEx.Redist.Flags.VC2010X64, 
+                    EnvironmentEx.Redist.Flags.VC2013X64
 #endif
                 );
 
@@ -249,9 +253,13 @@ namespace OriginPortable
 
                 Helper.RegForwarding(Helper.Options.Exit, regKeys);
 
-                Helper.RedistHandling(Helper.Options.Exit, EnvironmentEx.RedistPack.VC2010_x86, EnvironmentEx.RedistPack.VC2013_x86
+                Helper.RedistHandling(Helper.Options.Exit, 
+                    EnvironmentEx.Redist.Flags.VC2010X86, 
+                    EnvironmentEx.Redist.Flags.VC2013X86
 #if !x86
-                    , EnvironmentEx.RedistPack.VC2010_x64, EnvironmentEx.RedistPack.VC2013_x64
+                    , 
+                    EnvironmentEx.Redist.Flags.VC2010X64,
+                    EnvironmentEx.Redist.Flags.VC2013X64
 #endif
                 );
             }

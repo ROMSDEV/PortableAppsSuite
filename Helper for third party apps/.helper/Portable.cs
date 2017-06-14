@@ -332,74 +332,84 @@
 #endif
 
 #if RedistHandling
-        public static void RedistHandling(Options options, params EnvironmentEx.RedistPack[] versions)
+        public static void RedistHandling(Options options, params EnvironmentEx.Redist.Flags[] versions)
         {
-            var dict = new Dictionary<EnvironmentEx.RedistPack, Dictionary<int, List<int>>>();
+            var dict = new Dictionary<EnvironmentEx.Redist.Flags, Dictionary<int, List<int>>>();
             foreach (var version in versions)
             {
                 if (!dict.ContainsKey(version))
                     dict.Add(version, new Dictionary<int, List<int>>());
                 switch (version)
                 {
-                    case EnvironmentEx.RedistPack.VC2005_x86:
+                    case EnvironmentEx.Redist.Flags.VC2005X86:
                         if (!dict[version].ContainsKey(2005))
                             dict[version].Add(2005, new List<int>());
                         dict[version][2005].Add(86);
                         break;
-                    case EnvironmentEx.RedistPack.VC2005_x64:
+                    case EnvironmentEx.Redist.Flags.VC2005X64:
                         if (!dict[version].ContainsKey(2005))
                             dict[version].Add(2005, new List<int>());
                         dict[version][2005].Add(64);
                         break;
-                    case EnvironmentEx.RedistPack.VC2008_x86:
+                    case EnvironmentEx.Redist.Flags.VC2008X86:
                         if (!dict[version].ContainsKey(2008))
                             dict[version].Add(2008, new List<int>());
                         dict[version][2008].Add(86);
                         break;
-                    case EnvironmentEx.RedistPack.VC2008_x64:
+                    case EnvironmentEx.Redist.Flags.VC2008X64:
                         if (!dict[version].ContainsKey(2008))
                             dict[version].Add(2008, new List<int>());
                         dict[version][2008].Add(64);
                         break;
-                    case EnvironmentEx.RedistPack.VC2010_x86:
+                    case EnvironmentEx.Redist.Flags.VC2010X86:
                         if (!dict[version].ContainsKey(2010))
                             dict[version].Add(2010, new List<int>());
                         dict[version][2010].Add(86);
                         break;
-                    case EnvironmentEx.RedistPack.VC2010_x64:
+                    case EnvironmentEx.Redist.Flags.VC2010X64:
                         if (!dict[version].ContainsKey(2010))
                             dict[version].Add(2010, new List<int>());
                         dict[version][2010].Add(64);
                         break;
-                    case EnvironmentEx.RedistPack.VC2012_x86:
+                    case EnvironmentEx.Redist.Flags.VC2012X86:
                         if (!dict[version].ContainsKey(2012))
                             dict[version].Add(2012, new List<int>());
                         dict[version][2012].Add(86);
                         break;
-                    case EnvironmentEx.RedistPack.VC2012_x64:
+                    case EnvironmentEx.Redist.Flags.VC2012X64:
                         if (!dict[version].ContainsKey(2012))
                             dict[version].Add(2012, new List<int>());
                         dict[version][2012].Add(64);
                         break;
-                    case EnvironmentEx.RedistPack.VC2013_x86:
+                    case EnvironmentEx.Redist.Flags.VC2013X86:
                         if (!dict[version].ContainsKey(2013))
                             dict[version].Add(2013, new List<int>());
                         dict[version][2013].Add(86);
                         break;
-                    case EnvironmentEx.RedistPack.VC2013_x64:
+                    case EnvironmentEx.Redist.Flags.VC2013X64:
                         if (!dict[version].ContainsKey(2013))
                             dict[version].Add(2013, new List<int>());
                         dict[version][2013].Add(64);
                         break;
-                    case EnvironmentEx.RedistPack.VC2015_x86:
+                    case EnvironmentEx.Redist.Flags.VC2015X86:
                         if (!dict[version].ContainsKey(2015))
                             dict[version].Add(2015, new List<int>());
                         dict[version][2015].Add(86);
                         break;
-                    case EnvironmentEx.RedistPack.VC2015_x64:
+                    case EnvironmentEx.Redist.Flags.VC2015X64:
                         if (!dict[version].ContainsKey(2015))
                             dict[version].Add(2015, new List<int>());
                         dict[version][2015].Add(64);
+                        break;
+                    case EnvironmentEx.Redist.Flags.VC2017X86:
+                        if (!dict[version].ContainsKey(2017))
+                            dict[version].Add(2017, new List<int>());
+                        dict[version][2017].Add(86);
+                        break;
+                    case EnvironmentEx.Redist.Flags.VC2017X64:
+                        if (!dict[version].ContainsKey(2017))
+                            dict[version].Add(2017, new List<int>());
+                        dict[version][2017].Add(64);
                         break;
                     default:
                         return;
@@ -429,7 +439,7 @@
                             default:
                                 if (Ini.ReadDirect("Redist", version.ToString(), iniPath).EqualsEx("False"))
                                     Elevation.RestartAsAdministrator(EnvironmentEx.CommandLine(false));
-                                if (EnvironmentEx.RedistPackIsInstalled(version))
+                                if (EnvironmentEx.Redist.IsInstalled(version))
                                 {
                                     Ini.WriteDirect("Redist", version.ToString(), true, iniPath);
                                     break;
@@ -459,7 +469,7 @@
                                     if (p?.HasExited == false)
                                         p.WaitForExit();
                                 notifyBox.Close();
-                                if (!EnvironmentEx.RedistPackIsInstalled(version))
+                                if (!EnvironmentEx.Redist.IsInstalled(version))
                                 {
                                     Environment.ExitCode = 1;
                                     Environment.Exit(Environment.ExitCode);

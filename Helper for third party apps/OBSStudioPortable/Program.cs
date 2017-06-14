@@ -14,7 +14,7 @@ namespace OBSPortable
             Log.AllowLogging();
 
 #if x86
-            const byte sBits = 64;
+            const byte sArch = 64;
             var sPath = PathEx.Combine(PathEx.LocalDir, "OBSStudio64Portable.exe");
             if (Environment.Is64BitOperatingSystem && File.Exists(sPath))
             {
@@ -23,14 +23,13 @@ namespace OBSPortable
             }
             var sAppPath = PathEx.Combine(PathEx.LocalDir, @"App\OBS32\bin\64bit\obs64.exe");
 
-            const byte cBits = 32;
+            const byte cArch = 32;
             var cAppPath = PathEx.Combine(PathEx.LocalDir, @"App\OBS32\bin\32bit\obs32.exe");
 #else
-            const byte sBits = 32;
-            var sPath = PathEx.Combine(PathEx.LocalDir, "OBSStudioPortable.exe");
+            const byte sArch = 32;
             var sAppPath = PathEx.Combine(PathEx.LocalDir, @"App\OBS64\bin\32bit\obs32.exe");
 
-            const byte cBits = 64;
+            const byte cArch = 64;
             var cAppPath = PathEx.Combine(PathEx.LocalDir, @"App\OBS64\bin\64bit\obs64.exe");
 #endif
 
@@ -43,7 +42,7 @@ namespace OBSPortable
                 if (!newInstance)
                     return;
 
-                var bDir = PathEx.Combine(PathEx.LocalDir, $@"App\OBS{cBits}\bin\{sBits}bit");
+                var bDir = PathEx.Combine(PathEx.LocalDir, $@"App\OBS{cArch}\bin\{sArch}bit");
                 try
                 {
                     if (Directory.Exists(bDir))
@@ -53,7 +52,7 @@ namespace OBSPortable
                 {
                     AppDomain.CurrentDomain.ProcessExit += (s, e) => ProcessEx.Send($"RD /S /Q \"{bDir}\"");
                 }
-                var pDir = PathEx.Combine(PathEx.LocalDir, $@"App\OBS{cBits}\obs-plugins\{sBits}bit");
+                var pDir = PathEx.Combine(PathEx.LocalDir, $@"App\OBS{cArch}\obs-plugins\{sArch}bit");
                 try
                 {
                     if (Directory.Exists(pDir))
