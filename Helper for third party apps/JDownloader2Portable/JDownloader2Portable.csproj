@@ -64,21 +64,24 @@
   </PropertyGroup>
   <PropertyGroup>
     <PostBuildEvent>if not exist "$(TargetDir)App\jd2" md "$(TargetDir)App\jd2"
-if not exist "$(TargetDir)App\SilDev.CSharpLib.dll" copy NUL "$(TargetDir)App\SilDev.CSharpLib.dll"
-if not exist "$(TargetDir)App\SilDev.CSharpLib.pdb" copy NUL "$(TargetDir)App\SilDev.CSharpLib.pdb"
-if exist "$(TargetDir)SilDev.CSharpLib.dll" (
-xcopy /h /y "$(TargetDir)SilDev.CSharpLib.dll" "$(TargetDir)App\SilDev.CSharpLib.dll"
-del /f /q "$(TargetDir)SilDev.CSharpLib.dll"
+for %%i in (
+"SilDev.CSharpLib.dll"
+"SilDev.CSharpLib.pdb" ) do (
+    if exist "$(TargetDir)%%i" (
+        if exist "$(TargetDir)App\%%i" (
+            attrib -H "$(TargetDir)App\%%i"
+            del /F /Q "$(TargetDir)App\%%i"
+        )
+        attrib -H "$(TargetDir)%%i"
+        xcopy /Y "$(TargetDir)%%i" "$(TargetDir)App\%%i*"
+		del /F /Q "$(TargetDir)%%i"
+    )
 )
-if exist "$(TargetDir)SilDev.CSharpLib.pdb" (
-xcopy /h /y "$(TargetDir)SilDev.CSharpLib.pdb" "$(TargetDir)App\SilDev.CSharpLib.pdb"
-del /f /q "$(TargetDir)SilDev.CSharpLib.pdb"
-)
-if exist "$(TargetDir)SilDev.CSharpLib.pdb" del /f /q /a:h "$(TargetDir)SilDev.CSharpLib.pdb"
-if exist "$(TargetDir)SilDev.CSharpLib.xml" del /f /q "$(TargetDir)SilDev.CSharpLib.xml"
+del /F /Q "$(TargetDir)*.xml"
 attrib +h "$(TargetDir)*.exe.config"
 attrib +h "$(TargetDir)*.pdb"
-attrib +h "$(TargetDir)App\*.pdb"</PostBuildEvent>
+attrib +h "$(TargetDir)App\*.pdb"
+</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

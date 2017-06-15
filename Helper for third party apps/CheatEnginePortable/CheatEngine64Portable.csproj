@@ -64,12 +64,25 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>if exist "$(TargetDir)SilDev.CSharpLib64.dll" move /y "$(TargetDir)SilDev.CSharpLib64.dll" "$(TargetDir)App\CheatEngine\SilDev.CSharpLib64.dll"
-if exist "$(TargetDir)SilDev.CSharpLib64.pdb" (
-move /y "$(TargetDir)SilDev.CSharpLib64.pdb" "$(TargetDir)App\CheatEngine\SilDev.CSharpLib64.pdb"
-attrib +h "$(TargetDir)App\CheatEngine\*.pdb"
+    <PostBuildEvent>if not exist "$(TargetDir)App\CheatEngine" md "$(TargetDir)App\CheatEngine"
+for %%i in (
+"SilDev.CSharpLib64.dll"
+"SilDev.CSharpLib64.pdb" ) do (
+    if exist "$(TargetDir)%%i" (
+        if exist "$(TargetDir)App\CheatEngine\%%i" (
+            attrib -H "$(TargetDir)App\CheatEngine\%%i"
+            del /F /Q "$(TargetDir)App\CheatEngine\%%i"
+        )
+        attrib -H "$(TargetDir)%%i"
+        xcopy /Y "$(TargetDir)%%i" "$(TargetDir)App\CheatEngine\%%i*"
+		del /F /Q "$(TargetDir)%%i"
+    )
 )
-if exist "$(TargetDir)SilDev.CSharpLib64.xml" del /f /q "$(TargetDir)SilDev.CSharpLib64.xml"</PostBuildEvent>
+del /F /Q "$(TargetDir)*.xml"
+attrib +h "$(TargetDir)*.exe.config"
+attrib +h "$(TargetDir)*.pdb"
+attrib +h "$(TargetDir)App\CheatEngine\*.pdb"
+</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>if exist "$(SolutionDir).helper\AssemblyDateVersion.exe" "$(SolutionDir).helper\AssemblyDateVersion.exe" "$(ProjectDir)Properties\AssemblyInfo.cs"</PreBuildEvent>

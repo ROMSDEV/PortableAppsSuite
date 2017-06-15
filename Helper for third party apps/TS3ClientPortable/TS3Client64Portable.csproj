@@ -74,18 +74,20 @@
   </PropertyGroup>
   <PropertyGroup>
     <PostBuildEvent>if not exist "$(TargetDir)App\ts3_x64" md "$(TargetDir)App\ts3_x64"
-if not exist "$(TargetDir)App\SilDev.CSharpLib64.dll" copy NUL "$(TargetDir)App\SilDev.CSharpLib64.dll"
-if not exist "$(TargetDir)App\SilDev.CSharpLib64.pdb" copy NUL "$(TargetDir)App\SilDev.CSharpLib64.pdb"
-if exist "$(TargetDir)SilDev.CSharpLib64.dll" (
-xcopy /h /y "$(TargetDir)SilDev.CSharpLib64.dll" "$(TargetDir)App\SilDev.CSharpLib64.dll"
-del /f /q "$(TargetDir)SilDev.CSharpLib64.dll"
+for %%i in (
+"SilDev.CSharpLib64.dll"
+"SilDev.CSharpLib64.pdb" ) do (
+    if exist "$(TargetDir)%%i" (
+        if exist "$(TargetDir)App\%%i" (
+            attrib -H "$(TargetDir)App\%%i"
+            del /F /Q "$(TargetDir)App\%%i"
+        )
+        attrib -H "$(TargetDir)%%i"
+        xcopy /Y "$(TargetDir)%%i" "$(TargetDir)App\%%i*"
+		del /F /Q "$(TargetDir)%%i"
+    )
 )
-if exist "$(TargetDir)SilDev.CSharpLib64.pdb" (
-xcopy /h /y "$(TargetDir)SilDev.CSharpLib64.pdb" "$(TargetDir)App\SilDev.CSharpLib64.pdb"
-del /f /q "$(TargetDir)SilDev.CSharpLib64.pdb"
-)
-if exist "$(TargetDir)SilDev.CSharpLib64.pdb" del /f /q /a:h "$(TargetDir)SilDev.CSharpLib64.pdb"
-if exist "$(TargetDir)SilDev.CSharpLib64.xml" del /f /q "$(TargetDir)SilDev.CSharpLib64.xml"
+del /F /Q "$(TargetDir)*.xml"
 attrib +h "$(TargetDir)*.exe.config"
 attrib +h "$(TargetDir)*.pdb"
 attrib +h "$(TargetDir)App\*.pdb"
