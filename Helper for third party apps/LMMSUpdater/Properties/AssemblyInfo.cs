@@ -3,10 +3,10 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 #if x86
-[assembly: AssemblyTitle("LMMS Media Player Updater")]
+[assembly: AssemblyTitle("LMMS Updater")]
 [assembly: AssemblyProduct("LMMSUpdater")]
 #else
-[assembly: AssemblyTitle("LMMS Media Player Updater (64-bit)")]
+[assembly: AssemblyTitle("LMMS Updater (64-bit)")]
 [assembly: AssemblyProduct("LMMSUpdater64")]
 #endif
 
@@ -19,6 +19,6 @@ using System.Runtime.InteropServices;
 
 [assembly: ComVisible(false)]
 
-[assembly: Guid("d11b001a-08c9-421b-bcaa-b7c4809ce734")]
+[assembly: Guid("3968c343-ee9c-4f7a-87d1-d10f35178a01")]
 
-[assembly: AssemblyVersion("17.6.13.*")]
+[assembly: AssemblyVersion("17.6.15.*")]

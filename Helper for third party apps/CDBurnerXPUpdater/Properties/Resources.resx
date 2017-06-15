@@ -133,6 +133,9 @@
   <data name="AppPath" xml:space="preserve">
     <value>%CurDir%\cdbxpp.exe</value>
   </data>
+  <data name="Msg_Err_00" xml:space="preserve">
+    <value>Sorry, there is no internet connection available.</value>
+  </data>
   <data name="Msg_Hint_00" xml:space="preserve">
     <value>A newer version is available. Would you like to update now?</value>
   </data>

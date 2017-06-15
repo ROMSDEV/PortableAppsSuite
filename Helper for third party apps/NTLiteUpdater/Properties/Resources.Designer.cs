@@ -108,6 +108,15 @@ namespace AppUpdater.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Sorry, there is no internet connection available..
+        /// </summary>
+        internal static string Msg_Err_00 {
+            get {
+                return ResourceManager.GetString("Msg_Err_00", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A newer version is available. Would you like to update now?.
         /// </summary>
         internal static string Msg_Hint_00 {
@@ -135,16 +144,7 @@ namespace AppUpdater.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to NTLite update canceled..
-        /// </summary>
-        internal static string Msg_Hint_03 {
-            get {
-                return ResourceManager.GetString("Msg_Hint_03", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to NTLite not found..
+        ///   Looks up a localized string similar to NTLite must be closed..
         /// </summary>
         internal static string Msg_Warn_00 {
             get {
@@ -153,20 +153,11 @@ namespace AppUpdater.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to NTLite must be closed..
+        ///   Looks up a localized string similar to NTLite update failed..
         /// </summary>
         internal static string Msg_Warn_01 {
             get {
                 return ResourceManager.GetString("Msg_Warn_01", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to NTLite update failed..
-        /// </summary>
-        internal static string Msg_Warn_02 {
-            get {
-                return ResourceManager.GetString("Msg_Warn_02", resourceCulture);
             }
         }
         

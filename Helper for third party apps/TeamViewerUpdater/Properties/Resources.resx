@@ -121,11 +121,17 @@
   <data name="TeamViewerUpdater" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\TeamViewerUpdater.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="diagonal_pattern" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\diagonal_pattern.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="AppName" xml:space="preserve">
     <value>TeamViewer</value>
   </data>
   <data name="AppPath" xml:space="preserve">
     <value>%CurDir%\TeamViewer.exe</value>
+  </data>
+  <data name="Msg_Err_00" xml:space="preserve">
+    <value>Sorry, there is no internet connection available.</value>
   </data>
   <data name="Msg_Hint_00" xml:space="preserve">
     <value>A newer version is available. Would you like to update now?</value>
@@ -158,8 +164,5 @@ SilDev.CSharpLib.pdb</value>
   </data>
   <data name="WindowTitle" xml:space="preserve">
     <value>TeamViewer Updater</value>
-  </data>
-  <data name="diagonal_pattern" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\diagonal_pattern.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

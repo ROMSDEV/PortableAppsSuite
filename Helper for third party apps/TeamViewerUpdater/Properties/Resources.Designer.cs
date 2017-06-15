@@ -39,7 +39,7 @@ namespace AppUpdater.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("TeamViewerUpdater.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("AppUpdater.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -85,6 +85,15 @@ namespace AppUpdater.Properties {
             get {
                 object obj = ResourceManager.GetObject("diagonal_pattern", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sorry, there is no internet connection available..
+        /// </summary>
+        internal static string Msg_Err_00 {
+            get {
+                return ResourceManager.GetString("Msg_Err_00", resourceCulture);
             }
         }
         

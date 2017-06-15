@@ -124,6 +124,9 @@
   <data name="FurMarkUpdater" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\FurMarkUpdater.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="iu" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\.helper\iu\iu;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="AppName" xml:space="preserve">
     <value>FurMark</value>
   </data>
@@ -132,6 +135,9 @@
   </data>
   <data name="Extract" xml:space="preserve">
     <value>-x "{0}" -d"{1}"</value>
+  </data>
+  <data name="Msg_Err_00" xml:space="preserve">
+    <value>Sorry, there is no internet connection available.</value>
   </data>
   <data name="Msg_Hint_00" xml:space="preserve">
     <value>A newer version is available. Would you like to update now?</value>
@@ -146,12 +152,9 @@
     <value>FurMark update canceled.</value>
   </data>
   <data name="Msg_Warn_00" xml:space="preserve">
-    <value>FurMark not found.</value>
-  </data>
-  <data name="Msg_Warn_01" xml:space="preserve">
     <value>FurMark must be closed.</value>
   </data>
-  <data name="Msg_Warn_02" xml:space="preserve">
+  <data name="Msg_Warn_01" xml:space="preserve">
     <value>FurMark update failed.</value>
   </data>
   <data name="RegexFirstUrl" xml:space="preserve">
@@ -198,8 +201,5 @@ sildev.csharplib64.pdb</value>
   </data>
   <data name="WindowTitle" xml:space="preserve">
     <value>FurMark Updater</value>
-  </data>
-  <data name="iu" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\..\.helper\iu\iu;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>

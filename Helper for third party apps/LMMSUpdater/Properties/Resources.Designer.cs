@@ -80,7 +80,7 @@ namespace AppUpdater.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to %CurDir%\LMMS.exe.
+        ///   Looks up a localized string similar to %CurDir%\lmms.exe.
         /// </summary>
         internal static string AppPath {
             get {
@@ -109,6 +109,15 @@ namespace AppUpdater.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Sorry, there is no internet connection available..
+        /// </summary>
+        internal static string Msg_Err_00 {
+            get {
+                return ResourceManager.GetString("Msg_Err_00", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A newer version is available. Would you like to update now?.
         /// </summary>
         internal static string Msg_Hint_00 {
@@ -132,15 +141,6 @@ namespace AppUpdater.Properties {
         internal static string Msg_Hint_02 {
             get {
                 return ResourceManager.GetString("Msg_Hint_02", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to LMMS update canceled..
-        /// </summary>
-        internal static string Msg_Hint_03 {
-            get {
-                return ResourceManager.GetString("Msg_Hint_03", resourceCulture);
             }
         }
         

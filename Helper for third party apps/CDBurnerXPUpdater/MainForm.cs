@@ -15,8 +15,9 @@ namespace AppUpdater
     public partial class MainForm : Form
     {
         private readonly NetEx.AsyncTransfer _transfer = new NetEx.AsyncTransfer();
+        private readonly bool _silent = Environment.CommandLine.ContainsEx("/silent");
+        private readonly string _appPath = PathEx.Combine(Resources.AppPath);
         private int _countdown = 10;
-        private bool _silent;
 
         public MainForm()
         {
@@ -26,9 +27,15 @@ namespace AppUpdater
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            _silent = Environment.CommandLine.ContainsEx("/silent");
             Text = Resources.WindowTitle;
             TaskBar.Progress.SetState(Handle, TaskBar.Progress.Flags.Indeterminate);
+            if (!NetEx.InternetIsAvailable())
+            {
+                if (!_silent || !File.Exists(_appPath))
+                    MessageBoxEx.Show(Resources.Msg_Err_00, Resources.WindowTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Application.Exit();
+                return;
+            }
             var source = NetEx.Transfer.DownloadString(Resources.RegexUrl);
             string updUrl;
             try
@@ -64,13 +71,12 @@ namespace AppUpdater
             catch (Exception ex)
             {
                 Log.Write(ex);
-                if (!_silent)
+                if (!_silent || !File.Exists(_appPath))
                     MessageBoxEx.Show(Resources.Msg_Warn_01, Resources.WindowTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 Application.Exit();
                 return;
             }
-            var appPath = PathEx.Combine(Resources.AppPath);
-            var localDate = File.GetLastWriteTime(appPath);
+            var localDate = File.GetLastWriteTime(_appPath);
             var onlineDate = NetEx.GetFileDate(updUrl, Resources.UserAgent);
             if ((onlineDate - localDate).Days > 0)
             {
@@ -184,10 +190,7 @@ namespace AppUpdater
                 Log.Write(ex);
                 e.Result = false;
                 Data.ForceDelete(updDir);
-                var appPath = PathEx.Combine(Resources.AppPath);
-                if (_silent)
-                    _silent = File.Exists(appPath);
-                if (!_silent)
+                if (!_silent || !File.Exists(_appPath))
                     MessageBoxEx.Show(string.Format("{0}{3}{3}('{1}\\{2}')", ex.Message, PathEx.LocalDir, entry, Environment.NewLine), Resources.WindowTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
             catch (Exception ex)
@@ -202,23 +205,23 @@ namespace AppUpdater
         {
             WindowState = FormWindowState.Minimized;
             TaskBar.Progress.SetState(Handle, TaskBar.Progress.Flags.Indeterminate);
-            if (!_silent)
-                switch (e.Result as bool?)
-                {
-                    case true:
+            switch (e.Result as bool?)
+            {
+                case true:
+                    if (!_silent)
                         MessageBoxEx.Show(Resources.Msg_Hint_02, Resources.WindowTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        break;
-                    default:
+                    break;
+                default:
+                    if (!_silent || !File.Exists(_appPath))
                         MessageBoxEx.Show(Resources.Msg_Warn_01, Resources.WindowTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        break;
-                }
+                    break;
+            }
             Application.Exit();
         }
 
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-            var appPath = PathEx.Combine(Resources.AppPath);
-            Ini.WriteDirect("History", "LastCheck", File.Exists(appPath) ? DateTime.Now : DateTime.MinValue);
+            Ini.WriteDirect("History", "LastCheck", File.Exists(_appPath) ? DateTime.Now : DateTime.MinValue);
             ProcessEx.SendHelper.WaitThenDelete(_transfer.FilePath, 5, Elevation.IsAdministrator);
         }
     }

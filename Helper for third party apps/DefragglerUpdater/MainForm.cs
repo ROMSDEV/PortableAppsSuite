@@ -15,8 +15,9 @@ namespace AppUpdater
     public partial class MainForm : Form
     {
         private readonly NetEx.AsyncTransfer _transfer = new NetEx.AsyncTransfer();
+        private readonly bool _silent = Environment.CommandLine.ContainsEx("/silent");
+        private readonly string _appPath = PathEx.Combine(Resources.AppPath);
         private int _countdown = 10;
-        private bool _silent;
 
         public MainForm()
         {
@@ -26,14 +27,19 @@ namespace AppUpdater
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            _silent = Environment.CommandLine.ContainsEx("/silent");
             Text = Resources.WindowTitle;
             TaskBar.Progress.SetState(Handle, TaskBar.Progress.Flags.Indeterminate);
-            var appPath = PathEx.Combine(Resources.AppPath);
+            if (!NetEx.InternetIsAvailable())
+            {
+                if (!_silent || !File.Exists(_appPath))
+                    MessageBoxEx.Show(Resources.Msg_Err_00, Resources.WindowTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Application.Exit();
+                return;
+            }
             Version localVersion;
             try
             {
-                var version = FileVersionInfo.GetVersionInfo(appPath).FileVersion;
+                var version = FileVersionInfo.GetVersionInfo(_appPath).FileVersion;
                 if (version.Contains(','))
                     version = version.Split(',').Select(c => c.Trim()).Join('.');
                 localVersion = Version.Parse(version);
@@ -62,7 +68,7 @@ namespace AppUpdater
             catch (Exception ex)
             {
                 Log.Write(ex);
-                if (!_silent)
+                if (!_silent || !File.Exists(_appPath))
                     MessageBoxEx.Show(Resources.Msg_Warn_01, Resources.WindowTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 Application.Exit();
                 return;
@@ -172,9 +178,8 @@ namespace AppUpdater
                 Data.DirCopy(appDir, PathEx.LocalDir, true, true);
                 if (Directory.Exists(updDir))
                     Directory.Delete(updDir, true);
-                appPath = PathEx.Combine(Resources.AppPath);
-                if (File.Exists(appPath))
-                    File.SetLastWriteTime(appPath, DateTime.Now);
+                if (File.Exists(_appPath))
+                    File.SetLastWriteTime(_appPath, DateTime.Now);
                 appPath = PathEx.Combine(Resources.AppPath64);
                 if (File.Exists(appPath))
                     File.SetLastWriteTime(appPath, DateTime.Now);
@@ -185,10 +190,7 @@ namespace AppUpdater
                 Log.Write(ex);
                 e.Result = false;
                 Data.ForceDelete(updDir);
-                var appPath = PathEx.Combine(Resources.AppPath);
-                if (_silent)
-                    _silent = File.Exists(appPath);
-                if (!_silent)
+                if (!_silent || !File.Exists(_appPath))
                     MessageBoxEx.Show(string.Format("{0}{3}{3}('{1}\\{2}')", ex.Message, PathEx.LocalDir, entry, Environment.NewLine), Resources.WindowTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
             catch (Exception ex)
@@ -203,24 +205,24 @@ namespace AppUpdater
         {
             WindowState = FormWindowState.Minimized;
             TaskBar.Progress.SetState(Handle, TaskBar.Progress.Flags.Indeterminate);
-            if (!_silent)
-                switch (e.Result as bool?)
-                {
-                    case true:
+            switch (e.Result as bool?)
+            {
+                case true:
+                    if (!_silent)
                         MessageBoxEx.Show(Resources.Msg_Hint_02, Resources.WindowTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        break;
-                    default:
+                    break;
+                default:
+                    if (!_silent || !File.Exists(_appPath))
                         MessageBoxEx.Show(Resources.Msg_Warn_01, Resources.WindowTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        break;
-                }
+                    break;
+            }
             Application.Exit();
         }
 
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-            var appPath = PathEx.Combine(Resources.AppPath);
             var appPath64 = PathEx.Combine(Resources.AppPath64);
-            Ini.WriteDirect("History", "LastCheck", File.Exists(appPath) && File.Exists(appPath64) ? DateTime.Now : DateTime.MinValue);
+            Ini.WriteDirect("History", "LastCheck", File.Exists(_appPath) && File.Exists(appPath64) ? DateTime.Now : DateTime.MinValue);
             ProcessEx.SendHelper.WaitThenDelete(_transfer.FilePath);
         }
     }

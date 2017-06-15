@@ -162,4 +162,7 @@ SilDev.CSharpLib.pdb</value>
   <data name="WindowTitle" xml:space="preserve">
     <value>Resource Hacker Updater</value>
   </data>
+  <data name="Msg_Err_00" xml:space="preserve">
+    <value>Sorry, there is no internet connection available.</value>
+  </data>
 </root>

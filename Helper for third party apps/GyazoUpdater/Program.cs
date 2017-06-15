@@ -18,7 +18,7 @@ namespace AppUpdater
             MessageBoxEx.TopMost = true;
             if (Process.GetProcessesByName(Resources.AppName).Length > 0)
             {
-                MessageBoxEx.Show(Resources.Msg_Warn_01, Resources.WindowTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBoxEx.Show(Resources.Msg_Warn_00, Resources.WindowTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 Environment.Exit(1);
             }
             bool newInstance;

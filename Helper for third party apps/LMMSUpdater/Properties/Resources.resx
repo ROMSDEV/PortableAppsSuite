@@ -131,7 +131,10 @@
     <value>LMMS</value>
   </data>
   <data name="AppPath" xml:space="preserve">
-    <value>%CurDir%\LMMS.exe</value>
+    <value>%CurDir%\lmms.exe</value>
+  </data>
+  <data name="Msg_Err_00" xml:space="preserve">
+    <value>Sorry, there is no internet connection available.</value>
   </data>
   <data name="Msg_Hint_00" xml:space="preserve">
     <value>A newer version is available. Would you like to update now?</value>
@@ -141,9 +144,6 @@
   </data>
   <data name="Msg_Hint_02" xml:space="preserve">
     <value>LMMS successfully updated.</value>
-  </data>
-  <data name="Msg_Hint_03" xml:space="preserve">
-    <value>LMMS update canceled.</value>
   </data>
   <data name="Msg_Warn_00" xml:space="preserve">
     <value>LMMS must be closed.</value>

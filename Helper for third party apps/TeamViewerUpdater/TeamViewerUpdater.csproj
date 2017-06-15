@@ -7,7 +7,7 @@
     <ProjectGuid>{7B189260-CADE-4AAB-8620-1B17658D3ECA}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TeamViewerUpdater</RootNamespace>
+    <RootNamespace>AppUpdater</RootNamespace>
     <AssemblyName>TeamViewerUpdater</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

@@ -133,6 +133,9 @@
   <data name="Extract" xml:space="preserve">
     <value>/a "{0}" TARGETDIR="{1}" /qn</value>
   </data>
+  <data name="Msg_Err_00" xml:space="preserve">
+    <value>Sorry, there is no internet connection available.</value>
+  </data>
   <data name="Msg_Hint_00" xml:space="preserve">
     <value>A newer version is available. Would you like to update now?</value>
   </data>
@@ -141,9 +144,6 @@
   </data>
   <data name="Msg_Hint_02" xml:space="preserve">
     <value>YoloMouse successfully updated.</value>
-  </data>
-  <data name="Msg_Hint_03" xml:space="preserve">
-    <value>YoloMouse update canceled.</value>
   </data>
   <data name="Msg_Warn_00" xml:space="preserve">
     <value>YoloMouse must be closed.</value>

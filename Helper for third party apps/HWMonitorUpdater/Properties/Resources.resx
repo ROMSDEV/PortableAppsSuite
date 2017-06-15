@@ -139,6 +139,9 @@
   <data name="AppPath64" xml:space="preserve">
     <value>%CurDir%\HWMonitor_x64.exe</value>
   </data>
+  <data name="Msg_Err_00" xml:space="preserve">
+    <value>Sorry, there is no internet connection available.</value>
+  </data>
   <data name="Msg_Hint_00" xml:space="preserve">
     <value>A newer version is available. Would you like to update now?</value>
   </data>
@@ -147,9 +150,6 @@
   </data>
   <data name="Msg_Hint_02" xml:space="preserve">
     <value>HWMonitor successfully updated.</value>
-  </data>
-  <data name="Msg_Hint_03" xml:space="preserve">
-    <value>HWMonitor update canceled.</value>
   </data>
   <data name="Msg_Warn_00" xml:space="preserve">
     <value>HWMonitor must be closed.</value>

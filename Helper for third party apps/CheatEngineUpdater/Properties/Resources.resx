@@ -136,6 +136,9 @@
   <data name="Extract" xml:space="preserve">
     <value>-x "{0}" -d"{1}"</value>
   </data>
+  <data name="Msg_Err_00" xml:space="preserve">
+    <value>Sorry, there is no internet connection available.</value>
+  </data>
   <data name="Msg_Hint_00" xml:space="preserve">
     <value>A newer version is available. Would you like to update now?</value>
   </data>
@@ -149,12 +152,9 @@
     <value>Cheat Engine update canceled.</value>
   </data>
   <data name="Msg_Warn_00" xml:space="preserve">
-    <value>Cheat Engine not found.</value>
-  </data>
-  <data name="Msg_Warn_01" xml:space="preserve">
     <value>Cheat Engine must be closed.</value>
   </data>
-  <data name="Msg_Warn_02" xml:space="preserve">
+  <data name="Msg_Warn_01" xml:space="preserve">
     <value>Cheat Engine update failed.</value>
   </data>
   <data name="RegexPattern" xml:space="preserve">
