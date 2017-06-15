@@ -1,12 +1,12 @@
-namespace TeamViewerUpdater
+namespace AppUpdater
 {
     using System;
-    using System.Diagnostics;
     using System.IO;
-    using System.Linq;
     using System.Threading;
     using System.Windows.Forms;
+    using Properties;
     using SilDev;
+    using SilDev.Forms;
 
     internal static class Program
     {
@@ -14,23 +14,12 @@ namespace TeamViewerUpdater
         private static void Main()
         {
             Log.AllowLogging();
-            var teamViewer = PathEx.Combine("%CurDir%\\TeamViewer.exe");
-            if (!File.Exists(teamViewer))
+            MessageBoxEx.TopMost = true;
+            if (ProcessEx.IsRunning(Resources.AppName))
             {
-                MessageBox.Show(@"TeamViewer not found.", @"TeamViewer Updater", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-            string[] pList =
-            {
-                "TeamViewer",
-                "TeamViewer_Desktop",
-                "tv_w32",
-                "tv_x64"
-            };
-            if (pList.Any(p => Process.GetProcessesByName(p).Length > 0))
-            {
-                MessageBox.Show(@"TeamViewer must be closed.", @"TeamViewer Updater", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
+                MessageBoxEx.Show(Resources.Msg_Warn_00, Resources.WindowTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                Environment.ExitCode = 1;
+                Environment.Exit(Environment.ExitCode);
             }
             bool newInstance;
             using (new Mutex(true, ProcessEx.CurrentName, out newInstance))
@@ -39,16 +28,12 @@ namespace TeamViewerUpdater
                     return;
                 if (!Elevation.WritableLocation())
                     Elevation.RestartAsAdministrator();
+                Ini.SetFile(Path.ChangeExtension(PathEx.LocalPath, ".ini"));
+                if ((DateTime.Now - Ini.Read("History", "LastCheck", DateTime.MinValue)).Days < 1)
+                    return;
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
-                try
-                {
-                    Application.Run(new MainForm());
-                }
-                catch (Exception ex)
-                {
-                    Log.Write(ex);
-                }
+                Application.Run(new MainForm());
             }
         }
     }

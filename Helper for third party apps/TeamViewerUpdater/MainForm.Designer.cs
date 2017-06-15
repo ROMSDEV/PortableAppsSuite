@@ -1,4 +1,4 @@
-namespace TeamViewerUpdater
+namespace AppUpdater
 {
     partial class MainForm
     {
@@ -80,7 +80,7 @@ namespace TeamViewerUpdater
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.BackgroundImage = global::TeamViewerUpdater.Properties.Resources.diagonal_pattern;
+            this.BackgroundImage = global::AppUpdater.Properties.Resources.diagonal_pattern;
             this.ClientSize = new System.Drawing.Size(264, 100);
             this.Controls.Add(this.DLPercentage);
             this.Controls.Add(this.DLLoaded);
@@ -90,10 +90,8 @@ namespace TeamViewerUpdater
             this.Name = "MainForm";
             this.Opacity = 0D;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "TeamViewer Updater";
-            this.WindowState = System.Windows.Forms.FormWindowState.Minimized;
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
-            this.Shown += new System.EventHandler(this.MainForm_Shown);
+            this.Load += new System.EventHandler(this.MainForm_Load);
             this.ResumeLayout(false);
 
         }

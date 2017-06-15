@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace TeamViewerUpdater.Properties {
+namespace AppUpdater.Properties {
     using System;
     
     
@@ -61,6 +61,24 @@ namespace TeamViewerUpdater.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to TeamViewer.
+        /// </summary>
+        internal static string AppName {
+            get {
+                return ResourceManager.GetString("AppName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to %CurDir%\TeamViewer.exe.
+        /// </summary>
+        internal static string AppPath {
+            get {
+                return ResourceManager.GetString("AppPath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap diagonal_pattern {
@@ -71,12 +89,98 @@ namespace TeamViewerUpdater.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A newer version is available. Would you like to update now?.
+        /// </summary>
+        internal static string Msg_Hint_00 {
+            get {
+                return ResourceManager.GetString("Msg_Hint_00", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No newer version available..
+        /// </summary>
+        internal static string Msg_Hint_01 {
+            get {
+                return ResourceManager.GetString("Msg_Hint_01", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to TeamViewer successfully updated..
+        /// </summary>
+        internal static string Msg_Hint_02 {
+            get {
+                return ResourceManager.GetString("Msg_Hint_02", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to TeamViewer must be closed..
+        /// </summary>
+        internal static string Msg_Warn_00 {
+            get {
+                return ResourceManager.GetString("Msg_Warn_00", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to TeamViewer update failed..
+        /// </summary>
+        internal static string Msg_Warn_01 {
+            get {
+                return ResourceManager.GetString("Msg_Warn_01", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
         internal static System.Drawing.Icon TeamViewerUpdater {
             get {
                 object obj = ResourceManager.GetObject("TeamViewerUpdater", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to http://download.teamviewer.com/download/TeamViewerPortable.zip.
+        /// </summary>
+        internal static string UpdateUrl {
+            get {
+                return ResourceManager.GetString("UpdateUrl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mozilla/5.0.
+        /// </summary>
+        internal static string UserAgent {
+            get {
+                return ResourceManager.GetString("UserAgent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to TeamViewerUpdater.exe
+        ///TeamViewerUpdater.exe.config
+        ///TeamViewerUpdater.ini
+        ///TeamViewerUpdater.pdb
+        ///SilDev.CSharpLib.dll
+        ///SilDev.CSharpLib.pdb.
+        /// </summary>
+        internal static string WhiteList {
+            get {
+                return ResourceManager.GetString("WhiteList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to TeamViewer Updater.
+        /// </summary>
+        internal static string WindowTitle {
+            get {
+                return ResourceManager.GetString("WindowTitle", resourceCulture);
             }
         }
     }

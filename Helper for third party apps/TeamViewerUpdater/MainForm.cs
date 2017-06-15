@@ -1,9 +1,10 @@
-namespace TeamViewerUpdater
+namespace AppUpdater
 {
     using System;
     using System.ComponentModel;
     using System.IO;
     using System.IO.Compression;
+    using System.Linq;
     using System.Windows.Forms;
     using Properties;
     using SilDev;
@@ -11,10 +12,9 @@ namespace TeamViewerUpdater
 
     public partial class MainForm : Form
     {
-        private readonly string _teamViewer = PathEx.Combine("%CurDir%\\TeamViewer.exe");
         private readonly NetEx.AsyncTransfer _transfer = new NetEx.AsyncTransfer();
-        private int _dlFinishCount;
-        private string _zipPath = string.Empty;
+        private int _countdown = 10;
+        private bool _silent;
 
         public MainForm()
         {
@@ -22,125 +22,162 @@ namespace TeamViewerUpdater
             Icon = Resources.TeamViewerUpdater;
         }
 
-        private void MainForm_Shown(object sender, EventArgs e)
+        private void MainForm_Load(object sender, EventArgs e)
         {
-            const string updateUrl = "http://download.teamviewer.com/download/TeamViewerPortable.zip";
-            const string fileName = "TeamViewerPortable.zip";
-            var onlineDate = NetEx.GetFileDate(updateUrl);
-            var localDate = File.GetLastWriteTime(_teamViewer);
-            if (onlineDate.Date > localDate.Date)
+            _silent = Environment.CommandLine.ContainsEx("/silent");
+            Text = Resources.WindowTitle;
+            TaskBar.Progress.SetState(Handle, TaskBar.Progress.Flags.Indeterminate);
+            var appPath = PathEx.Combine(Resources.AppPath);
+            var localDate = File.GetLastWriteTime(appPath);
+            var onlineDate = NetEx.GetFileDate(Resources.UpdateUrl, Resources.UserAgent);
+            if ((onlineDate - localDate).Days > 0)
             {
-                if (ShowInfoBox("UpdateAvailable", MessageBoxButtons.YesNo) == DialogResult.Yes || Environment.CommandLine.Contains("/silent"))
+                if (_silent || MessageBoxEx.Show(Resources.Msg_Hint_00, Resources.WindowTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
                 {
-                    _zipPath = PathEx.Combine("%CurDir%", fileName);
-                    if (!File.Exists(_zipPath))
+                    var archivePath = PathEx.Combine(PathEx.LocalDir, $"..\\{PathEx.GetTempFileName()}");
+                    if (!File.Exists(archivePath))
                     {
-                        _transfer.DownloadFile(updateUrl, _zipPath);
-                        CheckDownload.Enabled = true;
+                        _transfer.DownloadFile(Resources.UpdateUrl, archivePath);
                         Opacity = 1f;
+                        CheckDownload.Enabled = true;
+                        return;
                     }
-                    else
-                    {
-                        ExtractDownload.RunWorkerAsync();
-                        Opacity = 0;
-                    }
+                    ExtractDownload.RunWorkerAsync();
                 }
-                else
-                    Close();
-            }
-            else
-            {
-                ShowInfoBox("NoUpdates", MessageBoxButtons.OK);
                 Application.Exit();
+                return;
             }
-        }
-
-        private DialogResult ShowInfoBox(string arg, MessageBoxButtons btn)
-        {
-            if (Environment.CommandLine.Contains("/silent"))
-                return DialogResult.No;
-            string text;
-            switch (arg)
-            {
-                case "UpdateAvailable":
-                    text = "A newer version is available. Would you like to update now?";
-                    break;
-                case "Updated":
-                    text = "TeamViewer successfully updated.";
-                    break;
-                case "UpdateFailed":
-                    text = "TeamViewer update failed.";
-                    break;
-                default:
-                    text = "No newer version available.";
-                    break;
-            }
-            return MessageBox.Show(text, Text, btn, MessageBoxIcon.Information);
+            if (!_silent)
+                MessageBoxEx.Show(Resources.Msg_Hint_01, Resources.WindowTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            Application.Exit();
         }
 
         private void CheckDownload_Tick(object sender, EventArgs e)
         {
-            DLSpeed.Text = $@"{(int)Math.Round(_transfer.TransferSpeed)} kb/s";
+            DLSpeed.Text = _transfer.TransferSpeedAd;
             DLPercentage.Value = _transfer.ProgressPercentage;
             DLLoaded.Text = _transfer.DataReceived;
-            if (DLPercentage.Value > 0 && WindowState != FormWindowState.Normal)
-                WindowState = FormWindowState.Normal;
             if (!_transfer.IsBusy)
-                _dlFinishCount++;
-            if (_dlFinishCount == 1)
+                _countdown--;
+            if (_countdown == 9)
                 DLPercentage.JumpToEnd();
-            if (_dlFinishCount < 10)
+            TaskBar.Progress.SetValue(Handle, DLPercentage.Value, DLPercentage.Maximum);
+            if (_countdown > 0)
                 return;
             CheckDownload.Enabled = false;
-            if (!ExtractDownload.IsBusy)
-                ExtractDownload.RunWorkerAsync();
+            ExtractDownload.RunWorkerAsync();
         }
 
         private void ExtractDownload_DoWork(object sender, DoWorkEventArgs e)
         {
+            var updDir = PathEx.Combine(PathEx.LocalDir, $"..\\{PathEx.GetTempDirName()}");
+            var entry = string.Empty;
             try
             {
-                if (!File.Exists(_zipPath))
+                if (_transfer?.FilePath == null || !File.Exists(_transfer.FilePath))
                     return;
-                using (var zip = ZipFile.OpenRead(_zipPath))
-                    foreach (var ent in zip.Entries)
+                if (!Directory.Exists(updDir))
+                    Directory.CreateDirectory(updDir);
+                using (var archive = ZipFile.OpenRead(_transfer.FilePath))
+                    foreach (var ent in archive.Entries)
+                        try
+                        {
+                            if (!Path.HasExtension(ent.FullName))
+                                continue;
+                            var entPath = ent.FullName;
+                            entPath = PathEx.Combine(updDir, entPath);
+                            if (File.Exists(entPath))
+                                File.Delete(entPath);
+                            var entDir = Path.GetDirectoryName(entPath);
+                            if (string.IsNullOrEmpty(entDir))
+                                continue;
+                            if (!Directory.Exists(entDir))
+                            {
+                                if (File.Exists(entDir))
+                                    File.Delete(entDir);
+                                Directory.CreateDirectory(entDir);
+                            }
+                            ent.ExtractToFile(entPath, true);
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Write(ex);
+                            entry = ent.FullName.Split('/').Join('\\');
+                            throw;
+                        }
+                var appPath = Directory.EnumerateFiles(updDir, $"*{Resources.AppName}.exe", SearchOption.AllDirectories).FirstOrDefault();
+                if (string.IsNullOrEmpty(appPath))
+                    throw new ArgumentNullException(nameof(appPath));
+                var appDir = Path.GetDirectoryName(appPath);
+                if (string.IsNullOrEmpty(appDir))
+                    throw new ArgumentNullException(nameof(appDir));
+                var curFiles = Directory.EnumerateFiles(PathEx.LocalDir, "*", SearchOption.AllDirectories).Where(x => !Resources.WhiteList.ContainsEx(Path.GetFileName(x)));
+                foreach (var file in curFiles)
+                    try
                     {
-                        var entPath = PathEx.Combine("%CurDir%", ent.FullName);
-                        if (File.Exists(entPath))
-                            File.Delete(entPath);
-                        ent.ExtractToFile(entPath, true);
+                        File.Delete(file);
                     }
-                File.SetLastWriteTime(_teamViewer, DateTime.Now);
-                e.Result = "Updated";
+                    catch
+                    {
+                        try
+                        {
+                            File.Move(file, $"{file}.{{{Path.GetFileName(updDir)}}}");
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Write(ex);
+                            Data.ForceDelete(file, true);
+                        }
+                    }
+                Data.DirCopy(appDir, PathEx.LocalDir, true, true);
+                if (Directory.Exists(updDir))
+                    Directory.Delete(updDir, true);
+                appPath = PathEx.Combine(Resources.AppPath);
+                if (File.Exists(appPath))
+                    File.SetLastWriteTime(appPath, DateTime.Now);
+                e.Result = true;
+            }
+            catch (PathTooLongException ex)
+            {
+                Log.Write(ex);
+                e.Result = false;
+                Data.ForceDelete(updDir);
+                var appPath = PathEx.Combine(Resources.AppPath);
+                if (_silent)
+                    _silent = File.Exists(appPath);
+                if (!_silent)
+                    MessageBoxEx.Show(string.Format("{0}{3}{3}('{1}\\{2}')", ex.Message, PathEx.LocalDir, entry, Environment.NewLine), Resources.WindowTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
             catch (Exception ex)
             {
                 Log.Write(ex);
-                try
-                {
-                    if (File.Exists(_zipPath))
-                        File.Delete(_zipPath);
-                }
-                catch (Exception exx)
-                {
-                    Log.Write(exx);
-                }
-                e.Result = "UpdateFailed";
+                e.Result = false;
+                Data.ForceDelete(updDir);
             }
         }
 
         private void ExtractDownload_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            Opacity = 0;
-            ShowInTaskbar = false;
-            ShowInfoBox(e.Result?.ToString() ?? "UpdateFailed", MessageBoxButtons.OK);
-            Close();
+            WindowState = FormWindowState.Minimized;
+            TaskBar.Progress.SetState(Handle, TaskBar.Progress.Flags.Indeterminate);
+            if (!_silent)
+                switch (e.Result as bool?)
+                {
+                    case true:
+                        MessageBoxEx.Show(Resources.Msg_Hint_02, Resources.WindowTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        break;
+                    default:
+                        MessageBoxEx.Show(Resources.Msg_Warn_01, Resources.WindowTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        break;
+                }
+            Application.Exit();
         }
 
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-            if (File.Exists(_zipPath))
-                ProcessEx.Send($"PING 127.0.0.1 -n 2 & DEL /F /Q \"{_zipPath}\"");
+            var appPath = PathEx.Combine(Resources.AppPath);
+            Ini.WriteDirect("History", "LastCheck", File.Exists(appPath) ? DateTime.Now : DateTime.MinValue);
+            ProcessEx.SendHelper.WaitThenDelete(_transfer.FilePath);
         }
     }
 }
