@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 [assembly: AssemblyTitle("TeamViewer Portable")]
-[assembly: AssemblyDescription("TeamViewer Portable Launcher with integrated Updater.")]
+[assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Si13n7 Dev. ®")]
 [assembly: AssemblyProduct("TeamViewerPortable")]
@@ -15,4 +15,4 @@ using System.Runtime.InteropServices;
 
 [assembly: Guid("22a9a6e9-97e9-4566-b152-502f0aba7977")]
 
-[assembly: AssemblyVersion("17.6.7.*")]
+[assembly: AssemblyVersion("17.6.15.*")]

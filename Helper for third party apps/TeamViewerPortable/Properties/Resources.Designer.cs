@@ -61,30 +61,31 @@ namespace TeamViewerPortable.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        ///   Looks up a localized string similar to [Settings]
+        ///nosave=1
+        ///importsettings=1
+        ///LogIncomingConnections=0
+        ///LogOutgoingConnections=0
+        ///[License]
+        ///code=00-00000-000000-000000
+        ///.
         /// </summary>
-        internal static System.Drawing.Icon appicon {
+        internal static string config {
             get {
-                object obj = ResourceManager.GetObject("appicon", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
+                return ResourceManager.GetString("config", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Machine:ACFullAccessOnLoginScreen=0
-        ///User:AccessControl\AC_AllowOutgoingConnections=1
-        ///User:AccessControl\AC_Client_AccessControlType=0
-        ///User:AccessControl\AC_Client_Custom_AllowPartnerViewDesktop=0
-        ///User:AccessControl\AC_Client_Custom_AllowToPrintOnMyPrinters=0
-        ///User:AccessControl\AC_Client_Custom_AllowToPrintOnRemotePrinters=0
-        ///User:AccessControl\AC_Client_Custom_AllowVPN=0
-        ///User:AccessControl\AC_Client_Custom_ChangeDirAllowed=0
-        ///User:AccessControl\AC_Client_Custom_ControlRemoteTV=0
-        ///User:AccessControl\AC [rest of string was truncated]&quot;;.
+        ///   Looks up a localized string similar to Machine:ACFullAccessOnLoginScreen=0        ///
+        ///User:AccessControl\AC_AllowOutgoingConnections=1        ///
+        ///User:AccessControl\AC_Client_AccessControlType=0        ///
+        ///User:AccessControl\AC_Client_Custom_AllowPartnerViewDesktop=0        ///
+        ///User:AccessControl\AC_Client_Custom_AllowToPrintOnMyPrin [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string DefaultSettings {
+        internal static string settings {
             get {
-                return ResourceManager.GetString("DefaultSettings", resourceCulture);
+                return ResourceManager.GetString("settings", resourceCulture);
             }
         }
     }
