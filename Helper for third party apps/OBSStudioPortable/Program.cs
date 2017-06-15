@@ -1,9 +1,10 @@
 namespace OBSPortable
 {
     using System;
-    using System.Diagnostics;
+    using System.Collections.Generic;
     using System.IO;
     using System.Threading;
+    using Portable;
     using SilDev;
 
     internal static class Program
@@ -14,26 +15,20 @@ namespace OBSPortable
             Log.AllowLogging();
 
 #if x86
-            const byte sArch = 64;
-            var sPath = PathEx.Combine(PathEx.LocalDir, "OBSStudio64Portable.exe");
-            if (Environment.Is64BitOperatingSystem && File.Exists(sPath))
+            var curPath64 = PathEx.Combine(PathEx.LocalDir, "OBSStudio64Portable.exe");
+            if (Environment.Is64BitOperatingSystem && File.Exists(curPath64))
             {
-                ProcessEx.Start(sPath, EnvironmentEx.CommandLine());
+                ProcessEx.Start(curPath64, EnvironmentEx.CommandLine(false));
                 return;
             }
-            var sAppPath = PathEx.Combine(PathEx.LocalDir, @"App\OBS32\bin\64bit\obs64.exe");
-
-            const byte cArch = 32;
-            var cAppPath = PathEx.Combine(PathEx.LocalDir, @"App\OBS32\bin\32bit\obs32.exe");
+            var appPath = PathEx.Combine(PathEx.LocalDir, "App\\bin\\32bit\\obs32.exe");
+            var redPath = PathEx.Combine(PathEx.LocalDir, "App\\bin\\64bit\\obs64.exe");
 #else
-            const byte sArch = 32;
-            var sAppPath = PathEx.Combine(PathEx.LocalDir, @"App\OBS64\bin\32bit\obs32.exe");
-
-            const byte cArch = 64;
-            var cAppPath = PathEx.Combine(PathEx.LocalDir, @"App\OBS64\bin\64bit\obs64.exe");
+            var appPath = PathEx.Combine(PathEx.LocalDir, "App\\bin\\64bit\\obs64.exe");
+            var redPath = PathEx.Combine(PathEx.LocalDir, "App\\bin\\32bit\\obs32.exe");
 #endif
 
-            if (!File.Exists(cAppPath) || Process.GetProcessesByName(Path.GetFileNameWithoutExtension(cAppPath)).Length > 0 || Process.GetProcessesByName(Path.GetFileNameWithoutExtension(sAppPath)).Length > 0)
+            if (!File.Exists(appPath) || ProcessEx.IsRunning(Path.GetFileNameWithoutExtension(appPath)) || ProcessEx.IsRunning(Path.GetFileNameWithoutExtension(redPath)))
                 return;
 
             bool newInstance;
@@ -42,46 +37,40 @@ namespace OBSPortable
                 if (!newInstance)
                     return;
 
-                var bDir = PathEx.Combine(PathEx.LocalDir, $@"App\OBS{cArch}\bin\{sArch}bit");
-                try
+                var dirMap = new Dictionary<string, string>
                 {
-                    if (Directory.Exists(bDir))
-                        Directory.Delete(bDir, true);
-                }
-                catch
-                {
-                    AppDomain.CurrentDomain.ProcessExit += (s, e) => ProcessEx.Send($"RD /S /Q \"{bDir}\"");
-                }
-                var pDir = PathEx.Combine(PathEx.LocalDir, $@"App\OBS{cArch}\obs-plugins\{sArch}bit");
-                try
-                {
-                    if (Directory.Exists(pDir))
-                        Directory.Delete(pDir, true);
-                }
-                catch
-                {
-                    AppDomain.CurrentDomain.ProcessExit += (s, e) => ProcessEx.Send($"RD /S /Q \"{pDir}\"");
-                }
-
-                var cfgDir = PathEx.Combine("%AppData%\\obs-studio");
-                var datDir = PathEx.Combine("%CurDir%\\Data");
-                Data.DirLink(cfgDir, datDir, true);
-
-                using (var p = ProcessEx.Start(cAppPath, false, false))
-                    if (!p?.HasExited == true)
-                        p?.WaitForExit();
-                for (var i = 0; i < 10; i++)
-                {
-                    var isRunning = true;
-                    while (isRunning)
                     {
-                        isRunning = ProcessEx.IsRunning(cAppPath) || ProcessEx.IsRunning(sAppPath) || WinApi.FindWindowByCaption("OBS Studio Update") != IntPtr.Zero;
+                        "%AppData%\\obs-studio",
+                        "%CurDir%\\Data"
+                    }
+                };
+
+                Helper.DirectoryForwarding(Helper.Options.Start, dirMap);
+
+                Helper.ApplicationStart(appPath, EnvironmentEx.CommandLine(false));
+
+                var names = new[]
+                {
+                    Path.GetFileNameWithoutExtension(appPath),
+                    Path.GetFileNameWithoutExtension(redPath)
+                };
+                Recheck:
+                foreach (var name in names)
+                {
+                    var wasRunning = false;
+                    while (ProcessEx.IsRunning(name) || WinApi.FindWindowByCaption("OBS Studio Update") != IntPtr.Zero)
+                    {
+                        if (!wasRunning)
+                            wasRunning = true;
                         Thread.Sleep(200);
                     }
-                    Thread.Sleep(500);
+                    if (!wasRunning)
+                        continue;
+                    Thread.Sleep(250);
+                    goto Recheck;
                 }
 
-                Data.DirUnLink(@"%AppData%\obs-studio", true);
+                Helper.DirectoryForwarding(Helper.Options.Exit, dirMap);
             }
         }
     }
