@@ -18,8 +18,8 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\.bin\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <OutputPath>..\.bin\ZAPPortable\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;DirectoryForwarding;FindJava</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>true</Prefer32Bit>
@@ -28,8 +28,8 @@
     <PlatformTarget>x86</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\.bin\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <OutputPath>..\.bin\ZAPPortable\</OutputPath>
+    <DefineConstants>TRACE;DirectoryForwarding;FindJava</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>true</Prefer32Bit>
@@ -49,6 +49,7 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\.helper\Portable.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -61,5 +62,25 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>if exist "$(SolutionDir).helper\AssemblyDateVersion.exe" "$(SolutionDir).helper\AssemblyDateVersion.exe" "$(ProjectDir)Properties\AssemblyInfo.cs"</PreBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>if not exist "$(TargetDir)App\ZedAttackProxy" md "$(TargetDir)App\ZedAttackProxy"
+for %25%25i in (
+"SilDev.CSharpLib.dll"
+"SilDev.CSharpLib.pdb" ) do (
+    if exist "$(TargetDir)%25%25i" (
+        if exist "$(TargetDir)App\%25%25i" (
+            attrib -H "$(TargetDir)App\%25%25i"
+            del /F /Q "$(TargetDir)App\%25%25i"
+        )
+        attrib -H "$(TargetDir)%25%25i"
+        xcopy /Y "$(TargetDir)%25%25i" "$(TargetDir)App\%25%25i*"
+        del /F /Q "$(TargetDir)%25%25i"
+    )
+)
+del /F /Q "$(TargetDir)*.xml"
+attrib +h "$(TargetDir)*.exe.config"
+attrib +h "$(TargetDir)*.pdb"
+attrib +h "$(TargetDir)App\*.pdb"</PostBuildEvent>
   </PropertyGroup>
 </Project>
