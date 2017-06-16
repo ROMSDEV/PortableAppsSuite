@@ -64,30 +64,22 @@
   </PropertyGroup>
   <PropertyGroup>
     <PostBuildEvent>if not exist "$(TargetDir)App\mpTrim" md "$(TargetDir)App\mpTrim"
-for %%i in (
+for %25%25i in (
 "SilDev.CSharpLib.dll"
 "SilDev.CSharpLib.pdb" ) do (
-    if exist "$(TargetDir)%%i" (
-        if exist "$(TargetDir)App\%%i" (
-            attrib -H "$(TargetDir)App\%%i"
-            del /F /Q "$(TargetDir)App\%%i"
+    if exist "$(TargetDir)%25%25i" (
+        if exist "$(TargetDir)App\%25%25i" (
+            attrib -H "$(TargetDir)App\%25%25i"
+            del /F /Q "$(TargetDir)App\%25%25i"
         )
-        attrib -H "$(TargetDir)%%i"
-        xcopy /Y "$(TargetDir)%%i" "$(TargetDir)App\%%i*"
-		del /F /Q "$(TargetDir)%%i"
+        attrib -H "$(TargetDir)%25%25i"
+        xcopy /Y "$(TargetDir)%25%25i" "$(TargetDir)App\%25%25i*"
+        del /F /Q "$(TargetDir)%25%25i"
     )
 )
 del /F /Q "$(TargetDir)*.xml"
 attrib +h "$(TargetDir)*.exe.config"
 attrib +h "$(TargetDir)*.pdb"
-attrib +h "$(TargetDir)App\*.pdb"
-</PostBuildEvent>
+attrib +h "$(TargetDir)App\*.pdb"</PostBuildEvent>
   </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

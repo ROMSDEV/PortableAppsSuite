@@ -80,14 +80,6 @@ for %25%25i in (
 del /F /Q "$(TargetDir)*.xml"
 attrib +h "$(TargetDir)*.exe.config"
 attrib +h "$(TargetDir)*.pdb"
-attrib +h "$(TargetDir)App\*.pdb"
-</PostBuildEvent>
+attrib +h "$(TargetDir)App\*.pdb"</PostBuildEvent>
   </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>
