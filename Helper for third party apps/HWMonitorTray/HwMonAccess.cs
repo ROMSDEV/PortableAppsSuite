@@ -106,7 +106,7 @@ namespace HwMonTray
             return Marshal.PtrToStringUni((IntPtr)(lpLocalBuffer.ToInt32() + Marshal.SizeOf(typeof(Interop.TVITEM))));
         }
 
-        private void addToTable()
+        private void AddToTable()
         {
             var array = ID_Values.Split('\t');
             var text = array[1];
@@ -138,7 +138,7 @@ namespace HwMonTray
                         break;
                     case 3:
                         ID_Values = tVItemTextEx;
-                        addToTable();
+                        AddToTable();
                         break;
                 }
                 level++;

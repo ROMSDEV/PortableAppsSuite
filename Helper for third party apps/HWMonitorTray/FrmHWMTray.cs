@@ -243,8 +243,33 @@ namespace HwMonTray
         private static void FrmHWMTray_FormClosing(object sender, FormClosingEventArgs e) =>
             ClearRegistry();
 
-        private static void InfoToolStripMenuItem_Click(object sender, EventArgs e) =>
-            MessageBox.Show(string.Concat(@"HWMonitor - GadgetHost", Environment.NewLine, Environment.NewLine, @"This little helper application extends the fantastic and FREE 'CPUID -Hardware-Monitor' by the following features:", Environment.NewLine, Environment.NewLine, @"-Starting/Running in Background", @"-Fast Access by Trayicon", @"-Share Sensor Data (for Sidebar Gadgets)", Environment.NewLine, Environment.NewLine, @"Version 2.0 - Copyright © Orbmu2k 2011; decompiled and optimized by Si13n7 Dev. ® 2017"), @"HWMonitor - GadgetHost", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+        private static void InfoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var message = string.Concat(
+                @"HWMonitor - GadgetHost",
+                Environment.NewLine,
+                Environment.NewLine,
+                Environment.NewLine,
+                @"This little helper application extends the fantastic and free 'CPUID-Hardware-Monitor' by the following features:",
+                Environment.NewLine,
+                Environment.NewLine,
+                @"-Starting and running in background",
+                Environment.NewLine,
+                @"-Fast access by tray icon",
+                Environment.NewLine,
+                @"-Share sensor data (for Sidebar Gadgets)",
+                Environment.NewLine,
+                Environment.NewLine,
+                Environment.NewLine,
+                @"Version 1.7 - Copyright © Orbmu2k 2011",
+                Environment.NewLine,
+                Environment.NewLine,
+                @"Version 2.0 - Copyright © Si13n7 Dev. ® 2017",
+                Environment.NewLine,
+                @"(decompilation, fixes, optimizations and re-compilation)");
+
+            MessageBox.Show(message,@"HWMonitor - GadgetHost", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+        }
 
         private void EnableDataSharingToolStripMenuItem_Click(object sender, EventArgs e)
         {
