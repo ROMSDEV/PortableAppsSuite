@@ -1,13 +1,13 @@
 ﻿namespace Portable
 {
-#if ApplicationStart || ConfigOverwrite || DirectoryForwarding || FileForwarding || FileSecureForwarding || RedistHandling || RegistryForwarding || RegistrySecureOverwrite
-#if ApplicationStart || ConfigOverwrite || DirectoryForwarding || FileForwarding || RedistHandling || RegistryForwarding || RegistrySecureOverwrite
+#if ApplicationStart || ConfigOverwrite || DirectoryForwarding || FileForwarding || FileSecureForwarding || FindJava || RedistHandling || RegistryForwarding || RegistrySecureOverwrite
+#if ApplicationStart || ConfigOverwrite || DirectoryForwarding || FileForwarding || FindJava || RedistHandling || RegistryForwarding || RegistrySecureOverwrite
     using System;
 #endif
 #if ConfigOverwrite || DirectoryForwarding || FileForwarding || FileSecureForwarding || RegistrySecureOverwrite
     using System.Collections.Generic;
 #endif
-#if RedistHandling
+#if RedistHandling || FindJava
     using System.Diagnostics;
 #endif
     using System.IO;
@@ -20,7 +20,7 @@
 #if ApplicationStart
     using System.Threading;
 #endif
-#if RedistHandling
+#if RedistHandling || FindJava
     using System.Windows.Forms;
 #endif
     using SilDev;
@@ -331,6 +331,73 @@
         }
 #endif
 
+#if FindJava
+        public static void FindJava(out string javaPath, string iniPath = null)
+        {
+            javaPath = null;
+            if (!string.IsNullOrEmpty(iniPath))
+            {
+                javaPath = Ini.ReadDirect("Java", "Path", iniPath);
+                if (File.Exists(javaPath))
+                    return;
+            }
+            try
+            {
+                var envVar = PathEx.LocalDir;
+                var drive = new DriveInfo(envVar).RootDirectory.Root.Name;
+                var javaDir = drive;
+                foreach (var dirName in envVar.Split('\\'))
+                    try
+                    {
+                        if (drive.Contains(dirName))
+                            continue;
+                        javaDir = Path.Combine(javaDir, dirName);
+                        string tmpDir;
+                        if (Environment.Is64BitOperatingSystem)
+                        {
+                            tmpDir = Path.Combine(javaDir, "CommonFiles\\Java64");
+                            if (Directory.Exists(tmpDir))
+                                foreach (var file in Directory.GetFiles(tmpDir, "javaw.exe", SearchOption.AllDirectories))
+                                {
+                                    javaDir = tmpDir;
+                                    javaPath = file;
+                                    break;
+                                }
+                        }
+                        tmpDir = Path.Combine(javaDir, "CommonFiles\\Java");
+                        if (!Directory.Exists(tmpDir))
+                            continue;
+                        foreach (var file in Directory.GetFiles(tmpDir, "javaw.exe", SearchOption.AllDirectories))
+                        {
+                            javaDir = tmpDir;
+                            javaPath = file;
+                            break;
+                        }
+                        if (File.Exists(javaPath))
+                            break;
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Write(ex);
+                    }
+
+                if (!File.Exists(javaPath))
+                    throw new PathNotFoundException(javaPath);
+
+                if (!string.IsNullOrEmpty(iniPath))
+                    Ini.WriteDirect("Java", "Path", javaPath, iniPath);
+            }
+            catch (Exception ex)
+            {
+                Log.Write(ex);
+                var info = FileVersionInfo.GetVersionInfo(PathEx.LocalPath);
+                MessageBox.Show(@"Java Portable not found!", info.FileDescription, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Environment.ExitCode = 1;
+                Environment.Exit(Environment.ExitCode);
+            }
+        }
+#endif
+
 #if RedistHandling
         public static void RedistHandling(Options options, params EnvironmentEx.Redist.Flags[] versions)
         {
@@ -444,7 +511,7 @@
                                     Ini.WriteDirect("Redist", version.ToString(), true, iniPath);
                                     break;
                                 }
-                                var info = FileVersionInfo.GetVersionInfo(PathEx.LocalPath ?? string.Empty);
+                                var info = FileVersionInfo.GetVersionInfo(PathEx.LocalPath);
                                 if (!Ini.ReadDirect("Redist", version.ToString(), iniPath).EqualsEx("True", "False"))
                                 {
                                     MessageBoxEx.TopMost = true;

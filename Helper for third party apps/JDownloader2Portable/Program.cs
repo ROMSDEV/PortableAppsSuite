@@ -5,6 +5,7 @@ namespace JDownloader2Portable
     using System.IO;
     using System.Threading;
     using System.Windows.Forms;
+    using Portable;
     using SilDev;
 
     internal static class Program
@@ -27,7 +28,7 @@ namespace JDownloader2Portable
                 Ini.WriteDirect("Associations", "FileTypes", "ccf,dlc,jdc,rsdf,sft", iniPath);
 
             string javaPath;
-            FindJava(out javaPath, iniPath);
+            Helper.FindJava(out javaPath, iniPath);
 
             bool newInstance;
             using (new Mutex(true, ProcessEx.CurrentName, out newInstance))
@@ -73,66 +74,6 @@ namespace JDownloader2Portable
                 {
                     Log.Write(ex);
                 }
-            }
-        }
-
-        private static void FindJava(out string javaPath, string iniPath)
-        {
-            javaPath = Ini.ReadDirect("Java", "Path", iniPath);
-            if (File.Exists(javaPath))
-                return;
-
-            try
-            {
-                var envVar = EnvironmentEx.GetVariableValue("CurDir");
-                var drive = new DriveInfo(envVar).RootDirectory.Root.Name;
-                var javaDir = drive;
-                foreach (var dirName in envVar.Split('\\'))
-                    try
-                    {
-                        if (drive.Contains(dirName))
-                            continue;
-                        javaDir = Path.Combine(javaDir, dirName);
-                        string tmpDir;
-                        if (Environment.Is64BitOperatingSystem)
-                        {
-                            tmpDir = Path.Combine(javaDir, "CommonFiles\\Java64");
-                            if (Directory.Exists(tmpDir))
-                                foreach (var file in Directory.GetFiles(tmpDir, "javaw.exe", SearchOption.AllDirectories))
-                                {
-                                    javaDir = tmpDir;
-                                    javaPath = file;
-                                    break;
-                                }
-                        }
-                        tmpDir = Path.Combine(javaDir, "CommonFiles\\Java");
-                        if (!Directory.Exists(tmpDir))
-                            continue;
-                        foreach (var file in Directory.GetFiles(tmpDir, "javaw.exe", SearchOption.AllDirectories))
-                        {
-                            javaDir = tmpDir;
-                            javaPath = file;
-                            break;
-                        }
-                        if (File.Exists(javaPath))
-                            break;
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.Write(ex);
-                    }
-
-                if (!File.Exists(javaPath))
-                    throw new PathNotFoundException(javaPath);
-
-                Ini.WriteDirect("Java", "Path", javaPath, iniPath);
-            }
-            catch (Exception ex)
-            {
-                Log.Write(ex);
-                MessageBox.Show(@"Java Portable not found!", @"JDownloader 2 Portable", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                Environment.ExitCode = 1;
-                Environment.Exit(Environment.ExitCode);
             }
         }
 
