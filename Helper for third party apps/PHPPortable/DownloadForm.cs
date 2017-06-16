@@ -6,14 +6,15 @@ namespace RunPHP
     using System.IO;
     using System.IO.Compression;
     using System.Windows.Forms;
+    using Properties;
     using SilDev;
     using SilDev.Forms;
 
     public partial class DownloadForm : Form
     {
         private readonly NetEx.AsyncTransfer _transfer = new NetEx.AsyncTransfer();
-        private int _dlFinishCount;
-        private string _phpPath = string.Empty;
+        private readonly string _appPath = PathEx.Combine(Resources.AppPath);
+        private int _countdown = 10;
 
         public DownloadForm()
         {
@@ -22,9 +23,31 @@ namespace RunPHP
 
         private void DownloadForm_Load(object sender, EventArgs e)
         {
-            _phpPath = PathEx.Combine("%CurDir%\\php\\php.exe");
-            Download();
-            CheckDownload.Enabled = true;
+            try
+            {
+                string source;
+                if (!NetEx.InternetIsAvailable() || string.IsNullOrWhiteSpace(source = NetEx.Transfer.DownloadString($"{Resources.UpdateUrl}/{Resources.HashFile}")))
+                {
+                    MessageBoxEx.Show(this, Resources.Msg_Err_00, Resources.WindowTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    Application.Exit();
+                    return;
+                }
+                var file = string.Empty;
+                foreach (var str in source.Split(' '))
+                {
+                    if (string.IsNullOrWhiteSpace(str) || str.ContainsEx(Resources.SearchBlacklist.SplitNewLine()) || !str.ContainsEx(Resources.SearchMatch))
+                        continue;
+                    file = str;
+                }
+                if (!file.EndsWithEx(".zip"))
+                    file = file.Substring(0, file.Length - new Crypto.Sha1().HashLength).Trim();
+                _transfer.DownloadFile($"{Resources.UpdateUrl}/{file}", PathEx.Combine(PathEx.LocalDir, file));
+                CheckDownload.Enabled = true;
+            }
+            catch
+            {
+                Process.Start(Resources.UpdateUrl);
+            }
         }
 
         private void DownloadForm_FormClosed(object sender, FormClosedEventArgs e)
@@ -33,49 +56,20 @@ namespace RunPHP
                 _transfer.CancelAsync();
             if (ExtractDownload.IsBusy)
                 ExtractDownload.CancelAsync();
-            if (!File.Exists(_phpPath))
+            if (!File.Exists(_appPath))
                 Application.Exit();
-        }
-
-        private void Download()
-        {
-            try
-            {
-                var source = NetEx.Transfer.DownloadString("http://windows.php.net/downloads/releases/sha1sum.txt");
-                if (string.IsNullOrWhiteSpace(source))
-                {
-                    MessageBoxEx.Show("Sorry, no connection available.", "No Connection Available", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    Application.Exit();
-                    return;
-                }
-                var archive = string.Empty;
-                foreach (var str in source.Split(' '))
-                    if (!string.IsNullOrWhiteSpace(str))
-                    {
-                        var tmp = str.ToLower();
-                        if (!tmp.Contains("test") && !tmp.Contains("debug") && !tmp.Contains("devel") && !tmp.Contains("nts") && tmp.Contains("-x86.zip"))
-                            archive = str;
-                    }
-                if (!archive.EndsWith(".zip"))
-                    archive = archive.Substring(0, archive.Length - 40).Trim();
-                _transfer.DownloadFile($"http://windows.php.net/downloads/releases/{archive}", PathEx.Combine("%CurDir%", archive));
-            }
-            catch
-            {
-                Process.Start("http://windows.php.net/downloads/releases");
-            }
         }
 
         private void CheckDownload_Tick(object sender, EventArgs e)
         {
-            DLSpeed.Text = $@"{(int)Math.Round(_transfer.TransferSpeed)} kb/s";
+            DLSpeed.Text = _transfer.TransferSpeedAd;
             DLPercentage.Value = _transfer.ProgressPercentage;
             DLLoaded.Text = _transfer.DataReceived;
             if (!_transfer.IsBusy)
-                _dlFinishCount++;
-            if (_dlFinishCount == 1)
+                _countdown--;
+            if (_countdown == 9)
                 DLPercentage.JumpToEnd();
-            if (_dlFinishCount < 10)
+            if (_countdown > 0)
                 return;
             CheckDownload.Enabled = false;
             ExtractDownload.RunWorkerAsync();
@@ -85,19 +79,20 @@ namespace RunPHP
         {
             try
             {
-                var path = PathEx.Combine("%CurDir%\\php");
                 if (!File.Exists(_transfer.FilePath))
                     return;
-                using (var zip = ZipFile.Open(_transfer.FilePath, ZipArchiveMode.Read))
+                using (var file = ZipFile.Open(_transfer.FilePath, ZipArchiveMode.Read))
                 {
-                    if (Directory.Exists(path))
-                        Directory.Delete(path, true);
-                    zip.ExtractToDirectory(path);
+                    var dir = Path.GetDirectoryName(_appPath);
+                    if (Directory.Exists(dir))
+                        Directory.Delete(dir, true);
+                    file.ExtractToDirectory(dir);
                 }
                 File.Delete(_transfer.FilePath);
             }
-            catch
+            catch (Exception ex)
             {
+                Log.Write(ex);
                 Application.Exit();
             }
         }
@@ -106,7 +101,7 @@ namespace RunPHP
         {
             if (e.Cancelled)
                 return;
-            MessageBoxEx.Show(this, !_transfer.HasCanceled ? "Operation completed!" : "Operation failed!", "Info", MessageBoxButtons.OK, MessageBoxIcon.None);
+            MessageBoxEx.Show(this, !_transfer.HasCanceled ? Resources.Msg_Hint_01 : Resources.Msg_Warn_00, Resources.WindowTitle, MessageBoxButtons.OK, !_transfer.HasCanceled ? MessageBoxIcon.Asterisk : MessageBoxIcon.Warning);
             Close();
         }
     }

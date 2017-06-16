@@ -18,7 +18,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\.bin\</OutputPath>
+    <OutputPath>..\.bin\PHPPortable\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -27,7 +27,7 @@
     <PlatformTarget>x86</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\.bin\</OutputPath>
+    <OutputPath>..\.bin\PHPPortable\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -36,7 +36,7 @@
     <StartupObject>RunPHP.Program</StartupObject>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>php.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\appicon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="SilDev.CSharpLib">
@@ -80,31 +80,37 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="php.ico" />
+    <None Include="Resources\appimage.png" />
+    <None Include="Resources\appicon16.ico" />
+    <None Include="Resources\appicon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>if exist "$(SolutionDir).helper\AssemblyDateVersion.exe" "$(SolutionDir).helper\AssemblyDateVersion.exe" "$(ProjectDir)Properties\AssemblyInfo.cs"</PreBuildEvent>
   </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+  <PropertyGroup>
+    <PostBuildEvent>if not exist "$(TargetDir)App" md "$(TargetDir)App"
+for %25%25i in (
+"SilDev.CSharpLib.dll"
+"SilDev.CSharpLib.pdb" ) do (
+    if exist "$(TargetDir)%25%25i" (
+        if exist "$(TargetDir)App\%25%25i" (
+            attrib -H "$(TargetDir)App\%25%25i"
+            del /F /Q "$(TargetDir)App\%25%25i"
+        )
+        attrib -H "$(TargetDir)%25%25i"
+        xcopy /Y "$(TargetDir)%25%25i" "$(TargetDir)App\%25%25i*"
+        del /F /Q "$(TargetDir)%25%25i"
+    )
+)
+del /F /Q "$(TargetDir)*.xml"
+attrib +h "$(TargetDir)*.exe.config"
+attrib +h "$(TargetDir)*.pdb"
+attrib +h "$(TargetDir)App\*.pdb"</PostBuildEvent>
+  </PropertyGroup>
 </Project>

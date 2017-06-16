@@ -220,7 +220,7 @@ namespace RunPHP
             this.RunBtn.Name = "RunBtn";
             this.RunBtn.Size = new System.Drawing.Size(174, 23);
             this.RunBtn.TabIndex = 1;
-            this.RunBtn.Text = "Run";
+            this.RunBtn.Text = "Run PHP Script";
             this.RunBtn.UseVisualStyleBackColor = true;
             this.RunBtn.Click += new System.EventHandler(this.RunBtn_Click);
             // 
@@ -230,7 +230,7 @@ namespace RunPHP
             this.ScBtn.Name = "ScBtn";
             this.ScBtn.Size = new System.Drawing.Size(174, 23);
             this.ScBtn.TabIndex = 0;
-            this.ScBtn.Text = "Shortcut";
+            this.ScBtn.Text = "Create Batch Script";
             this.ScBtn.UseVisualStyleBackColor = true;
             this.ScBtn.Click += new System.EventHandler(this.ScBtn_Click);
             // 
@@ -246,12 +246,12 @@ namespace RunPHP
             // 
             // pictureBox1
             // 
-            this.pictureBox1.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("pictureBox1.BackgroundImage")));
+            this.pictureBox1.BackgroundImage = global::RunPHP.Properties.Resources.appimage;
             this.pictureBox1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Left;
             this.pictureBox1.Location = new System.Drawing.Point(0, 0);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(160, 81);
+            this.pictureBox1.Size = new System.Drawing.Size(139, 81);
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
             // 
@@ -288,7 +288,6 @@ namespace RunPHP
             this.ClientSize = new System.Drawing.Size(560, 263);
             this.Controls.Add(this.MainLayout);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
