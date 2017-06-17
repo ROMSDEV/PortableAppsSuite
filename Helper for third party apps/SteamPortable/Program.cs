@@ -85,52 +85,8 @@ namespace SteamPortable
                         "%CurDir%\\Data\\cache"
                     },
                     {
-                        "%CurDir%\\App\\Steam\\appcache",
-                        "%CurDir%\\Data\\appcache"
-                    },
-                    {
-                        "%CurDir%\\App\\Steam\\config",
-                        "%CurDir%\\Data\\config"
-                    },
-                    {
-                        "%CurDir%\\App\\Steam\\depotcache",
-                        "%CurDir%\\Data\\depotcache"
-                    },
-                    {
-                        "%CurDir%\\App\\Steam\\dumps",
-                        "%CurDir%\\Data\\dumps"
-                    },
-                    {
-                        "%CurDir%\\App\\Steam\\htmlcache",
-                        "%CurDir%\\Data\\htmlcache"
-                    },
-                    {
-                        "%CurDir%\\App\\Steam\\logs",
-                        "%CurDir%\\Data\\logs"
-                    },
-                    {
-                        "%CurDir%\\App\\Steam\\music",
-                        "%CurDir%\\Data\\music"
-                    },
-                    {
-                        "%CurDir%\\App\\Steam\\remoteui",
-                        "%CurDir%\\Data\\remoteui"
-                    },
-                    {
-                        "%CurDir%\\App\\Steam\\skins",
-                        "%CurDir%\\Data\\skins"
-                    },
-                    {
                         "%CurDir%\\App\\Steam\\steamapps",
                         steamAppsVar
-                    },
-                    {
-                        "%CurDir%\\App\\Steam\\userdata",
-                        "%CurDir%\\Data\\userdata"
-                    },
-                    {
-                        "%CurDir%\\App\\Steam\\vrpanorama",
-                        "%CurDir%\\Data\\vrpanorama"
                     }
                 };
 
@@ -167,6 +123,78 @@ namespace SteamPortable
                     Ini.WriteDirect("Cache", null, null, iniPath);
 
                 Helper.DirectoryForwarding(Helper.Options.Start, dirMap);
+
+                var scMap = new Dictionary<string, string>
+                {
+                    {
+                        "%CurDir%\\App\\Steam\\appcache",
+                        "%CurDir%\\Data\\shortcuts\\appcache"
+                    },
+                    {
+                        "%CurDir%\\App\\Steam\\config",
+                        "%CurDir%\\Data\\shortcuts\\config"
+                    },
+                    {
+                        "%CurDir%\\App\\Steam\\depotcache",
+                        "%CurDir%\\Data\\shortcuts\\depotcache"
+                    },
+                    {
+                        "%CurDir%\\App\\Steam\\dumps",
+                        "%CurDir%\\Data\\shortcuts\\dumps"
+                    },
+                    {
+                        "%CurDir%\\App\\Steam\\htmlcache",
+                        "%CurDir%\\Data\\shortcuts\\htmlcache"
+                    },
+                    {
+                        "%CurDir%\\App\\Steam\\logs",
+                        "%CurDir%\\Data\\shortcuts\\logs"
+                    },
+                    {
+                        "%CurDir%\\App\\Steam\\music",
+                        "%CurDir%\\Data\\shortcuts\\music"
+                    },
+                    {
+                        "%CurDir%\\App\\Steam\\remoteui",
+                        "%CurDir%\\Data\\shortcuts\\remoteui"
+                    },
+                    {
+                        "%CurDir%\\App\\Steam\\skins",
+                        "%CurDir%\\Data\\shortcuts\\skins"
+                    },
+                    {
+                        "%CurDir%\\App\\Steam\\userdata",
+                        "%CurDir%\\Data\\shortcuts\\userdata"
+                    },
+                    {
+                        "%CurDir%\\App\\Steam\\vrpanorama",
+                        "%CurDir%\\Data\\shortcuts\\vrpanorama"
+                    }
+                };
+
+                var scDir = Path.Combine(dataDir, "shortcuts");
+                foreach (var data in scMap)
+                {
+                    var dir1 = PathEx.Combine(data.Key);
+                    var dir2 = PathEx.Combine(data.Value);
+                    try
+                    {
+                        if (Directory.Exists(dir2))
+                        {
+                            Data.DirCopy(dir2, dir1, true, true);
+                            Directory.Delete(dir2, true);
+                        }
+                        if (!Directory.Exists(dir1))
+                            Directory.CreateDirectory(dir1);
+                        if (!Directory.Exists(scDir))
+                            Directory.CreateDirectory(scDir);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Write(ex);
+                    }
+                    Data.CreateShortcut(dir1, dir2);
+                }
 
                 var regKeys = new[]
                 {
@@ -306,13 +334,22 @@ namespace SteamPortable
 
                 if (!Ini.Read("Settings", "ImproveSteamStartTime", false, iniPath))
                     return;
+                if (Directory.Exists(scDir))
+                    try
+                    {
+                        Directory.Delete(scDir, true);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Write(ex);
+                    }
                 var patternDict = new Dictionary<string, SearchOption>
                 {
                     { ".crash", SearchOption.TopDirectoryOnly },
                     { "*.old", SearchOption.TopDirectoryOnly },
                     { "*.log", SearchOption.AllDirectories },
                     { "*.log.last", SearchOption.TopDirectoryOnly },
-                    { "ClientRegistry.blob", SearchOption.TopDirectoryOnly },
+                    { "ClientRegistry.blob", SearchOption.TopDirectoryOnly }
                 };
                 foreach (var p in patternDict)
                     try
@@ -333,43 +370,22 @@ namespace SteamPortable
                     }
                 var dirs = new[]
                 {
-                    "appcache",
-                    "cache",
-                    "depotcache",
-                    "dumps",
-                    "logs",
-                    "htmlcache"
+                    Path.Combine(appDir, "appcache"),
+                    Path.Combine(appDir, "depotcache"),
+                    Path.Combine(appDir, "dumps"),
+                    Path.Combine(appDir, "htmlcache"),
+                    Path.Combine(dataDir, "cache")
                 };
                 foreach (var d in dirs)
-                {
-                    var dir = PathEx.Combine(dataDir, d);
                     try
                     {
-                        Directory.Delete(dir, true);
+                        if (Directory.Exists(d))
+                            Directory.Delete(d, true);
                     }
                     catch (Exception ex)
                     {
                         Log.Write(ex);
                     }
-                }
-                try
-                {
-                    foreach (var d in Directory.EnumerateDirectories(dataDir))
-                        try
-                        {
-                            if (Directory.EnumerateFiles(d).Any())
-                                continue;
-                            Directory.Delete(d, true);
-                        }
-                        catch (Exception ex)
-                        {
-                            Log.Write(ex);
-                        }
-                }
-                catch (Exception ex)
-                {
-                    Log.Write(ex);
-                }
             }
         }
     }
