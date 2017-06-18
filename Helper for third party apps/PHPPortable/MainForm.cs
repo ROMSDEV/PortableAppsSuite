@@ -22,37 +22,6 @@ namespace RunPHP
             Icon = Resources.appicon16;
         }
 
-        private void CenterWindow(IntPtr hWnd, bool isChild)
-        {
-            var rect = new Rectangle(0, 0, 0, 0);
-            WinApi.UnsafeNativeMethods.GetWindowRect(hWnd, ref rect);
-            var width = rect.Width - rect.X;
-            var height = rect.Height - rect.Y;
-            var point = new Point(0, 0);
-            if (isChild)
-            {
-                rect = new Rectangle(0, 0, 0, 0);
-                WinApi.UnsafeNativeMethods.GetWindowRect(Handle, ref rect);
-                point.X = rect.X + (rect.Width - rect.X) / 2;
-                point.Y = rect.Y + (rect.Height - rect.Y) / 2;
-            }
-            else
-            {
-                point.X = Screen.PrimaryScreen.Bounds.Width / 2;
-                point.Y = Screen.PrimaryScreen.Bounds.Height / 2;
-            }
-            point = new Point
-            {
-                X = point.X - width / 2,
-                Y = point.Y - height / 2
-            };
-            var min = new Point(0, 0);
-            var max = new Point(Screen.FromHandle(hWnd).WorkingArea.Width - width, Screen.FromHandle(hWnd).WorkingArea.Height - height);
-            point.X = point.X < min.X ? min.X : point.X > max.X ? max.X : point.X;
-            point.Y = point.Y < min.Y ? min.Y : point.Y > max.Y ? max.Y : point.Y;
-            WinApi.UnsafeNativeMethods.MoveWindow(hWnd, point.X, point.Y, width, height, false);
-        }
-
         private void MainForm_Load(object sender, EventArgs e)
         {
             if (!File.Exists(_appPath))
@@ -63,7 +32,7 @@ namespace RunPHP
                     if (!CheckDownload.Enabled)
                         CheckDownload.Enabled = true;
                     _downloadForm.Show(this);
-                    CenterWindow(_downloadForm.Handle, true);
+                    WinApi.CenterWindow(_downloadForm.Handle, Handle);
                 }
                 else
                 {
@@ -101,8 +70,8 @@ namespace RunPHP
 
         private void MainForm_Move(object sender, EventArgs e)
         {
-            if (Application.OpenForms.Count > 1)
-                CenterWindow(_downloadForm.Handle, true);
+            if (Application.OpenForms.Count > 1 && Application.OpenForms.Cast<Form>().Any(f => f.Handle == _downloadForm.Handle))
+                WinApi.CenterWindow(_downloadForm.Handle, Handle);
         }
 
         private void CheckDownload_Tick(object sender, EventArgs e)
@@ -238,7 +207,7 @@ namespace RunPHP
                 if (!CheckDownload.Enabled)
                     CheckDownload.Enabled = true;
                 _downloadForm.Show(this);
-                CenterWindow(_downloadForm.Handle, true);
+                WinApi.CenterWindow(_downloadForm.Handle, Handle);
             }
             catch (WarningException)
             {

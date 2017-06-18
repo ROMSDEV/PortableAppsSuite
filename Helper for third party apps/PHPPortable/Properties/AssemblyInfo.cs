@@ -16,4 +16,4 @@ using System.Resources;
 
 [assembly: Guid("4f030000-165a-41f2-89b2-458511fa81df")]
 
-[assembly: AssemblyVersion("17.6.16.*")]
+[assembly: AssemblyVersion("17.6.18.*")]
