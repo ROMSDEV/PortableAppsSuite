@@ -32,7 +32,7 @@ namespace TeamViewerPortable
                     "tv_x64",
                     "TeamViewerUpdater"
                 };
-                if (!File.Exists(updaterPath) || processes.Any(ProcessEx.IsRunning))
+                if (!File.Exists(updaterPath) || processes.Any(name => ProcessEx.IsRunning(name)))
                     return;
 
                 Helper.ApplicationStart(updaterPath, "/silent", null);

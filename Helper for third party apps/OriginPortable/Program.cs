@@ -276,7 +276,7 @@ namespace OriginPortable
                                      .Select(Path.GetFileNameWithoutExtension)
                                      .Where(n => n.ContainsEx("Origin"))
                                      .Where(IsNoService);
-                return names.Any(ProcessEx.IsRunning);
+                return names.Any(name => ProcessEx.IsRunning(name));
             }
             catch (Exception ex)
             {

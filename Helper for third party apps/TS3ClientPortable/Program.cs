@@ -148,7 +148,7 @@ namespace TS3ClientPortable
                     if (!hide && !enable)
                         continue;
 
-                    var hWnd = WinApi.FindWindowByCaption("TeamSpeak 3");
+                    var hWnd = WinApi.NativeHelper.FindWindowByCaption("TeamSpeak 3");
                     if (hWnd == IntPtr.Zero)
                         continue;
 
@@ -161,7 +161,7 @@ namespace TS3ClientPortable
                     if (!enable)
                         continue;
                     enable = false;
-                    WinApi.UnsafeNativeMethods.ShowWindowAsync(hWnd, state.EqualsEx("Minimized") ? WinApi.ShowWindowFunc.SW_SHOWMINIMIZED : WinApi.ShowWindowFunc.SW_SHOWMAXIMIZED);
+                    WinApi.NativeHelper.ShowWindowAsync(hWnd, state.EqualsEx("Minimized") ? WinApi.ShowWindowFlags.ShowMinimized : WinApi.ShowWindowFlags.ShowMaximized);
                 }
                 while (ProcessEx.IsRunning(appName))
                     Thread.Sleep(200);
@@ -169,7 +169,7 @@ namespace TS3ClientPortable
                 Second:
                 for (var i = 0; i < 10; i++)
                 {
-                    while (ProcessEx.IsRunning(updPath) || WinApi.FindWindowByCaption("TeamSpeak 3 Client Update") != IntPtr.Zero)
+                    while (ProcessEx.IsRunning(updPath) || WinApi.NativeHelper.FindWindowByCaption("TeamSpeak 3 Client Update") != IntPtr.Zero)
                         Thread.Sleep(200);
                     if (ProcessEx.IsRunning(appName))
                     {

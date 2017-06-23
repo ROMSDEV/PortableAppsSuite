@@ -32,7 +32,7 @@ namespace RunPHP
                     if (!CheckDownload.Enabled)
                         CheckDownload.Enabled = true;
                     _downloadForm.Show(this);
-                    WinApi.CenterWindow(_downloadForm.Handle, Handle);
+                    WinApi.NativeHelper.CenterWindow(_downloadForm.Handle, Handle);
                 }
                 else
                 {
@@ -71,7 +71,7 @@ namespace RunPHP
         private void MainForm_Move(object sender, EventArgs e)
         {
             if (Application.OpenForms.Count > 1 && Application.OpenForms.Cast<Form>().Any(f => f.Handle == _downloadForm.Handle))
-                WinApi.CenterWindow(_downloadForm.Handle, Handle);
+                WinApi.NativeHelper.CenterWindow(_downloadForm.Handle, Handle);
         }
 
         private void CheckDownload_Tick(object sender, EventArgs e)
@@ -207,7 +207,7 @@ namespace RunPHP
                 if (!CheckDownload.Enabled)
                     CheckDownload.Enabled = true;
                 _downloadForm.Show(this);
-                WinApi.CenterWindow(_downloadForm.Handle, Handle);
+                WinApi.NativeHelper.CenterWindow(_downloadForm.Handle, Handle);
             }
             catch (WarningException)
             {
