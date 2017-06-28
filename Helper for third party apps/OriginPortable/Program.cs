@@ -17,8 +17,7 @@ namespace OriginPortable
         private static void Main()
         {
             Log.AllowLogging();
-            bool newInstance;
-            using (new Mutex(true, ProcessEx.CurrentName, out newInstance))
+            using (new Mutex(true, ProcessEx.CurrentName, out bool newInstance))
             {
                 var appDir = PathEx.Combine(PathEx.LocalDir, "App\\Origin");
                 var appPath = Path.Combine(appDir, "Origin.exe");
@@ -48,8 +47,8 @@ namespace OriginPortable
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
 
-                Helper.RedistHandling(Helper.Options.Start, 
-                    EnvironmentEx.Redist.Flags.VC2010X86, 
+                Helper.RedistHandling(Helper.Options.Start,
+                    EnvironmentEx.Redist.Flags.VC2010X86,
                     EnvironmentEx.Redist.Flags.VC2013X86
 #if !x86
                     , 
@@ -107,6 +106,10 @@ namespace OriginPortable
                     {
                         "%ProgramData%\\Origin",
                         "%CurDir%\\Data\\ProgramData\\Origin"
+                    },
+                    {
+                        "%UserProfile%\\.Origin",
+                        "%CurDir%\\Data\\Temp"
                     }
                 };
 
@@ -253,8 +256,8 @@ namespace OriginPortable
 
                 Helper.RegForwarding(Helper.Options.Exit, regKeys);
 
-                Helper.RedistHandling(Helper.Options.Exit, 
-                    EnvironmentEx.Redist.Flags.VC2010X86, 
+                Helper.RedistHandling(Helper.Options.Exit,
+                    EnvironmentEx.Redist.Flags.VC2010X86,
                     EnvironmentEx.Redist.Flags.VC2013X86
 #if !x86
                     , 
@@ -262,6 +265,17 @@ namespace OriginPortable
                     EnvironmentEx.Redist.Flags.VC2013X64
 #endif
                 );
+
+                try
+                {
+                    var qtWebEngineCacheDir = PathEx.Combine("%UserProfile%\\.QtWebEngineProcess");
+                    if (Directory.Exists(qtWebEngineCacheDir))
+                        Directory.Delete(qtWebEngineCacheDir, true);
+                }
+                catch (Exception ex)
+                {
+                    Log.Write(ex);
+                }
             }
         }
 

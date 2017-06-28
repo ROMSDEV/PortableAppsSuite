@@ -30,8 +30,7 @@ namespace VLCPortable
             if (!File.Exists(updaterPath) || ProcessEx.IsRunning(Path.GetFileNameWithoutExtension(updaterPath)))
                 return;
 
-            bool newInstance;
-            using (new Mutex(true, ProcessEx.CurrentName, out newInstance))
+            using (new Mutex(true, ProcessEx.CurrentName, out bool newInstance))
             {
                 var appPath = PathEx.Combine(appDir, "vlc.exe");
 

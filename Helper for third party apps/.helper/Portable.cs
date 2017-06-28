@@ -399,6 +399,7 @@
 #endif
 
 #if RedistHandling
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
         public static void RedistHandling(Options options, params EnvironmentEx.Redist.Flags[] versions)
         {
             var dict = new Dictionary<EnvironmentEx.Redist.Flags, Dictionary<int, List<int>>>();

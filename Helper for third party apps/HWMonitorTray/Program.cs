@@ -13,8 +13,7 @@ namespace HwMonTray
             string processName;
             using (var current = Process.GetCurrentProcess())
                 processName = current.ProcessName;
-            bool newInstance;
-            using (new Mutex(true, processName, out newInstance))
+            using (new Mutex(true, processName, out bool newInstance))
             {
                 if (!newInstance)
                     return;

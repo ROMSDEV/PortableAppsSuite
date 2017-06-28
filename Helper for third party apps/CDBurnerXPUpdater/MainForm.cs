@@ -53,12 +53,11 @@ namespace AppUpdater
                         continue;
 #endif
                     var mVer = Regex.Match(mName, Resources.RegexVersionPattern, RegexOptions.Singleline).Groups[1].ToString();
-                    Version ver;
 #if !x86
-                    if (!Version.TryParse(mVer.RemoveText("x64-"), out ver))
+                    if (!Version.TryParse(mVer.RemoveText("x64-"), out Version ver))
                         continue;
 #else
-                    if (!Version.TryParse(mVer, out ver))
+                    if (!Version.TryParse(mVer, out Version ver))
                         continue;
 #endif
                     urls.Add(string.Format(Resources.UpdateUrl, mName));

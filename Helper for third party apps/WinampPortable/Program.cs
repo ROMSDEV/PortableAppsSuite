@@ -15,8 +15,7 @@ namespace WinampPortable
         private static void Main()
         {
             Log.AllowLogging();
-            bool newInstance;
-            using (new Mutex(true, ProcessEx.CurrentName, out newInstance))
+            using (new Mutex(true, ProcessEx.CurrentName, out bool newInstance))
             {
                 var appDir = PathEx.Combine(PathEx.LocalDir, "App\\winamp");
                 var appPath = PathEx.Combine(appDir, "winamp.exe");

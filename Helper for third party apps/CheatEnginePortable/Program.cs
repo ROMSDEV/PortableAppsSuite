@@ -15,8 +15,7 @@ namespace CheatEnginePortable
         private static void Main()
         {
             Log.AllowLogging();
-            bool newInstance;
-            using (new Mutex(true, ProcessEx.CurrentName, out newInstance))
+            using (new Mutex(true, ProcessEx.CurrentName, out bool newInstance))
             {
 #if x86
                 var curPath64 = PathEx.Combine(PathEx.LocalDir, "CheatEngine64Portable.exe");
@@ -63,7 +62,7 @@ namespace CheatEnginePortable
                     }
                 };
 
-                var regKeys = new []
+                var regKeys = new[]
                 {
                     "HKCU\\Software\\Cheat Engine"
                 };

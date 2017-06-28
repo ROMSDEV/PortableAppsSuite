@@ -27,11 +27,8 @@ namespace JDownloader2Portable
             if (!File.Exists(iniPath))
                 Ini.WriteDirect("Associations", "FileTypes", "ccf,dlc,jdc,rsdf,sft", iniPath);
 
-            string javaPath;
-            Helper.FindJava(out javaPath, iniPath);
-
-            bool newInstance;
-            using (new Mutex(true, ProcessEx.CurrentName, out newInstance))
+            Helper.FindJava(out string javaPath, iniPath);
+            using (new Mutex(true, ProcessEx.CurrentName, out bool newInstance))
             {
                 var cmdLine = $"-jar \"{appPath}\" {EnvironmentEx.CommandLine(false)}".Trim();
                 if (!newInstance)
@@ -46,13 +43,14 @@ namespace JDownloader2Portable
                         if (p?.HasExited == false)
                             p.WaitForExit();
                     Recheck:
-                    foreach (var p in ProcessEx.GetInstances(javaPath))
+                    var appName = Path.GetFileNameWithoutExtension(javaPath);
+                    foreach (var p in ProcessEx.GetInstances(appName))
                     {
                         var wasRunning = false;
                         bool isRunning;
                         do
                         {
-                            isRunning = p?.GetCommandLine()?.ContainsEx(appPath) == true;
+                            isRunning = p?.GetCommandLine()?.ContainsEx(appDir) == true;
                             if (p?.HasExited == false)
                                 p.WaitForExit();
                             if (!wasRunning && isRunning)

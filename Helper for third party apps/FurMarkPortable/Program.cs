@@ -13,8 +13,7 @@ namespace FurMarkPortable
         private static void Main()
         {
             Log.AllowLogging();
-            bool newInstance;
-            using (new Mutex(true, ProcessEx.CurrentName, out newInstance))
+            using (new Mutex(true, ProcessEx.CurrentName, out bool newInstance))
             {
                 var appDir = PathEx.Combine(PathEx.LocalDir, "App\\FurMark");
                 if (!Directory.Exists(appDir))

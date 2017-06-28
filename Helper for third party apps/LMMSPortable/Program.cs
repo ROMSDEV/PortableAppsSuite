@@ -14,8 +14,7 @@ namespace LMMSPortable
         private static void Main()
         {
             Log.AllowLogging();
-            bool newInstance;
-            using (new Mutex(true, ProcessEx.CurrentName, out newInstance))
+            using (new Mutex(true, ProcessEx.CurrentName, out bool newInstance))
             {
 #if x86
                 var curPath64 = PathEx.Combine(PathEx.LocalDir, "LMMS64Portable.exe");

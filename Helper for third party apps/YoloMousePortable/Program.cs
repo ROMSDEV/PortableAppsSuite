@@ -29,8 +29,7 @@ namespace YoloMousePortable
             var updaterPath = PathEx.Combine(appDir, "YoloMouseUpdater64.exe");
 #endif
 
-            bool newInstance;
-            using (new Mutex(true, ProcessEx.CurrentName, out newInstance))
+            using (new Mutex(true, ProcessEx.CurrentName, out bool newInstance))
             {
                 if (!newInstance)
                     return;

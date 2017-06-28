@@ -58,7 +58,7 @@ namespace OBSPortable
                 foreach (var name in names)
                 {
                     var wasRunning = false;
-                    while (ProcessEx.IsRunning(name) || WinApi.NativeHelper.FindWindowByCaption("OBS Studio Update") != IntPtr.Zero)
+                    while (ProcessEx.IsRunning(name) || ProcessEx.IsRunning("consent") || WinApi.NativeHelper.FindWindowByCaption("OBS Studio Update") != IntPtr.Zero)
                     {
                         if (!wasRunning)
                             wasRunning = true;

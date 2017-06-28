@@ -22,8 +22,7 @@ namespace AppUpdater
                 Environment.ExitCode = 1;
                 Environment.Exit(Environment.ExitCode);
             }
-            bool newInstance;
-            using (new Mutex(true, ProcessEx.CurrentName, out newInstance))
+            using (new Mutex(true, ProcessEx.CurrentName, out bool newInstance))
             {
                 if (!newInstance)
                     return;

@@ -13,8 +13,7 @@ namespace SharpKeysPortable
         [STAThread]
         private static void Main()
         {
-            bool newInstance;
-            using (new Mutex(true, ProcessEx.CurrentName, out newInstance))
+            using (new Mutex(true, ProcessEx.CurrentName, out bool newInstance))
             {
                 if (!newInstance)
                     return;

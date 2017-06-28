@@ -53,10 +53,7 @@ namespace AppUpdater
                     var mVer = mPath.Split('/').FirstOrDefault();
                     if (string.IsNullOrEmpty(mVer) || !mVer.All(c => char.IsDigit(c) || c == '.'))
                         continue;
-                    Version ver;
-                    if (!Version.TryParse(mVer, out ver))
-                        continue;
-                    if (paths.ContainsKey(ver))
+                    if (!Version.TryParse(mVer, out Version ver) || paths.ContainsKey(ver))
                         continue;
                     paths.Add(ver, mPath);
                 }

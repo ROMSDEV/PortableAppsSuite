@@ -14,16 +14,15 @@ namespace FrapsPortable
         private static void Main()
         {
             Log.AllowLogging();
-#if x86
-            var appPath64 = PathEx.Combine(@"%CurDir%\Fraps64Portable.exe");
+#if !x86
+            var appPath64 = PathEx.Combine(PathEx.LocalDir, "Fraps64Portable.exe");
             if (Environment.Is64BitOperatingSystem && File.Exists(appPath64))
             {
                 ProcessEx.Start(appPath64);
                 Environment.Exit(Environment.ExitCode);
             }
 #endif
-            bool newInstance;
-            using (new Mutex(true, ProcessEx.CurrentName, out newInstance))
+            using (new Mutex(true, ProcessEx.CurrentName, out bool newInstance))
             {
                 if (!newInstance)
                     return;

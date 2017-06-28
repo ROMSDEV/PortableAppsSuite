@@ -1,7 +1,6 @@
 namespace RunPHP
 {
     using System;
-    using System.Diagnostics;
     using System.Threading;
     using System.Windows.Forms;
     using SilDev;
@@ -12,8 +11,7 @@ namespace RunPHP
         private static void Main()
         {
             Log.AllowLogging();
-            bool newInstance;
-            using (new Mutex(true, ProcessEx.CurrentName, out newInstance))
+            using (new Mutex(true, ProcessEx.CurrentName, out bool newInstance))
             {
                 if (!newInstance)
                     return;

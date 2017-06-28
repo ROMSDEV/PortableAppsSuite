@@ -45,8 +45,7 @@ namespace WinRARPortable
             else
                 Ini.SetFile(iniPath);
 
-            bool newInstance;
-            using (new Mutex(true, ProcessEx.CurrentName, out newInstance))
+            using (new Mutex(true, ProcessEx.CurrentName, out bool newInstance))
             {
                 if (!newInstance && !Environment.CommandLine.ContainsEx("{5C1A7995-36C7-4346-B549-D6392EFC86E4}"))
                 {

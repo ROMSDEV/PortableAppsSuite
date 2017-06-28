@@ -17,8 +17,7 @@ namespace ZAPPortable
             Log.AllowLogging();
             try
             {
-                bool newInstance;
-                using (new Mutex(true, ProcessEx.CurrentName, out newInstance))
+                using (new Mutex(true, ProcessEx.CurrentName, out bool newInstance))
                 {
                     if (!newInstance)
                         return;
@@ -32,8 +31,7 @@ namespace ZAPPortable
                         return;
 
                     var iniPath = Path.ChangeExtension(PathEx.LocalPath, ".ini");
-                    string javaPath;
-                    Helper.FindJava(out javaPath, iniPath);
+                    Helper.FindJava(out string javaPath, iniPath);
 
                     var dirMap = new Dictionary<string, string>
                     {
@@ -48,11 +46,27 @@ namespace ZAPPortable
                     using (var p = ProcessEx.Start(javaPath, Path.GetDirectoryName(appPath), args, false, false))
                         if (p?.HasExited == false)
                             p.WaitForExit();
-                    var isRunning = true;
-                    while (isRunning)
+
+                    Recheck:
+                    var appName = Path.GetFileNameWithoutExtension(javaPath);
+                    foreach (var p in ProcessEx.GetInstances(appName))
                     {
-                        isRunning = IsRunning();
-                        Thread.Sleep(100);
+                        var wasRunning = false;
+                        bool isRunning;
+                        do
+                        {
+                            isRunning = p?.GetCommandLine()?.ContainsEx(appDir) == true;
+                            if (p?.HasExited == false)
+                                p.WaitForExit();
+                            if (!wasRunning && isRunning)
+                                wasRunning = true;
+                            Thread.Sleep(200);
+                        }
+                        while (isRunning);
+                        if (!wasRunning)
+                            continue;
+                        Thread.Sleep(250);
+                        goto Recheck;
                     }
 
                     Helper.DirectoryForwarding(Helper.Options.Exit, dirMap);

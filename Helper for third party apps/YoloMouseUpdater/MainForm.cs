@@ -59,8 +59,7 @@ namespace AppUpdater
                     var mVer = mName.Split('/').FirstOrDefault()?.Trim();
                     if (string.IsNullOrWhiteSpace(mVer))
                         continue;
-                    Version ver;
-                    if (!Version.TryParse(mVer, out ver))
+                    if (!Version.TryParse(mVer, out Version ver))
                         continue;
                     urls.Add(string.Format(Resources.UpdateUrl, mName,
 #if !x86

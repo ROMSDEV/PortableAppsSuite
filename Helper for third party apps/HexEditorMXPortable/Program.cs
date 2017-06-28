@@ -12,8 +12,7 @@ namespace HexEditorMXPortable
         private static void Main()
         {
             Log.AllowLogging();
-            bool newInstance;
-            using (new Mutex(true, ProcessEx.CurrentName, out newInstance))
+            using (new Mutex(true, ProcessEx.CurrentName, out bool newInstance))
             {
                 var appPath = PathEx.Combine(PathEx.LocalDir, "App\\hexeditmx\\hexeditmx.exe");
                 if (!File.Exists(appPath))

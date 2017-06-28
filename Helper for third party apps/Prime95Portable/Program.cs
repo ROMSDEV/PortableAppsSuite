@@ -13,8 +13,7 @@ namespace Prime95Portable
         private static void Main()
         {
             Log.AllowLogging();
-            bool newInstance;
-            using (new Mutex(true, ProcessEx.CurrentName, out newInstance))
+            using (new Mutex(true, ProcessEx.CurrentName, out bool newInstance))
             {
                 var appDir = PathEx.Combine(PathEx.LocalDir, "App", Environment.Is64BitOperatingSystem ? "p95win64" : "p95win32");
                 if (!Directory.Exists(appDir))

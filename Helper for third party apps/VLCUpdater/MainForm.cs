@@ -73,8 +73,7 @@ namespace AppUpdater
                     if (!cVer.Count(char.IsDigit).IsBetween(3, 16) || !cVer.Count(c => c == '.').IsBetween(2, 3))
                         continue;
                     mVer = new string(mVer.Where(c => char.IsDigit(c) || c == '.').ToArray());
-                    Version ver;
-                    if (!Version.TryParse(mVer, out ver))
+                    if (!Version.TryParse(mVer, out Version ver))
                         continue;
                     vers.Add(ver);
                 }

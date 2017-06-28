@@ -17,6 +17,7 @@ namespace HwMonTray
         private string Type;
         private string ID_Values;
 
+        [SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
         public HwMonAccess()
         {
             var wndApp = Interop.FindWindowEx(IntPtr.Zero, IntPtr.Zero, null, "CPUID Hardware Monitor (GadgetHost)");
@@ -51,6 +52,7 @@ namespace HwMonTray
                 Interop.IsWow64Process(hProcess, out Wow64);
         }
 
+        [SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
         [SuppressMessage("ReSharper", "UnusedParameter.Local")]
         private void Dispose(bool disposing)
         {
@@ -62,6 +64,8 @@ namespace HwMonTray
                 Interop.CloseHandle(hProcess);
         }
 
+        [SuppressMessage("Microsoft.Design", "CA1063:ImplementIDisposableCorrectly")]
+        [SuppressMessage("Microsoft.Usage", "CA2216:DisposableTypesShouldDeclareFinalizer")]
         public void Dispose()
         {
             GC.SuppressFinalize(this);
@@ -90,6 +94,7 @@ namespace HwMonTray
             ReadTVItems(inItem, 0);
         }
 
+        [SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
         [SuppressMessage("ReSharper", "ParameterHidesMember")]
         private string GetTVItemTextEx(IntPtr wndTreeView, IntPtr item)
         {

@@ -16,10 +16,8 @@ namespace RunPHP
         private readonly string _appPath = PathEx.Combine(Resources.AppPath);
         private int _countdown = 10;
 
-        public DownloadForm()
-        {
+        public DownloadForm() => 
             InitializeComponent();
-        }
 
         private void DownloadForm_Load(object sender, EventArgs e)
         {

@@ -17,8 +17,7 @@ namespace TS3ClientPortable
         private static void Main()
         {
             Log.AllowLogging();
-            bool newInstance;
-            using (new Mutex(true, Process.GetCurrentProcess().ProcessName, out newInstance))
+            using (new Mutex(true, Process.GetCurrentProcess().ProcessName, out bool newInstance))
             {
                 if (!newInstance)
                     return;
@@ -88,10 +87,6 @@ namespace TS3ClientPortable
                     {
                         "%LocalAppData%\\TeamSpeak 3",
                         "%CurDir%\\Data\\Temp"
-                    },
-                    {
-                        "%UserProfile%\\.QtWebEngineProcess",
-                        "%CurDir%\\Data\\Temp\\.QtWebEngineProcess"
                     },
                     {
                         "%UserProfile%\\.TeamSpeak 3",
@@ -196,6 +191,9 @@ namespace TS3ClientPortable
 
                 try
                 {
+                    var qtWebEngineCacheDir = PathEx.Combine("%UserProfile%\\.QtWebEngineProcess");
+                    if (Directory.Exists(qtWebEngineCacheDir))
+                        Directory.Delete(qtWebEngineCacheDir, true);
                     var owInstallerPath = Path.Combine(appDir, "OverwolfTeamSpeakInstaller.exe");
                     if (File.Exists(owInstallerPath))
                         File.Delete(owInstallerPath);

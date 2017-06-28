@@ -25,6 +25,7 @@ namespace HwMonTray
         private readonly Process _process = new Process();
         private bool _visible;
 
+        [SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", MessageId = "components")]
         protected override void Dispose(bool disposing)
         {
             if (disposing)

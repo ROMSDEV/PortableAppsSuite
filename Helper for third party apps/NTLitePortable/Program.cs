@@ -35,8 +35,7 @@ namespace NTLitePortable
             if (!File.Exists(updaterPath) || ProcessEx.IsRunning(Path.GetFileNameWithoutExtension(appPath)) || ProcessEx.IsRunning(Path.GetFileNameWithoutExtension(updaterPath)))
                 return;
 
-            bool newInstance;
-            using (new Mutex(true, ProcessEx.CurrentName, out newInstance))
+            using (new Mutex(true, ProcessEx.CurrentName, out bool newInstance))
             {
                 if (!newInstance)
                     return;
