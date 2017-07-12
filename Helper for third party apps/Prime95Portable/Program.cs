@@ -26,9 +26,14 @@ namespace Prime95Portable
                     return;
                 }
 
+#if LEGACY
+                if (!File.Exists(appPath) || ProcessEx.IsRunning(Path.GetFileNameWithoutExtension(appPath)))
+                    return;
+#else
                 var updaterPath = Path.Combine(appDir, Environment.Is64BitOperatingSystem ? "Prime95Updater64.exe" : "Prime95Updater.exe");
                 if (ProcessEx.IsRunning(Path.GetFileNameWithoutExtension(appPath)) || !File.Exists(updaterPath) || ProcessEx.IsRunning(Path.GetFileNameWithoutExtension(updaterPath)))
                     return;
+#endif
 
                 var dataDir = PathEx.Combine(PathEx.LocalDir, "Data");
                 var cfgPath = PathEx.Combine(dataDir, "prime.txt");
@@ -40,6 +45,7 @@ namespace Prime95Portable
                     }
                 };
 
+#if !LEGACY
                 Helper.ApplicationStart(updaterPath, "/silent", null);
                 if (!File.Exists(appPath))
                 {
@@ -48,6 +54,7 @@ namespace Prime95Portable
                         File.Delete(updIniPath);
                     return;
                 }
+#endif
 
                 if (!File.Exists(cfgPath))
                 {
