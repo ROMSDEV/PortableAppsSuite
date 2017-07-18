@@ -27,7 +27,7 @@ namespace HLSWPortable
 
                 try
                 {
-                    string unpachedAppPath = $"{appPath}.SI13N7-BACKUP";
+                    var unpachedAppPath = $"{appPath}.SI13N7-BACKUP";
                     if (!File.Exists(unpachedAppPath) && Crypto.EncryptFileToMd5(appPath).EqualsEx("1715a84deb7c6c3f35dc8acd96833ef9"))
                     {
                         File.Copy(appPath, unpachedAppPath);
