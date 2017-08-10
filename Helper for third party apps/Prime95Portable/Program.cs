@@ -1,7 +1,7 @@
 namespace Prime95Portable
 {
     using System;
-    using System.Collections.Generic;
+    using System.Diagnostics;
     using System.IO;
     using System.Threading;
     using Portable;
@@ -33,19 +33,7 @@ namespace Prime95Portable
                 var updaterPath = Path.Combine(appDir, Environment.Is64BitOperatingSystem ? "Prime95Updater64.exe" : "Prime95Updater.exe");
                 if (ProcessEx.IsRunning(Path.GetFileNameWithoutExtension(appPath)) || !File.Exists(updaterPath) || ProcessEx.IsRunning(Path.GetFileNameWithoutExtension(updaterPath)))
                     return;
-#endif
 
-                var dataDir = PathEx.Combine(PathEx.LocalDir, "Data");
-                var cfgPath = PathEx.Combine(dataDir, "prime.txt");
-                var fileMap = new Dictionary<string, string>
-                {
-                    {
-                        PathEx.Combine(appDir, "prime.txt"),
-                        cfgPath
-                    }
-                };
-
-#if !LEGACY
                 Helper.ApplicationStart(updaterPath, "/silent", null);
                 if (!File.Exists(appPath))
                 {
@@ -56,18 +44,28 @@ namespace Prime95Portable
                 }
 #endif
 
-                if (!File.Exists(cfgPath))
+                try
                 {
-                    if (!Directory.Exists(dataDir))
-                        Directory.CreateDirectory(dataDir);
-                    File.WriteAllText(cfgPath, "TrayIcon=0");
+                    var dataDir = PathEx.Combine(PathEx.LocalDir, "Data");
+                    var cfgPath = PathEx.Combine(appDir, "prime.txt");
+                    if (!File.Exists(cfgPath))
+                        File.Create(cfgPath).Close();
+                    if (!File.ReadAllText(cfgPath).EqualsEx(dataDir))
+                        File.WriteAllText(cfgPath, $"WorkingDir={dataDir}");
+                    cfgPath = PathEx.Combine(dataDir, "prime.txt");
+                    if (!File.Exists(cfgPath))
+                    {
+                        if (!Directory.Exists(dataDir))
+                            Directory.CreateDirectory(dataDir);
+                        File.WriteAllText(cfgPath, "TrayIcon=0");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Write(ex);
                 }
 
-                Helper.FileForwarding(Helper.Options.Start, fileMap);
-
-                Helper.ApplicationStart(appPath, EnvironmentEx.CommandLine(false), false);
-
-                Helper.FileForwarding(Helper.Options.Exit, fileMap);
+                Helper.ApplicationStart(appPath, EnvironmentEx.CommandLine(false), ProcessWindowStyle.Maximized, false);
             }
         }
     }
