@@ -4,14 +4,14 @@
 #if ApplicationStart || ConfigOverwrite || DirectoryForwarding || FileForwarding || FindJava || RedistHandling || RegistryForwarding || RegistrySecureOverwrite
     using System;
 #endif
-#if ConfigOverwrite || DirectoryForwarding || FileForwarding || FileSecureForwarding || RegistrySecureOverwrite
+#if ConfigOverwrite || DirectoryForwarding || FileForwarding || FileSecureForwarding || RedistHandling || RegistrySecureOverwrite
     using System.Collections.Generic;
 #endif
-#if RedistHandling || FindJava
+#if ApplicationStart || RedistHandling || FindJava
     using System.Diagnostics;
 #endif
     using System.IO;
-#if ApplicationStart || ConfigOverwrite || DirectoryForwarding || FileForwarding || FileSecureForwarding || RegistryForwarding || RegistrySecureOverwrite
+#if ConfigOverwrite || DirectoryForwarding || FileForwarding || FileSecureForwarding || RegistryForwarding || RegistrySecureOverwrite
     using System.Linq;
 #endif
 #if RegistrySecureOverwrite
@@ -40,12 +40,12 @@
 #endif
 
 #if ApplicationStart
-        public static void ApplicationStart(string filePath, string commandLine = null, bool? full = true)
+        public static void ApplicationStart(string fileName, string workingDirectory, string arguments, ProcessWindowStyle processWindowStyle = ProcessWindowStyle.Normal, bool? full = true)
         {
-            var path = PathEx.Combine(filePath);
+            var path = PathEx.Combine(fileName);
             if (!File.Exists(path))
                 return;
-            using (var p = ProcessEx.Start(path, commandLine, Elevation.IsAdministrator, false))
+            using (var p = ProcessEx.Start(path, workingDirectory, arguments, Elevation.IsAdministrator, processWindowStyle, false))
                 if (p?.HasExited == false)
                     p.WaitForExit();
             if (full == null)
@@ -72,6 +72,29 @@
                 goto Recheck;
             }
         }
+
+        public static void ApplicationStart(string fileName, string arguments, ProcessWindowStyle processWindowStyle, bool? full = true)
+        {
+            string workingDirectory = null;
+            try
+            {
+                workingDirectory = Path.GetDirectoryName(fileName);
+            }
+            catch (Exception ex)
+            {
+                Log.Write(ex);
+            }
+            ApplicationStart(fileName, workingDirectory, arguments, processWindowStyle, full);
+        }
+
+        public static void ApplicationStart(string fileName, string arguments, bool? full = true) =>
+            ApplicationStart(fileName, arguments, ProcessWindowStyle.Normal, full);
+
+        public static void ApplicationStart(string fileName, ProcessWindowStyle processWindowStyle, bool? full = true) =>
+            ApplicationStart(fileName, null, ProcessWindowStyle.Normal, full);
+
+        public static void ApplicationStart(string fileName, bool? full) =>
+            ApplicationStart(fileName, null, ProcessWindowStyle.Normal, full);
 #endif
 
 #if ConfigOverwrite
